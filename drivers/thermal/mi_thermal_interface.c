@@ -460,6 +460,27 @@ static ssize_t thermal_max_brightness_store(struct device *dev,
 static DEVICE_ATTR(thermal_max_brightness, 0664, thermal_max_brightness_show,
 		   thermal_max_brightness_store);
 
+static ssize_t thermal_max_brightness_show(struct device *dev,
+					struct device_attribute *attr,
+					char *buf)
+{
+	return snprintf(buf, PAGE_SIZE, "%d\n",
+			atomic_read(&thermal_max_brightness));
+}
+static ssize_t thermal_max_brightness_store(struct device *dev,
+					 struct device_attribute *attr,
+					 const char *buf, size_t len)
+{
+	int val = -1;
+	val = simple_strtol(buf, NULL, 10);
+
+	atomic_set(&thermal_max_brightness, val);
+	return len;
+}
+
+static DEVICE_ATTR(thermal_max_brightness, 0664, thermal_max_brightness_show,
+		   thermal_max_brightness_store);
+
 #ifdef CONFIG_MI_THERMAL_ATC_ENABLE
 static ssize_t thermal_atc_enable_show(struct device *dev,
 				       struct device_attribute *attr, char *buf)
