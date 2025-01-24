@@ -84,7 +84,7 @@ struct netns_ipv4 {
 #endif
 	struct xt_table		*nat_table;
 #endif
-
+	unsigned int sysctl_tcp_collapse_max_bytes; // Cloudflare Disable TCP Collapse Logic
 	int sysctl_icmp_echo_ignore_all;
 	int sysctl_icmp_echo_ignore_broadcasts;
 	int sysctl_icmp_ignore_bogus_error_responses;
