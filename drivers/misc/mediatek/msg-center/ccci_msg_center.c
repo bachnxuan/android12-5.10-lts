@@ -345,7 +345,7 @@ static inline int cmd_handle_thread_func(void *arg)
 
 	// free remain cmd obj
 	while ((cmd = pop_next_cmd(pcmd_head)) != NULL) {
-		pr_info("[%s][%s] free remain cmd(%d,0x%08X)\n",
+		pr_debug("[%s][%s] free remain cmd(%d,0x%08X)\n",
 			TAG, __func__, cmd->msg_id, cmd->cmd_id);
 		kfree(cmd);
 	}
@@ -412,13 +412,13 @@ static int __init msg_center_init(void)
 	struct ccci_msg_obj *ptr_msg;
 	struct array_head *ptr_head;
 
-	pr_info("[%s][%s]\n", TAG, __func__);
+	pr_debug("[%s][%s]\n", TAG, __func__);
 
 	for (i = 0; i < ARRAY_SIZE(ccci_msg_objs); i++) {
 		ptr_msg = &ccci_msg_objs[i];
 
 		if (ptr_msg->id < 0 || ptr_msg->id >= CCCI_MAX_MSG_ID) {
-			pr_info("[%s][%s] error: id is invalid: %d\n",
+			pr_debug("[%s][%s] error: id is invalid: %d\n",
 				TAG, __func__, ptr_msg->id);
 
 			return -CCCI_ERR_INVALID_MSG_ID;
@@ -445,7 +445,7 @@ static int __init msg_center_init(void)
 			ptr_head->ptr_lock = NULL;
 
 		else {
-			pr_info("[%s][%s] error: msg type is invalid: %d,%d\n",
+			pr_debug("[%s][%s] error: msg type is invalid: %d,%d\n",
 				TAG, __func__, ptr_msg->id, ptr_msg->type);
 
 			return -CCCI_ERR_INVALID_MSG_TYPE;
@@ -481,7 +481,7 @@ int ccci_msg_register(
 		return -CCCI_ERR_NO_MEMORY;
 	}
 
-	pr_info("[%s][%s] id: (%d,0x%08X); cb: %p\n",
+	pr_debug("[%s][%s] id: (%d,0x%08X); cb: %p\n",
 			TAG, __func__, msg_id, sub_id, callback);
 
 	if (msg_reg_array[msg_id].ptr_lock)
@@ -501,7 +501,7 @@ int	ccci_msg_unregister(
 		unsigned int sub_id,
 		void *callback)
 {
-	pr_info("[%s][%s] id: (%d,0x%08X); cb: %p\n",
+	pr_debug("[%s][%s] id: (%d,0x%08X); cb: %p\n",
 			TAG, __func__, msg_id, sub_id, callback);
 
 	return del_reg_from_array(msg_id, sub_id, callback);
@@ -711,7 +711,7 @@ int	ccci_cmd_unregister(
 {
 	int ret;
 
-	pr_info("[%s][%s] id: (%d,0x%08X); cb: %p\n",
+	pr_debug("[%s][%s] id: (%d,0x%08X); cb: %p\n",
 			TAG, __func__, msg_id, cmd_id, callback);
 
 	ret = del_reg_from_array(msg_id, cmd_id, callback);

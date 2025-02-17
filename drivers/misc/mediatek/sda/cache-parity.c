@@ -384,29 +384,29 @@ static irqreturn_t cache_parity_isr_v1(int irq, void *dev_id)
 		if (parity_irq_record[i].irq == irq) {
 			irq_idx = i;
 			parity_record = &(parity_irq_record[i].parity_record);
-			pr_info("parity isr for %d\n", i);
+			pr_debug("parity isr for %d\n", i);
 			break;
 		}
 	}
 
 	if (parity_record == NULL) {
-		pr_info("no matched irq %d\n", irq);
+		pr_debug("no matched irq %d\n", irq);
 		return IRQ_HANDLED;
 	}
 
 	base = cache_parity.cache_parity_base;
 
 	status = readl(base + parity_record->check_offset);
-	pr_info("status 0x%x\n", status);
+	pr_debug("status 0x%x\n", status);
 
 	if (status & parity_record->check_mask)
-		pr_info("detect cache parity error\n");
+		pr_debug("detect cache parity error\n");
 	else
-		pr_info("no cache parity error\n");
+		pr_debug("no cache parity error\n");
 
 	for (i = 0; i < parity_record->dump_length; i += 4) {
 		offset = parity_record->dump_offset + i;
-		pr_info("offset 0x%x, val 0x%x\n", offset,
+		pr_debug("offset 0x%x, val 0x%x\n", offset,
 			readl(base + offset));
 	}
 
@@ -518,7 +518,7 @@ static DRIVER_ATTR_RO(status);
 
 void __attribute__((weak)) cache_parity_init_platform(void)
 {
-	pr_info("[%s] adopt default flow\n", __func__);
+	pr_debug("[%s] adopt default flow\n", __func__);
 }
 
 static int __count_cache_parity_irq(struct device_node *dev)

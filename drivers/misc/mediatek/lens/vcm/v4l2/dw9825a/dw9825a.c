@@ -17,7 +17,7 @@
 
 
 #define LOG_INF(format, args...)                                               \
-	pr_info(DRIVER_NAME " [%s] " format, __func__, ##args)
+	pr_debug(DRIVER_NAME " [%s] " format, __func__, ##args)
 
 #define DW9825A_NAME				"dw9825a"
 #define DW9825A_MAX_FOCUS_POS			1023

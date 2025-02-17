@@ -299,20 +299,20 @@ static int cm_mgr_fb_notifier_callback(struct notifier_block *nb,
 	int *data = (int *)v;
 
 	if (value == MTK_DISP_EVENT_BLANK) {
-		pr_info("%s+\n", __func__);
+		pr_debug("%s+\n", __func__);
 		if (*data == MTK_DISP_BLANK_UNBLANK) {
-			pr_info("#@# %s(%d) SCREEN ON\n", __func__, __LINE__);
+			pr_debug("#@# %s(%d) SCREEN ON\n", __func__, __LINE__);
 			cm_mgr_blank_status = 0;
 			cm_mgr_to_sspm_command(IPI_CM_MGR_BLANK, 0);
 		} else if (*data == MTK_DISP_BLANK_POWERDOWN) {
-			pr_info("#@# %s(%d) SCREEN OFF\n", __func__, __LINE__);
+			pr_debug("#@# %s(%d) SCREEN OFF\n", __func__, __LINE__);
 			cm_mgr_blank_status = 1;
 			cm_mgr_dram_opp_base = -1;
 			if (hk.cm_mgr_perf_platform_set_status)
 				hk.cm_mgr_perf_platform_set_status(0);
 			cm_mgr_to_sspm_command(IPI_CM_MGR_BLANK, 1);
 		}
-		pr_info("%s-\n", __func__);
+		pr_debug("%s-\n", __func__);
 	}
 
 	return 0;
@@ -330,7 +330,7 @@ int cm_mgr_to_sspm_command(u32 cmd, int val)
 	struct cm_mgr_data cm_mgr_d;
 
 	if (cm_sspm_ready != 1) {
-		pr_info("#@# %s(%d) sspm not ready(%d) to receive cmd(%d)\n",
+		pr_debug("#@# %s(%d) sspm not ready(%d) to receive cmd(%d)\n",
 				__func__, __LINE__, cm_sspm_ready, cmd);
 		ret = -1;
 		return ret;
@@ -367,16 +367,16 @@ int cm_mgr_to_sspm_command(u32 cmd, int val)
 				IPI_SEND_POLLING, &cm_mgr_d, CM_MGR_D_LEN,
 				2000);
 		if (ret != 0) {
-			pr_info("#@# %s(%d) cmd(%d) error, return %d\n",
+			pr_debug("#@# %s(%d) cmd(%d) error, return %d\n",
 					__func__, __LINE__, cmd, ret);
 		} else if (!cm_ipi_ackdata) {
 			ret = cm_ipi_ackdata;
-			pr_info("#@# %s(%d) cmd(%d) ack fail %d\n",
+			pr_debug("#@# %s(%d) cmd(%d) ack fail %d\n",
 					__func__, __LINE__, cmd, ret);
 		}
 		break;
 	default:
-		pr_info("#@# %s(%d) wrong cmd(%d)!!!\n",
+		pr_debug("#@# %s(%d) wrong cmd(%d)!!!\n",
 				__func__, __LINE__, cmd);
 		break;
 	}
@@ -729,17 +729,17 @@ int cm_mgr_check_dts_setting(struct platform_device *pdev)
 	cm_mgr_base = devm_ioremap_resource(dev, res);
 
 	if (IS_ERR((void const *) cm_mgr_base)) {
-		pr_info("[CM_MGR] Unable to ioremap registers\n");
+		pr_debug("[CM_MGR] Unable to ioremap registers\n");
 		return -1;
 	}
 
-	pr_info("[CM_MGR] platform-cm_mgr cm_mgr_base=%p\n",
+	pr_debug("[CM_MGR] platform-cm_mgr cm_mgr_base=%p\n",
 			cm_mgr_base);
 
 	/* cm_mgr_cpu_opp_to_dram */
 	opp_count = of_count_phandle_with_args(node,
 			"cm_mgr_cpu_opp_to_dram", NULL);
-	pr_info("#@# %s(%d) opp_count %d\n",
+	pr_debug("#@# %s(%d) opp_count %d\n",
 			__func__, __LINE__, opp_count);
 
 	if (opp_count > 0)
@@ -772,7 +772,7 @@ int cm_mgr_check_dts_setting(struct platform_device *pdev)
 		else
 			cm_mgr_enable = 0;
 	}
-	pr_info("#@# %s(%d) cm_mgr_enable %d\n",
+	pr_debug("#@# %s(%d) cm_mgr_enable %d\n",
 			__func__, __LINE__, cm_mgr_enable);
 
 	ret = of_property_read_string(node,
@@ -783,7 +783,7 @@ int cm_mgr_check_dts_setting(struct platform_device *pdev)
 		else
 			cm_mgr_use_bcpu_weight = 0;
 	}
-	pr_info("#@# %s(%d) cm_mgr_use_bcpu_weight %d\n",
+	pr_debug("#@# %s(%d) cm_mgr_use_bcpu_weight %d\n",
 			__func__, __LINE__, cm_mgr_use_bcpu_weight);
 
 	ret = of_property_read_string(node,
@@ -794,7 +794,7 @@ int cm_mgr_check_dts_setting(struct platform_device *pdev)
 		else
 			cm_mgr_use_cpu_to_dram_map = 0;
 	}
-	pr_info("#@# %s(%d) cm_mgr_use_cpu_to_dram_map %d\n",
+	pr_debug("#@# %s(%d) cm_mgr_use_cpu_to_dram_map %d\n",
 			__func__, __LINE__, cm_mgr_use_cpu_to_dram_map);
 
 	ret = of_property_read_string(node,
@@ -805,7 +805,7 @@ int cm_mgr_check_dts_setting(struct platform_device *pdev)
 		else
 			cm_mgr_use_cpu_to_dram_map_new = 0;
 	}
-	pr_info("#@# %s(%d) cm_mgr_use_cpu_to_dram_map_new %d\n",
+	pr_debug("#@# %s(%d) cm_mgr_use_cpu_to_dram_map_new %d\n",
 			__func__, __LINE__, cm_mgr_use_cpu_to_dram_map_new);
 
 	/* get bcpu weight from dts */
@@ -813,14 +813,14 @@ int cm_mgr_check_dts_setting(struct platform_device *pdev)
 			&cpu_power_bcpu_weight_max);
 	if (ret)
 		cpu_power_bcpu_weight_max = 100;
-	pr_info("#@# %s(%d) cpu_power_bcpu_weight_max %d\n",
+	pr_debug("#@# %s(%d) cpu_power_bcpu_weight_max %d\n",
 			__func__, __LINE__, cpu_power_bcpu_weight_max);
 
 	ret = of_property_read_s32(node, "cpu_power_bcpu_weight_min",
 			&cpu_power_bcpu_weight_min);
 	if (ret)
 		cpu_power_bcpu_weight_min = 100;
-	pr_info("#@# %s(%d) cpu_power_bcpu_weight_min %d\n",
+	pr_debug("#@# %s(%d) cpu_power_bcpu_weight_min %d\n",
 			__func__, __LINE__, cpu_power_bcpu_weight_min);
 
 	/* get bbcpu weight from dts */
@@ -829,14 +829,14 @@ int cm_mgr_check_dts_setting(struct platform_device *pdev)
 	if (ret)
 		cpu_power_bbcpu_weight_max = 100;
 
-	pr_info("#@# %s(%d) cpu_power_bbcpu_weight_max %d\n",
+	pr_debug("#@# %s(%d) cpu_power_bbcpu_weight_max %d\n",
 			__func__, __LINE__, cpu_power_bbcpu_weight_max);
 
 	ret = of_property_read_s32(node, "cpu_power_bbcpu_weight_min",
 			&cpu_power_bbcpu_weight_min);
 	if (ret)
 		cpu_power_bbcpu_weight_min = 100;
-	pr_info("#@# %s(%d) cpu_power_bbcpu_weight_min %d\n",
+	pr_debug("#@# %s(%d) cpu_power_bbcpu_weight_min %d\n",
 			__func__, __LINE__, cpu_power_bbcpu_weight_min);
 
 	/* cm_mgr args */
@@ -1012,7 +1012,7 @@ int cm_mgr_common_init(void)
 
 	ret = sysfs_create_group(cm_mgr_kobj, &attr_group);
 	if (ret) {
-		pr_info("[CM_MGR] FAILED TO CREATE FILESYSTEM (%d)\n", ret);
+		pr_debug("[CM_MGR] FAILED TO CREATE FILESYSTEM (%d)\n", ret);
 		kobject_put(cm_mgr_kobj);
 
 		return ret;
@@ -1020,7 +1020,7 @@ int cm_mgr_common_init(void)
 
 	ret = mtk_disp_notifier_register("cm_mgr", &cm_mgr_fb_notifier);
 	if (ret) {
-		pr_info("[CM_MGR] FAILED TO REGISTER FB CLIENT (%d)\n", ret);
+		pr_debug("[CM_MGR] FAILED TO REGISTER FB CLIENT (%d)\n", ret);
 		return ret;
 	}
 
@@ -1032,11 +1032,11 @@ int cm_mgr_common_init(void)
 	ret = mtk_ipi_register(&sspm_ipidev, IPIS_C_CM, NULL, NULL,
 			(void *) &cm_ipi_ackdata);
 	if (ret) {
-		pr_info("[SSPM] IPIS_C_CM ipi_register fail, ret %d\n", ret);
+		pr_debug("[SSPM] IPIS_C_CM ipi_register fail, ret %d\n", ret);
 		cm_sspm_ready = -1;
 		return -1;
 	}
-	pr_info("SSPM is ready to service CM IPI\n");
+	pr_debug("SSPM is ready to service CM IPI\n");
 	cm_sspm_ready = 1;
 #endif /* CONFIG_MTK_TINYSYS_SSPM_V2 && defined(USE_CM_MGR_AT_SSPM) */
 #endif /* CONFIG_MTK_CM_IPI */
@@ -1046,7 +1046,7 @@ int cm_mgr_common_init(void)
 
 	FOR_EACH_TRACEPOINT(i) {
 		if (cm_mgr_tracepoints[i].tp == NULL) {
-			pr_info("[CM_MGR] Error, %s not found\n",
+			pr_debug("[CM_MGR] Error, %s not found\n",
 					cm_mgr_tracepoints[i].name);
 			tracepoint_cleanup();
 			return -1;
@@ -1055,7 +1055,7 @@ int cm_mgr_common_init(void)
 	ret = tracepoint_probe_register(cm_mgr_tracepoints[0].tp,
 			cm_mgr_tracepoints[0].func,  NULL);
 	if (ret) {
-		pr_info("cpu_frequency: Couldn't activate tracepoint\n");
+		pr_debug("cpu_frequency: Couldn't activate tracepoint\n");
 		goto fail_reg_cpu_frequency_entry;
 	}
 	cm_mgr_tracepoints[0].registered = true;
@@ -1118,7 +1118,7 @@ void cm_mgr_common_exit(void)
 
 	ret = mtk_disp_notifier_unregister(&cm_mgr_fb_notifier);
 	if (ret)
-		pr_info("[CM_MGR] FAILED TO UNREGISTER FB CLIENT (%d)\n", ret);
+		pr_debug("[CM_MGR] FAILED TO UNREGISTER FB CLIENT (%d)\n", ret);
 }
 EXPORT_SYMBOL_GPL(cm_mgr_common_exit);
 MODULE_LICENSE("GPL");

@@ -100,7 +100,7 @@ static int create_debug_fs(void)
 	for (i = 0; i < ARRAY_SIZE(eem_entries); i++) {
 		if (!proc_create(eem_entries[i].name, 0664,
 					eem_dir, eem_entries[i].fops)) {
-			pr_info("[%s]: create /proc/eem_lite/%s failed\n",
+			pr_debug("[%s]: create /proc/eem_lite/%s failed\n",
 					__func__,
 					eem_entries[i].name);
 		}
@@ -118,7 +118,7 @@ int mtk_eem_init(struct platform_device *pdev)
 	if (eem_res)
 		eemsn_log = ioremap(eem_res->start, resource_size(eem_res));
 	else {
-		pr_info("%s can't get resource, ret:%d\n", __func__, err);
+		pr_debug("%s can't get resource, ret:%d\n", __func__, err);
 		return 0;
 	}
 

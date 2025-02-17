@@ -53,17 +53,17 @@ int scp_ctrl_event_handler(struct notifier_block *this,
 
 	switch (event) {
 	case SCP_EVENT_STOP:
-		pr_info("[%s] SCP STOP", __func__);
+		pr_debug("[%s] SCP STOP", __func__);
 		if (g_ipi_cb.conap_scp_ipi_ctrl_notify)
 			(*g_ipi_cb.conap_scp_ipi_ctrl_notify)(0);
 		break;
 	case SCP_EVENT_READY:
-		pr_info("[%s] SCP READY", __func__);
+		pr_debug("[%s] SCP READY", __func__);
 		if (g_ipi_cb.conap_scp_ipi_ctrl_notify)
 			(*g_ipi_cb.conap_scp_ipi_ctrl_notify)(1);
 		break;
 	default:
-		pr_info("scp notify event error %lu", event);
+		pr_debug("scp notify event error %lu", event);
 	}
 	return 0;
 }
@@ -98,7 +98,7 @@ int ipi_recv_cb(unsigned int id, void *prdata, void *data, unsigned int len)
 
 	ktime_get_real_ts64(&t2);
 	if ((t2.tv_nsec - t1.tv_nsec) > 3000000)
-		pr_info("[%s] ===[%09ld]", __func__, (t2.tv_nsec - t1.tv_nsec));
+		pr_debug("[%s] ===[%09ld]", __func__, (t2.tv_nsec - t1.tv_nsec));
 	return 0;
 }
 
@@ -197,7 +197,7 @@ int conap_scp_ipi_init(struct conap_scp_ipi_cb *cb)
 	ret = mtk_ipi_register(&scp_ipidev, IPI_IN_SCP_CONNSYS,
 					(void *) ipi_recv_cb, NULL, &g_ipi_ack_data[0]);
 	if (ret != IPI_ACTION_DONE) {
-		pr_info("[%s] ipi_register ret=[%d]", __func__, ret);
+		pr_debug("[%s] ipi_register ret=[%d]", __func__, ret);
 		return -1;
 	}
 
@@ -215,7 +215,7 @@ int conap_scp_ipi_deinit(void)
 
 #ifdef MTK_CONAP_IPI_SUPPORT
 	ret = mtk_ipi_unregister(&scp_ipidev, IPI_IN_SCP_CONNSYS);
-	pr_info("[%s] ipi_unregister ret=[%d]", __func__, ret);
+	pr_debug("[%s] ipi_unregister ret=[%d]", __func__, ret);
 #else
 	pr_notice("[%s] mtk_ipi_send is not support", __func__);
 #endif

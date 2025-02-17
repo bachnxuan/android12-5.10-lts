@@ -18,7 +18,7 @@
 	writel(val, id)
 #else
 #define sspm_ts_write(id, val) \
-	pr_info("dummy sspm timesync\n")
+	pr_debug("dummy sspm timesync\n")
 #endif
 
 #define TIMESYNC_TAG	"[SSPM_TS]"
@@ -127,7 +127,7 @@ static void timesync_sync_base_internal(unsigned int flag)
 
 	spin_unlock_irqrestore(&timesync_ctx.lock, irq_flags);
 
-	pr_info("%s update base: ts=%llu, tick=0x%llx, fz=%d, ver=%d\n",
+	pr_debug("%s update base: ts=%llu, tick=0x%llx, fz=%d, ver=%d\n",
 		TIMESYNC_TAG, ts, tick, freeze, sspm_base_ver);
 }
 
@@ -160,7 +160,7 @@ unsigned int __init sspm_timesync_init(void)
 {
 	timesync_workqueue = create_workqueue("sspm_ts_wq");
 	if (!timesync_workqueue) {
-		pr_info("%s workqueue create failed\n", __func__);
+		pr_debug("%s workqueue create failed\n", __func__);
 		timesync_ctx.enabled = 0;
 		return -1;
 	}
@@ -187,7 +187,7 @@ unsigned int __init sspm_timesync_init(void)
 	hrtimer_start(&timesync_refresh_timer,
 		timesync_ctx.wrap_kt, HRTIMER_MODE_REL);
 
-	pr_info("%s ts: cycle_last %lld, time_base:%lld, wrap:%lld\n",
+	pr_debug("%s ts: cycle_last %lld, time_base:%lld, wrap:%lld\n",
 		TIMESYNC_TAG, timesync_counter.cycle_last,
 		timesync_counter.nsec, timesync_ctx.wrap_kt);
 

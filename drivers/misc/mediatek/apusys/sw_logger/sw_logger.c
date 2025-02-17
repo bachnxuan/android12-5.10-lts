@@ -1067,7 +1067,7 @@ int sw_logger_init(struct apusys_core_info *info)
 
 	ret = platform_driver_register(&sw_logger_driver);
 	if (ret != 0) {
-		pr_info("failed to register sw_logger driver");
+		pr_debug("failed to register sw_logger driver");
 		return -ENODEV;
 	}
 

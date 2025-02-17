@@ -138,7 +138,7 @@ int mnoc_init_drv_tags(void)
 
 	ret = apu_tp_init(mnoc_tp_tbl);
 	if (ret)
-		pr_info("%s: unable to register\n", __func__);
+		pr_debug("%s: unable to register\n", __func__);
 
 	return ret;
 }

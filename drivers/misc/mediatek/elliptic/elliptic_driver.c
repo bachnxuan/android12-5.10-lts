@@ -177,7 +177,7 @@ static int device_open(struct inode *inode, struct file *filp)
 	atomic_set(&elliptic_data->abort_io, 0);
 	elliptic_data_reset_debug_counters(elliptic_data);
 
-	pr_info("[ELUS] Opened device elliptic%u", minor);
+	pr_debug("[ELUS] Opened device elliptic%u", minor);
 
 	if (minor == 1)
 		elliptic_debug_io_open();
@@ -277,7 +277,7 @@ size_t elliptic_data_pop(struct elliptic_data
 		++elliptic_data->userspace_read_total;
 	} else {
 		if (-ERESTARTSYS == result)
-			pr_info("[ELUS] wait interrupted");
+			pr_debug("[ELUS] wait interrupted");
 		else
 			pr_debug("[ELUS] wait error = %d", result);
 
@@ -515,7 +515,7 @@ static int device_close(struct inode *inode, struct file *filp)
 	elliptic_data_cancel(elliptic_data);
 	up(&device->sem);
 
-	pr_info("[ELUS] Closed device elliptic%u", minor);
+	pr_debug("[ELUS] Closed device elliptic%u", minor);
 	return 0;
 }
 

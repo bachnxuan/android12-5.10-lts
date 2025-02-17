@@ -556,7 +556,7 @@ static void rndis_command_complete(struct usb_ep *ep, struct usb_request *req)
 			spin_lock(&rndis_lock);
 		} else
 			rndis->port.multi_pkt_xfer = 0;
-		pr_info("%s: MaxTransferSize: %d : Multi_pkt_txr: %s\n",
+		pr_debug("%s: MaxTransferSize: %d : Multi_pkt_txr: %s\n",
 				__func__, buf->MaxTransferSize,
 				rndis->port.multi_pkt_xfer ? "enabled" :
 							    "disabled");

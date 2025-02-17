@@ -379,21 +379,21 @@ static int gps_dl_get_reserved_memory_lk(struct device *dev)
 
 	node = dev->of_node;
 	if (!node) {
-		pr_info("gps_dl_get_reserved_memory_lk: unable to get consys node\n");
+		pr_debug("gps_dl_get_reserved_memory_lk: unable to get consys node\n");
 		return -1;
 	}
 
 	if (of_property_read_u32(node, "emi-addr", &phy_addr)) {
-		pr_info("gps_dl_get_reserved_memory_lk: unable to get emi_addr\n");
+		pr_debug("gps_dl_get_reserved_memory_lk: unable to get emi_addr\n");
 		return -1;
 	}
 
 	if (of_property_read_u32(node, "emi-size", &phy_size)) {
-		pr_info("gps_dl_get_reserved_memory_lk: unable to get emi_size\n");
+		pr_debug("gps_dl_get_reserved_memory_lk: unable to get emi_size\n");
 		return -1;
 	}
 
-	pr_info("gps_dl_get_reserved_memory_lk emi_addr %x, emi_size %x\n", phy_addr, phy_size);
+	pr_debug("gps_dl_get_reserved_memory_lk emi_addr %x, emi_size %x\n", phy_addr, phy_size);
 	gGpsRsvMemPhyBase = phy_addr;
 	gGpsRsvMemSize = phy_size;
 
@@ -410,16 +410,16 @@ static int gps_dl_get_b13_status_addr(struct device *dev)
 
 	node = dev->of_node;
 	if (!node) {
-		pr_info("gps_dl_get_b13_status_addr: unable to get consys node\n");
+		pr_debug("gps_dl_get_b13_status_addr: unable to get consys node\n");
 		return -1;
 	}
 
 	if (of_property_read_u32(node, "b13b14-status-addr", &phy_addr)) {
-		pr_info("gps_dl_get_b13_status_addr: unable to get emi_addr\n");
+		pr_debug("gps_dl_get_b13_status_addr: unable to get emi_addr\n");
 		return -1;
 	}
 
-	pr_info("gps_dl_get_b13_status_addr: b13b14-status-addr %x\n", phy_addr);
+	pr_debug("gps_dl_get_b13_status_addr: b13b14-status-addr %x\n", phy_addr);
 	b13_gps_status_addr = phy_addr;
 
 	return 0;

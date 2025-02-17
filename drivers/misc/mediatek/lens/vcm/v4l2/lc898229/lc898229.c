@@ -14,7 +14,7 @@
 #define DRIVER_NAME "lc898229"
 
 #define LOG_INF(format, args...)                                               \
-	pr_info(DRIVER_NAME " [%s] " format, __func__, ##args)
+	pr_debug(DRIVER_NAME " [%s] " format, __func__, ##args)
 
 #define LC898229_NAME				"lc898229"
 #define LC898229_MAX_FOCUS_POS			1023

@@ -472,7 +472,7 @@ static void read_sensor_Cali(void)
 		(otp_data[1] == 0x00) &&
 		(otp_data[2] == 0x0b) &&
 		(otp_data[3] == 0x01)) {
-		pr_info("OTP type: Internal Only");
+		pr_debug("OTP type: Internal Only");
 		otp_flag = OTP_QSC_INTERNAL;
 
 		for (idx = 0; idx < 2304; idx++) {
@@ -495,7 +495,7 @@ static void read_sensor_Cali(void)
 
 	} else if ((otp_data[5] == 0x56) && (otp_data[6] == 0x00)) {
 		/*Internal Module Type*/
-		pr_info("OTP type: Custom Only");
+		pr_debug("OTP type: Custom Only");
 		otp_flag = OTP_QSC_CUSTOM;
 
 		for (idx = 0; idx < 2304; idx++) {
@@ -507,7 +507,7 @@ static void read_sensor_Cali(void)
 		}
 
 	} else {
-		pr_info("OTP type: No Data, 0x0008 = %d, 0x0009 = %d",
+		pr_debug("OTP type: No Data, 0x0008 = %d, 0x0009 = %d",
 		read_cmos_eeprom_8(0x0008), read_cmos_eeprom_8(0x0009));
 	}
 
@@ -633,7 +633,7 @@ static void write_shutter(kal_uint32 shutter)
 	} else {
 		/* Extend frame length*/
 		if (read_cmos_sensor_8(0x0350) != 0x01) {
-			pr_info("single cam scenario enable auto-extend");
+			pr_debug("single cam scenario enable auto-extend");
 			write_cmos_sensor_8(0x0350, 0x01);
 		}
 		write_cmos_sensor_8(0x0104, 0x01);
@@ -1003,7 +1003,7 @@ static kal_uint32 streaming_control(kal_bool enable)
 		enable);
 	if (enable) {
 		if (read_cmos_sensor_8(0x0350) != 0x01) {
-			pr_info("single cam scenario enable auto-extend");
+			pr_debug("single cam scenario enable auto-extend");
 			write_cmos_sensor_8(0x0350, 0x01);
 		}
 		write_cmos_sensor_8(0x3020, 0x00);/*Mode transition mode change*/
@@ -3085,7 +3085,7 @@ static void custom3_setting(void)
 		sizeof(imx586_custom3_setting)/sizeof(kal_uint16));
 
 	if (otp_flag == OTP_QSC_NONE) {
-		pr_info("OTP no QSC Data, close qsc register");
+		pr_debug("OTP no QSC Data, close qsc register");
 		write_cmos_sensor_8(0x3621, 0x00);
 	}
 
@@ -3807,7 +3807,7 @@ static kal_uint32 seamless_switch(enum MSDK_SCENARIO_ID_ENUM scenario_id,
 	switch (scenario_id) {
 	case MSDK_SCENARIO_ID_CAMERA_CAPTURE_JPEG:
 	{
-		pr_info("seamless switch to full size!\n");
+		pr_debug("seamless switch to full size!\n");
 		spin_lock(&imgsensor_drv_lock);
 		imgsensor.sensor_mode = IMGSENSOR_MODE_CAPTURE;
 		imgsensor.pclk = imgsensor_info.cap.pclk;
@@ -3836,7 +3836,7 @@ static kal_uint32 seamless_switch(enum MSDK_SCENARIO_ID_ENUM scenario_id,
 #if 0
 	case MSDK_SCENARIO_ID_CUSTOM4:
 	{
-	pr_info("seamless switch to zoom-in 2x!\n");
+	pr_debug("seamless switch to zoom-in 2x!\n");
 	spin_lock(&imgsensor_drv_lock);
 	imgsensor.sensor_mode = IMGSENSOR_MODE_CUSTOM4;
 	imgsensor.pclk = imgsensor_info.custom4.pclk;
@@ -3863,7 +3863,7 @@ static kal_uint32 seamless_switch(enum MSDK_SCENARIO_ID_ENUM scenario_id,
 	break;
 	case MSDK_SCENARIO_ID_CUSTOM1:
 	{
-		pr_info("seamless switch to zoom-in 1.3x!\n");
+		pr_debug("seamless switch to zoom-in 1.3x!\n");
 		spin_lock(&imgsensor_drv_lock);
 		imgsensor.sensor_mode = IMGSENSOR_MODE_CUSTOM1;
 		imgsensor.pclk = imgsensor_info.custom1.pclk;
@@ -3912,14 +3912,14 @@ static kal_uint32 seamless_switch(enum MSDK_SCENARIO_ID_ENUM scenario_id,
 				shutter & 0xff;
 		}
 
-		pr_info("seamless switch Full remosaic!\n");
+		pr_debug("seamless switch Full remosaic!\n");
 		 imx586_table_write_cmos_sensor(imx586_seamless_custom3,
 		sizeof(imx586_seamless_custom3) / sizeof(kal_uint16));
 	}
 	break;
 	default:
 	{
-		pr_info(
+		pr_debug(
 		"error! wrong setting in set_seamless_switch = %d",
 		scenario_id);
 		return 0xff;
@@ -4930,7 +4930,7 @@ break;
 				sizeof(struct SENSOR_VC_INFO_STRUCT));
 			break;
 		default:
-			pr_info("error: get wrong vc_INFO id = %d",
+			pr_debug("error: get wrong vc_INFO id = %d",
 			*feature_data_32);
 			break;
 		}
@@ -4965,7 +4965,7 @@ break;
 			"warning! no ae_ctrl input");
 		}
 		if (feature_data == NULL) {
-			pr_info("error! input scenario is null!");
+			pr_debug("error! input scenario is null!");
 			return ERROR_INVALID_SCENARIO_ID;
 		}
 
@@ -4985,7 +4985,7 @@ break;
 			pScenarios =
 			(MUINT32 *)((uintptr_t)(*(feature_data + 1)));
 		} else {
-			pr_info("input pScenarios vector is NULL!\n");
+			pr_debug("input pScenarios vector is NULL!\n");
 			return ERROR_INVALID_SCENARIO_ID;
 		}
 		switch (*feature_data) {

@@ -114,7 +114,7 @@ u32 slbc_sram_read(u32 offset)
 	if (!slbc->sram_vaddr || offset >= slbc->regsize)
 		return 0;
 
-	/* pr_info("#@# %s(%d) regs 0x%x 0%x\n", __func__, __LINE__, slbc->regs, offset); */
+	/* pr_debug("#@# %s(%d) regs 0x%x 0%x\n", __func__, __LINE__, slbc->regs, offset); */
 
 	return readl(slbc->sram_vaddr + offset);
 }
@@ -130,7 +130,7 @@ void slbc_sram_write(u32 offset, u32 val)
 	if (!slbc->sram_vaddr || offset >= slbc->regsize)
 		return;
 
-	/* pr_info("#@# %s(%d) regs 0x%x 0%x\n", __func__, __LINE__, slbc->regs, offset); */
+	/* pr_debug("#@# %s(%d) regs 0x%x 0%x\n", __func__, __LINE__, slbc->regs, offset); */
 
 	writel(val, slbc->sram_vaddr + offset);
 }
@@ -139,7 +139,7 @@ void slbc_sram_init(struct mtk_slbc *slbc)
 {
 	int i;
 
-	pr_info("slbc_sram addr:0x%lx len:%d\n",
+	pr_debug("slbc_sram addr:0x%lx len:%d\n",
 			(unsigned long)slbc->regs, slbc->regsize);
 
 	/* print_hex_dump(KERN_INFO, "SLBC: ", DUMP_PREFIX_OFFSET, */
@@ -151,13 +151,13 @@ void slbc_sram_init(struct mtk_slbc *slbc)
 
 static void slbc_set_sram_data(struct slbc_data *d)
 {
-	pr_info("slbc: set pa:%lx va:%lx\n",
+	pr_debug("slbc: set pa:%lx va:%lx\n",
 			(unsigned long)d->paddr, (unsigned long)d->vaddr);
 }
 
 static void slbc_clr_sram_data(struct slbc_data *d)
 {
-	pr_info("slbc: clr pa:%lx va:%lx\n",
+	pr_debug("slbc: clr pa:%lx va:%lx\n",
 			(unsigned long)d->paddr, (unsigned long)d->vaddr);
 }
 
@@ -173,7 +173,7 @@ static void slbc_debug_log(const char *fmt, ...)
 	va_end(va);
 
 	if (len)
-		pr_info("#@# %s\n", buf);
+		pr_debug("#@# %s\n", buf);
 #endif /* SLBC_DEBUG */
 }
 
@@ -308,7 +308,7 @@ int slbc_request(struct slbc_data *d)
 	if ((d->type) == TP_ACP)
 		ret = slbc_request_acp(d);
 
-	pr_info("#@# %s(%d) uid 0x%x ret %d d->ret %d pa 0x%lx size 0x%lx\n",
+	pr_debug("#@# %s(%d) uid 0x%x ret %d d->ret %d pa 0x%lx size 0x%lx\n",
 			__func__, __LINE__, d->uid, ret, d->ret,
 			(unsigned long)d->paddr, d->size);
 
@@ -422,7 +422,7 @@ int slbc_release(struct slbc_data *d)
 	if ((d->type) == TP_ACP)
 		ret = slbc_release_acp(d);
 
-	pr_info("#@# %s(%d) uid 0x%x ret %d d->ret %d pa 0x%lx size 0x%lx\n",
+	pr_debug("#@# %s(%d) uid 0x%x ret %d d->ret %d pa 0x%lx size 0x%lx\n",
 			__func__, __LINE__, d->uid, ret, d->ret,
 			(unsigned long)d->paddr, d->size);
 
@@ -759,15 +759,15 @@ static ssize_t dbg_slbc_proc_write(struct file *file,
 			mutex_unlock(&slbc_ops_lock);
 		}
 	} else if (!strcmp(cmd, "slb_disable")) {
-		pr_info("slb disable %d\n", val_1);
+		pr_debug("slb disable %d\n", val_1);
 		slb_disable = val_1;
 		slbc_sspm_slb_disable((int)!!val_1);
 	} else if (!strcmp(cmd, "slc_disable")) {
-		pr_info("slc disable %d\n", val_1);
+		pr_debug("slc disable %d\n", val_1);
 		slc_disable = val_1;
 		slbc_sspm_slc_disable((int)!!val_1);
 	} else if (!strcmp(cmd, "slbc_scmi_enable")) {
-		pr_info("slbc scmi enable %d\n", val_1);
+		pr_debug("slbc scmi enable %d\n", val_1);
 		slbc_sspm_enable((int)!!val_1);
 	} else if (!strcmp(cmd, "slbc_uid_used")) {
 		slbc_uid_used = val_1;
@@ -814,14 +814,14 @@ static ssize_t dbg_slbc_proc_write(struct file *file,
 	} else if (!strcmp(cmd, "debug_level")) {
 		debug_level = val_1;
 	} else if (!strcmp(cmd, "sram")) {
-		pr_info("#@# %s(%d) slbc->regs 0x%lx slbc->regsize 0x%x\n",
+		pr_debug("#@# %s(%d) slbc->regs 0x%lx slbc->regsize 0x%x\n",
 				__func__, __LINE__,
 				(unsigned long)slbc->regs, slbc->regsize);
 
 		print_hex_dump(KERN_INFO, "SLBC: ", DUMP_PREFIX_OFFSET,
 				16, 4, slbc->sram_vaddr, slbc->regsize, 1);
 	} else {
-		pr_info("#@# %s(%d) wrong cmd %s val %d\n",
+		pr_debug("#@# %s(%d) wrong cmd %s val %d\n",
 				__func__, __LINE__, cmd, val_1);
 	}
 
@@ -854,7 +854,7 @@ static int slbc_create_debug_fs(void)
 	/* create /proc/slbc */
 	dir = proc_mkdir("slbc", NULL);
 	if (!dir) {
-		pr_info("fail to create /proc/slbc @ %s()\n", __func__);
+		pr_debug("fail to create /proc/slbc @ %s()\n", __func__);
 
 		return -ENOMEM;
 	}
@@ -862,7 +862,7 @@ static int slbc_create_debug_fs(void)
 	for (i = 0; i < ARRAY_SIZE(entries); i++) {
 		if (!proc_create_data(entries[i].name, 0660,
 					dir, entries[i].fops, entries[i].data))
-			pr_info("%s(), create /proc/slbc/%s failed\n",
+			pr_debug("%s(), create /proc/slbc/%s failed\n",
 					__func__, entries[i].name);
 	}
 
@@ -925,14 +925,14 @@ static int slbc_probe(struct platform_device *pdev)
 			else
 				slbc_enable = 0;
 		}
-		pr_info("#@# %s(%d) slbc_enable %d\n", __func__, __LINE__,
+		pr_debug("#@# %s(%d) slbc_enable %d\n", __func__, __LINE__,
 				slbc_enable);
 	} else
-		pr_info("find slbc node failed\n");
+		pr_debug("find slbc node failed\n");
 #else
 	slbc_enable = 0;
 
-	pr_info("#@# %s(%d) slbc_enable %d\n", __func__, __LINE__,
+	pr_debug("#@# %s(%d) slbc_enable %d\n", __func__, __LINE__,
 			slbc_enable);
 #endif /* ENABLE_SLBC */
 
@@ -940,7 +940,7 @@ static int slbc_probe(struct platform_device *pdev)
 	if (ret < 0) {
 		slbc_sram_enable = 0;
 
-		pr_info("slbc of_property_read_u32_array ERR : %d\n", ret);
+		pr_debug("slbc of_property_read_u32_array ERR : %d\n", ret);
 	} else {
 
 		slbc->regs = (void *)(long)reg[1];
@@ -955,7 +955,7 @@ static int slbc_probe(struct platform_device *pdev)
 		} else {
 			slbc_sram_enable = 1;
 
-			pr_info("#@# %s(%d) slbc->regs 0x%lx slbc->regsize 0x%x\n",
+			pr_debug("#@# %s(%d) slbc->regs 0x%lx slbc->regsize 0x%x\n",
 					__func__, __LINE__,
 					(unsigned long)slbc->regs, slbc->regsize);
 			slbc_sram_init(slbc);
@@ -970,7 +970,7 @@ static int slbc_probe(struct platform_device *pdev)
 
 	ret = slbc_create_debug_fs();
 	if (ret) {
-		pr_info("SLBC FAILED TO CREATE DEBUG FILESYSTEM (%d)\n", ret);
+		pr_debug("SLBC FAILED TO CREATE DEBUG FILESYSTEM (%d)\n", ret);
 
 		return ret;
 	}
@@ -979,7 +979,7 @@ static int slbc_probe(struct platform_device *pdev)
 		slbc->slbc_qos_latency = drv->states[2].exit_latency - 10;
 	else
 		slbc->slbc_qos_latency = 300;
-	pr_info("slbc_qos_latency %dus\n", slbc->slbc_qos_latency);
+	pr_debug("slbc_qos_latency %dus\n", slbc->slbc_qos_latency);
 
 	cpu_latency_qos_add_request(&slbc_qos_request,
 			PM_QOS_DEFAULT_VALUE);
@@ -1049,13 +1049,13 @@ int __init slbc_module_init(void)
 	/* register platform device/driver */
 	r = platform_device_register(&slbc_pdev);
 	if (r) {
-		pr_info("Failed to register platform device.\n");
+		pr_debug("Failed to register platform device.\n");
 		return -EINVAL;
 	}
 
 	r = platform_driver_register(&slbc_pdrv);
 	if (r) {
-		pr_info("fail to register slbc driver @ %s()\n", __func__);
+		pr_debug("fail to register slbc driver @ %s()\n", __func__);
 		return -EINVAL;
 	}
 

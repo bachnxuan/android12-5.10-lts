@@ -217,7 +217,7 @@ inline bool dsp_check_idx_msg_valid(
 	const uint32_t idx_msg)
 {
 	if (msg_queue == NULL) {
-		pr_info("msg_queue == NULL!! return");
+		pr_debug("msg_queue == NULL!! return");
 		return false;
 	}
 
@@ -228,7 +228,7 @@ inline bool dsp_check_idx_msg_valid(
 inline bool dsp_check_queue_empty(const struct dsp_msg_queue_t *msg_queue)
 {
 	if (msg_queue == NULL) {
-		pr_info("msg_queue == NULL!! return");
+		pr_debug("msg_queue == NULL!! return");
 		return false;
 	}
 
@@ -241,7 +241,7 @@ inline bool dsp_check_queue_to_be_full(const struct dsp_msg_queue_t *msg_queue)
 	uint32_t idx_w_to_be = 0;
 
 	if (msg_queue == NULL) {
-		pr_info("msg_queue == NULL!! return");
+		pr_debug("msg_queue == NULL!! return");
 		return false;
 	}
 
@@ -257,7 +257,7 @@ inline uint32_t dsp_get_num_messages_in_queue(
 	const struct dsp_msg_queue_t *msg_queue)
 {
 	if (msg_queue == NULL) {
-		pr_info("msg_queue == NULL!! return");
+		pr_debug("msg_queue == NULL!! return");
 		return 0;
 	}
 
@@ -277,7 +277,7 @@ inline uint32_t dsp_get_num_messages_in_queue(
 			if (p_ipi_msg->magic == IPI_MSG_MAGIC_NUMBER) \
 				DUMP_IPI_MSG(description, p_ipi_msg); \
 		} else { \
-			pr_info("%s, ipi_id: %u, buf %p, len: %u", \
+			pr_debug("%s, ipi_id: %u, buf %p, len: %u", \
 				description, \
 				p_dsp_msg->ipi_id, \
 				p_dsp_msg->buf, \
@@ -303,7 +303,7 @@ int ipi_queue_init_by_dsp(uint32_t dsp_id)
 	int ret = 0;
 
 	if (dsp_id >= NUM_OPENDSP_TYPE) {
-		pr_info("dsp_id: %u error!!", dsp_id);
+		pr_debug("dsp_id: %u error!!", dsp_id);
 		return -EFAULT;
 	}
 
@@ -371,7 +371,7 @@ int dsp_flush_msg_queue(uint32_t dsp_id)
 	unsigned long flags = 0;
 
 	if (dsp_id >= NUM_OPENDSP_TYPE) {
-		pr_info("dsp_id: %u error!!", dsp_id);
+		pr_debug("dsp_id: %u error!!", dsp_id);
 		return -EOVERFLOW;
 	}
 
@@ -425,29 +425,29 @@ int dsp_send_msg_to_queue(
 		dsp_id, ipi_id, buf, len, wait_ms);
 
 	if (dsp_id >= NUM_OPENDSP_TYPE) {
-		pr_info("dsp_id: %u error!!", dsp_id);
+		pr_debug("dsp_id: %u error!!", dsp_id);
 		return -EOVERFLOW;
 	}
 	if (buf == NULL || len > DSP_MSG_BUFFER_SIZE) {
-		pr_info("buf: %p, len: %u!! return", buf, len);
+		pr_debug("buf: %p, len: %u!! return", buf, len);
 		return -EFAULT;
 	}
 	if (is_audio_dsp_ready(dsp_id) == false) {
-		pr_info("dsp_id: %u not ready!! ipi_id: %u",
+		pr_debug("dsp_id: %u not ready!! ipi_id: %u",
 			dsp_id, ipi_id);
 		return 0;
 	}
 
 	msg_queue = &g_dsp_msg_queue[dsp_id][DSP_PATH_A2D];
 	if (msg_queue->enable == false) {
-		pr_info("queue disabled!! return");
+		pr_debug("queue disabled!! return");
 		return -1;
 	}
 
 
 	/* NEVER sleep in ISR */
 	if (in_interrupt() && wait_ms != 0) {
-		pr_info("in_interrupt()!! wait_ms %u => 0!!", wait_ms);
+		pr_debug("in_interrupt()!! wait_ms %u => 0!!", wait_ms);
 		wait_ms = 0;
 	}
 
@@ -463,7 +463,7 @@ int dsp_send_msg_to_queue(
 			      &queue_counter);
 	spin_unlock_irqrestore(&msg_queue->queue_lock, flags);
 	if (retval != 0) {
-		pr_info("dsp_id: %u, push fail!!", dsp_id);
+		pr_debug("dsp_id: %u, push fail!!", dsp_id);
 		return retval;
 	}
 
@@ -488,7 +488,7 @@ int dsp_send_msg_to_queue(
 				 msecs_to_jiffies(wait_ms));
 
 		if (msg_queue->enable == false) {
-			pr_info("queue disable");
+			pr_debug("queue disable");
 			retval = 0;
 			break;
 		}
@@ -506,13 +506,13 @@ int dsp_send_msg_to_queue(
 		}
 		if (retval == 0) { /* timeout */
 			p_ipi_msg = (struct ipi_msg_t *)p_element->msg.buf;
-			pr_info("wait %u ms timeout, will still send to dsp later!! msg: 0x%x, task: %d",
+			pr_debug("wait %u ms timeout, will still send to dsp later!! msg: 0x%x, task: %d",
 				wait_ms, p_ipi_msg->msg_id,
 				p_ipi_msg->task_scene);
 			break;
 		}
 		if (retval == -ERESTARTSYS) {
-			pr_info("-ERESTARTSYS, #%u, sleep us: %u",
+			pr_debug("-ERESTARTSYS, #%u, sleep us: %u",
 				try_cnt, k_restart_sleep_min_us);
 			retval = -EINTR;
 			usleep_range(k_restart_sleep_min_us,
@@ -629,7 +629,7 @@ static int dsp_push_msg(
 			     ipi_id, msg_queue->idx_r,
 			     msg_queue->idx_w);
 		if (n < 0 || n > sizeof(dump_str))
-			pr_info("error to get string dump_str");
+			pr_debug("error to get string dump_str");
 
 		p_ipi_msg = (struct ipi_msg_t *)buf;
 		if (len >= IPI_MSG_HEADER_SIZE &&
@@ -640,7 +640,7 @@ static int dsp_push_msg(
 				need_retry = true;
 			}
 		} else {
-			pr_info("%s", dump_str);
+			pr_debug("%s", dump_str);
 			need_retry = true;
 		}
 
@@ -688,13 +688,13 @@ static int dsp_pop_msg(struct dsp_msg_queue_t *msg_queue)
 	struct dsp_msg_t *p_dsp_msg = NULL;
 
 	if (msg_queue == NULL) {
-		pr_info("NULL!! msg_queue: %p", msg_queue);
+		pr_debug("NULL!! msg_queue: %p", msg_queue);
 		return -EFAULT;
 	}
 
 	/* check queue empty */
 	if (dsp_check_queue_empty(msg_queue) == true) {
-		pr_info("dsp_id: %u, queue is empty, idx_r: %u, idx_w: %u",
+		pr_debug("dsp_id: %u, queue is empty, idx_r: %u, idx_w: %u",
 			msg_queue->dsp_id,
 			msg_queue->idx_r,
 			msg_queue->idx_w);
@@ -727,7 +727,7 @@ static int dsp_front_msg(
 	uint32_t *p_idx_msg)
 {
 	if (msg_queue == NULL || pp_dsp_msg == NULL || p_idx_msg == NULL) {
-		pr_info("NULL!! msg_queue: %p, pp_dsp_msg: %p, p_idx_msg: %p",
+		pr_debug("NULL!! msg_queue: %p, pp_dsp_msg: %p, p_idx_msg: %p",
 			msg_queue, pp_dsp_msg, p_idx_msg);
 		return -EFAULT;
 	}
@@ -737,7 +737,7 @@ static int dsp_front_msg(
 
 	/* check queue empty */
 	if (dsp_check_queue_empty(msg_queue) == true) {
-		pr_info("dsp_id: %u, queue empty, idx_r: %u, idx_w: %u",
+		pr_debug("dsp_id: %u, queue empty, idx_r: %u, idx_w: %u",
 			msg_queue->dsp_id,
 			msg_queue->idx_r, msg_queue->idx_w);
 		return -ENOMEM;
@@ -745,7 +745,7 @@ static int dsp_front_msg(
 
 	/* front */
 	if (dsp_check_idx_msg_valid(msg_queue, msg_queue->idx_r) == false) {
-		pr_info("idx_r %u is invalid!! return",
+		pr_debug("idx_r %u is invalid!! return",
 			msg_queue->idx_r);
 		return -1;
 	}
@@ -794,7 +794,7 @@ static int dsp_get_queue_element(
 					 (!dsp_check_queue_empty(msg_queue) ||
 					  !msg_queue->thread_enable));
 			if (msg_queue->thread_enable == false) {
-				pr_info("thread disable");
+				pr_debug("thread disable");
 				retval = -1;
 				break;
 			}
@@ -809,7 +809,7 @@ static int dsp_get_queue_element(
 				break;
 			}
 			if (retval == -ERESTARTSYS) {
-				pr_info("-ERESTARTSYS, #%u, sleep us: %u",
+				pr_debug("-ERESTARTSYS, #%u, sleep us: %u",
 					try_cnt, k_restart_sleep_min_us);
 				retval = -EINTR;
 				usleep_range(k_restart_sleep_min_us,
@@ -843,11 +843,11 @@ static int dsp_init_single_msg_queue(
 	int i = 0, n = 0;
 
 	if (msg_queue == NULL) {
-		pr_info("NULL!! msg_queue: %p", msg_queue);
+		pr_debug("NULL!! msg_queue: %p", msg_queue);
 		return -EFAULT;
 	}
 	if (dsp_id >= NUM_OPENDSP_TYPE || dsp_path >= DSP_NUM_PATH) {
-		pr_info("dsp_id: %u, dsp_path: %u error!!",
+		pr_debug("dsp_id: %u, dsp_path: %u error!!",
 			dsp_id, dsp_path);
 		return -EFAULT;
 	}
@@ -855,7 +855,7 @@ static int dsp_init_single_msg_queue(
 
 	/* check double init */
 	if (msg_queue->init) {
-		pr_info("dsp_id: %u already init!!", dsp_id);
+		pr_debug("dsp_id: %u already init!!", dsp_id);
 		return 0;
 	}
 	msg_queue->init = true;
@@ -898,7 +898,7 @@ static int dsp_init_single_msg_queue(
 			     sizeof(thread_name),
 			     "dsp_send_thread_id_%u", dsp_id);
 		if (n < 0 || n > sizeof(thread_name))
-			pr_info("error to get string thread_name");
+			pr_debug("error to get string thread_name");
 
 	} else if (dsp_path == DSP_PATH_D2A) {
 		msg_queue->dsp_process_msg_func = dsp_process_msg_from_dsp;
@@ -906,7 +906,7 @@ static int dsp_init_single_msg_queue(
 			     sizeof(thread_name),
 			     "dsp_recv_thread_id_%u", dsp_id);
 		if (n < 0 || n > sizeof(thread_name))
-			pr_info("error to get string thread_name");
+			pr_debug("error to get string thread_name");
 	} else
 		WARN_ON(1);
 
@@ -917,7 +917,7 @@ static int dsp_init_single_msg_queue(
 					     "%s",
 					     thread_name);
 	if (IS_ERR(msg_queue->dsp_thread_task)) {
-		pr_info("can not create %s kthread", thread_name);
+		pr_debug("can not create %s kthread", thread_name);
 		WARN_ON(1);
 		msg_queue->thread_enable = false;
 	} else {
@@ -946,7 +946,7 @@ static int dsp_process_msg_thread(void *data)
 	struct sched_param param = { 0 };
 
 	if (msg_queue == NULL) {
-		pr_info("msg_queue == NULL!! return");
+		pr_debug("msg_queue == NULL!! return");
 		return -EFAULT;
 	}
 
@@ -961,11 +961,11 @@ static int dsp_process_msg_thread(void *data)
 		/* wait until element pushed */
 		retval = dsp_get_queue_element(msg_queue, &p_dsp_msg, &idx_msg);
 		if (retval != 0) {
-			pr_info("dsp_get_queue_element retval %d", retval);
+			pr_debug("dsp_get_queue_element retval %d", retval);
 			continue;
 		}
 		if (idx_msg >= MAX_DSP_MSG_NUM_IN_QUEUE) {
-			pr_info("dsp_get_queue_element idx_msg %u > %u",
+			pr_debug("dsp_get_queue_element idx_msg %u > %u",
 				idx_msg, MAX_DSP_MSG_NUM_IN_QUEUE);
 			spin_lock_irqsave(&msg_queue->queue_lock, flags);
 			dsp_pop_msg(msg_queue);
@@ -995,7 +995,7 @@ static int dsp_process_msg_thread(void *data)
 	}
 
 
-	pr_info("thread exit, dsp_id %u, dsp_path %u, idx_r %d, idx_w %d",
+	pr_debug("thread exit, dsp_id %u, dsp_path %u, idx_r %d, idx_w %d",
 		msg_queue->dsp_id, msg_queue->dsp_path,
 		msg_queue->idx_r, msg_queue->idx_w);
 
@@ -1103,7 +1103,7 @@ static int dsp_send_msg_to_dsp(
 	int n = 0;
 
 	if (msg_queue == NULL || p_dsp_msg == NULL) {
-		pr_info("NULL!! msg_queue: %p, p_dsp_msg: %p",
+		pr_debug("NULL!! msg_queue: %p, p_dsp_msg: %p",
 			msg_queue, p_dsp_msg);
 		return -EFAULT;
 	}
@@ -1149,7 +1149,7 @@ static int dsp_send_msg_to_dsp(
 			n = snprintf(dump_str, sizeof(dump_str),
 				     "dsp_id %u dead!!", dsp_id);
 			if (n < 0 || n > sizeof(dump_str))
-				pr_info("error to get string dump_str");
+				pr_debug("error to get string dump_str");
 			DUMP_IPC_MSG(dump_str, p_dsp_msg);
 			ret = 0;
 			break;
@@ -1158,7 +1158,7 @@ static int dsp_send_msg_to_dsp(
 			n = snprintf(dump_str, sizeof(dump_str),
 				     "dsp_id %u error!!", dsp_id);
 			if (n < 0 || n > sizeof(dump_str))
-				pr_info("error to get string dump_str");
+				pr_debug("error to get string dump_str");
 			DUMP_IPC_MSG(dump_str, p_dsp_msg);
 			ret = -1;
 			break;
@@ -1179,13 +1179,13 @@ static int dsp_send_msg_to_dsp(
 			n = snprintf(dump_str, sizeof(dump_str),
 				     "dsp_id %u retry %u pass", dsp_id, try_cnt);
 			if (n < 0 || n > sizeof(dump_str))
-				pr_info("error to get string dump_str");
+				pr_debug("error to get string dump_str");
 		} else {
 			n = snprintf(dump_str, sizeof(dump_str),
 				     "dsp_id %u retry %u err ret %d",
 				     dsp_id, try_cnt, ret);
 			if (n < 0 || n > sizeof(dump_str))
-				pr_info("error to get string dump_str");
+				pr_debug("error to get string dump_str");
 		}
 		DUMP_IPC_MSG(dump_str, p_dsp_msg);
 	}
@@ -1199,19 +1199,19 @@ static int dsp_process_msg_from_dsp(
 	struct dsp_msg_t *p_dsp_msg)
 {
 	if (msg_queue == NULL || p_dsp_msg == NULL) {
-		pr_info("NULL!! msg_queue: %p, p_dsp_msg: %p",
+		pr_debug("NULL!! msg_queue: %p, p_dsp_msg: %p",
 			msg_queue, p_dsp_msg);
 		return -EFAULT;
 	}
 
 	if (p_dsp_msg->ipi_handler == NULL) {
-		pr_info("NULL!! p_dsp_msg->ipi_handler: %p",
+		pr_debug("NULL!! p_dsp_msg->ipi_handler: %p",
 			p_dsp_msg->ipi_handler);
 		return -EFAULT;
 	}
 
 	if (p_dsp_msg->len == 0) {
-		pr_info("p_dsp_msg->len: %u", p_dsp_msg->len);
+		pr_debug("p_dsp_msg->len: %u", p_dsp_msg->len);
 		return -EFAULT;
 	}
 

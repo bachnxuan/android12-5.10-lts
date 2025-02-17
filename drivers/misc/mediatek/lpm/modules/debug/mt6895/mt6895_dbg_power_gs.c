@@ -118,7 +118,7 @@ int mt6895_power_gs_pmic_user_attach(struct lpm_gs_pmic *p)
 	if (!p || !p->regulator)
 		return -EINVAL;
 	/* Set compare golden setting for scenario */
-	pr_info("p regulaor %s\n", p->regulator);
+	pr_debug("p regulaor %s\n", p->regulator);
 	/*FIXME mediatek,mt6368-regulator*/
 	if (!strcmp(p->regulator, "mediatek,mt6363-regulator")) {
 		p->user[LPM_PWR_GS_TYPE_SUSPEND].name = "suspend";

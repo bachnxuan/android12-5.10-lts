@@ -74,19 +74,19 @@ static void met_print_data(unsigned int addr, struct conn_metlog_info *info, uns
 
 	if (info->output_len == 32) {
 		if (!met_addr_is_valid(addr + 3, info)) {
-			pr_info("%s, addr(0x%08x) is invalid", __func__, addr + 4);
+			pr_debug("%s, addr(0x%08x) is invalid", __func__, addr + 4);
 			return;
 		}
 		value = readl(met_base + addr - info->met_base_fw);
-		pr_info("MCU_MET_DATA:0x%08x", value);
+		pr_debug("MCU_MET_DATA:0x%08x", value);
 	} else if (info->output_len == 64) {
 		if (!met_addr_is_valid(addr + 7, info)) {
-			pr_info("%s, addr(0x%08x) is invalid", __func__, addr + 8);
+			pr_debug("%s, addr(0x%08x) is invalid", __func__, addr + 8);
 			return;
 		}
 		value = readl(met_base + addr - info->met_base_fw);
 		value2 = readl(met_base + addr - info->met_base_fw + 4);
-		pr_info("MCU_MET_DATA:0x%08x%08x", value2, value);
+		pr_debug("MCU_MET_DATA:0x%08x%08x", value2, value);
 	}
 }
 
@@ -102,42 +102,42 @@ static int met_thread(void *pvData)
 	int ret = -1;
 
 	if (data == NULL) {
-		pr_info("p_metlog_data(NULL)\n");
+		pr_debug("p_metlog_data(NULL)\n");
 		goto met_exit;
 	}
 
 	info = &data->info;
-	pr_info("type %d\n", info->type);
-	pr_info("read_cr %llx, write_cr %llx\n", info->read_cr, info->write_cr);
-	pr_info("met_base_ap %llx met_base_fw 0x%x, met_size 0x%x, output_len %d\n",
+	pr_debug("type %d\n", info->type);
+	pr_debug("read_cr %llx, write_cr %llx\n", info->read_cr, info->write_cr);
+	pr_debug("met_base_ap %llx met_base_fw 0x%x, met_size 0x%x, output_len %d\n",
 		info->met_base_ap, info->met_base_fw, info->met_size, info->output_len);
 
 	if (info->read_cr == 0 || info->write_cr == 0 || info->met_base_ap == 0 ||
 		info->met_base_fw == 0 || info->met_size == 0) {
-		pr_info("invalid parameter\n");
+		pr_debug("invalid parameter\n");
 		goto met_exit;
 	}
 
 	if (info->output_len % 32 != 0 || info->output_len == 0) {
-		pr_info("met output length(%d) is wrong\n", info->output_len);
+		pr_debug("met output length(%d) is wrong\n", info->output_len);
 		goto met_exit;
 	}
 
 	met_read_cr = ioremap(info->read_cr, 0x10);
 	if (!met_read_cr) {
-		pr_info("met_read_cr ioremap fail\n");
+		pr_debug("met_read_cr ioremap fail\n");
 		goto met_exit;
 	}
 
 	met_write_cr = ioremap(info->write_cr, 0x10);
 	if (!met_write_cr) {
-		pr_info("met_write_cr ioremap fail\n");
+		pr_debug("met_write_cr ioremap fail\n");
 		goto met_exit;
 	}
 
 	met_base = ioremap(info->met_base_ap, info->met_size);
 	if (!met_base) {
-		pr_info("met_base ioremap fail\n");
+		pr_debug("met_base ioremap fail\n");
 		goto met_exit;
 	}
 
@@ -146,7 +146,7 @@ static int met_thread(void *pvData)
 	/* read_cr: recording the address for "last" read */
 	while (1) {
 		if (osal_thread_should_stop(&data->met_thread)) {
-			pr_info("met thread should stop now...\n");
+			pr_debug("met thread should stop now...\n");
 			ret = 0;
 			goto met_exit;
 		}
@@ -162,18 +162,18 @@ static int met_thread(void *pvData)
 
 	while (1) {
 		if (osal_thread_should_stop(&data->met_thread)) {
-			pr_info("met thread should stop now...\n");
+			pr_debug("met thread should stop now...\n");
 			ret = 0;
 			goto met_exit;
 		}
 
 		if (!met_addr_is_valid(read_ptr, info) || !met_addr_is_valid(write_ptr, info))
-			pr_info("read_ptr(0x%x) or write_ptr(0x%x) is invalid!!!\n",
+			pr_debug("read_ptr(0x%x) or write_ptr(0x%x) is invalid!!!\n",
 				read_ptr, write_ptr);
 		else {
 			next_read_ptr = met_get_next_ptr(read_ptr, info);
 			if (next_read_ptr == write_ptr)
-				pr_info("no met data need to dump!!!\n");
+				pr_debug("no met data need to dump!!!\n");
 			else {
 				if (next_read_ptr > write_ptr) {
 					while (next_read_ptr < (info->met_base_fw + info->met_size)) {
@@ -204,7 +204,7 @@ met_exit:
 		iounmap(met_write_cr);
 	if (met_base)
 		iounmap(met_base);
-	pr_info("met thread exits succeed\n");
+	pr_debug("met thread exits succeed\n");
 
 	return ret;
 }
@@ -227,7 +227,7 @@ int conn_metlog_start(struct conn_metlog_info *info)
 	char thread_name[20];
 
 	if (!info) {
-		pr_info("%s: info is null.\n", __func__);
+		pr_debug("%s: info is null.\n", __func__);
 		return -1;
 	}
 
@@ -241,12 +241,12 @@ int conn_metlog_start(struct conn_metlog_info *info)
 		data = &g_table.sys_gps;
 		ret = osal_snprintf(thread_name, sizeof(thread_name), "conn_metlog_gps");
 	} else {
-		pr_info("%s: type %d is invalid.\n", __func__, info->type);
+		pr_debug("%s: type %d is invalid.\n", __func__, info->type);
 		return -1;
 	}
 
 	if (ret < 0) {
-		pr_info("snprintf fail! ret = %d, type = %d\n", ret, info->type);
+		pr_debug("snprintf fail! ret = %d, type = %d\n", ret, info->type);
 		return -1;
 	}
 
@@ -259,13 +259,13 @@ int conn_metlog_start(struct conn_metlog_info *info)
 
 	ret = osal_thread_create(p_thread);
 	if (ret) {
-		pr_info("osal_thread_create(0x%p) fail(%d)\n", p_thread, ret);
+		pr_debug("osal_thread_create(0x%p) fail(%d)\n", p_thread, ret);
 		return -2;
 	}
 
 	ret = osal_thread_run(p_thread);
 	if (ret) {
-		pr_info("osal_thread_run(evt_thread 0x%p) fail(%d)\n", p_thread, ret);
+		pr_debug("osal_thread_run(evt_thread 0x%p) fail(%d)\n", p_thread, ret);
 		return -3;
 	}
 
@@ -285,17 +285,17 @@ int conn_metlog_stop(int type)
 	else if (type == CONNDRV_TYPE_GPS)
 		p_thread = &g_table.sys_gps.met_thread;
 	else {
-		pr_info("%s: type %d is invalid.\n", __func__, type);
+		pr_debug("%s: type %d is invalid.\n", __func__, type);
 		return -1;
 	}
 
 	ret = osal_thread_stop(p_thread);
 	if (ret) {
-		pr_info("osal_thread_stop(0x%p) fail(%d)\n", p_thread, ret);
+		pr_debug("osal_thread_stop(0x%p) fail(%d)\n", p_thread, ret);
 		return -2;
 	}
 
-	pr_info("%s, type = %d\n", __func__, type);
+	pr_debug("%s, type = %d\n", __func__, type);
 	return 0;
 }
 EXPORT_SYMBOL(conn_metlog_stop);

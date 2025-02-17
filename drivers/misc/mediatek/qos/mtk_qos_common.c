@@ -90,7 +90,7 @@ void qos_sram_init(void __iomem *regs, unsigned int bound)
 
 	qos_sram_base = regs;
 	qos_sram_bound = bound;
-	pr_info("qos_sram addr:0x%x len:%d\n",
+	pr_debug("qos_sram addr:0x%x len:%d\n",
 		qos_sram_base, qos_sram_bound);
 
 	for (i = 0; i < bound; i += 4)
@@ -117,7 +117,7 @@ int mtk_qos_probe(struct platform_device *pdev,
 	ret = of_property_read_u32(node,
 			"mediatek,qos_enable", &mtk_qos_enable);
 	if (!ret)
-		pr_info("mtkqos: dts qos_enable = %d\n", mtk_qos_enable);
+		pr_debug("mtkqos: dts qos_enable = %d\n", mtk_qos_enable);
 	else
 		mtk_qos_enable = 1;
 
@@ -147,7 +147,7 @@ int mtk_qos_probe(struct platform_device *pdev,
 
 	platform_set_drvdata(pdev, qos);
 
-	pr_info("mtkqos:%s done (enable=%d)\n", __func__, mtk_qos_enable);
+	pr_debug("mtkqos:%s done (enable=%d)\n", __func__, mtk_qos_enable);
 
 	return 0;
 }

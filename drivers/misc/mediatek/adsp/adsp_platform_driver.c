@@ -73,12 +73,12 @@ static void show_adsp_core_suspend(struct adsp_priv *pdata)
 				 &status, sizeof(status));
 
 	if (pdata->id == ADSP_A_ID)
-		pr_info("%s(), IS_WFI(%d), IS_BUS_IDLE(%d), STATUS(%d)", __func__,
+		pr_debug("%s(), IS_WFI(%d), IS_BUS_IDLE(%d), STATUS(%d)", __func__,
 			check_hifi_status(ADSP_A_IS_WFI),
 			check_hifi_status(ADSP_AXI_BUS_IS_IDLE),
 			status);
 	else /* ADSP_B_ID */
-		pr_info("%s(), IS_WFI(%d), STATUS(%d)", __func__,
+		pr_debug("%s(), IS_WFI(%d), STATUS(%d)", __func__,
 			check_hifi_status(ADSP_B_IS_WFI),
 			status);
 }
@@ -143,7 +143,7 @@ int adsp_core0_suspend(void)
 		switch_adsp_power(false);
 		set_adsp_state(pdata, ADSP_SUSPEND);
 	}
-	pr_info("%s(), done elapse %lld us", __func__,
+	pr_debug("%s(), done elapse %lld us", __func__,
 		ktime_us_delta(ktime_get(), start));
 	return 0;
 ERROR:
@@ -174,7 +174,7 @@ int adsp_core0_resume(void)
 
 		adsp_timesync_resume();
 
-		pr_info("%s(), done elapse %lld us", __func__,
+		pr_debug("%s(), done elapse %lld us", __func__,
 			ktime_us_delta(ktime_get(), start));
 	}
 	return 0;
@@ -217,7 +217,7 @@ int adsp_core1_suspend(void)
 		/* notify another core suspend done */
 		wake_up(&adspsys->waitq);
 	}
-	pr_info("%s(), done elapse %lld us", __func__,
+	pr_debug("%s(), done elapse %lld us", __func__,
 		ktime_us_delta(ktime_get(), start));
 	return 0;
 ERROR:
@@ -250,7 +250,7 @@ int adsp_core1_resume(void)
 
 		adsp_awake_unlock(ADSP_A_ID);
 
-		pr_info("%s(), done elapse %lld us", __func__,
+		pr_debug("%s(), done elapse %lld us", __func__,
 			ktime_us_delta(ktime_get(), start));
 	}
 
@@ -334,7 +334,7 @@ static int slb_memory_control(bool en)
 	}
 EXIT:
 	if (ret)
-		pr_info("%s, fail slbc request %d, ret %d, cnt %d",
+		pr_debug("%s, fail slbc request %d, ret %d, cnt %d",
 			__func__, en, ret, use_cnt);
 	mutex_unlock(&lock);
 	return ret < 0 ? ret : use_cnt;
@@ -353,7 +353,7 @@ static void adsp_slb_init_handler(int id, void *data, unsigned int len)
 		info[0] = (unsigned long)slb_data.paddr;
 		info[1] = (unsigned long)slb_data.size;
 	}
-	pr_info("%s(), addr:0x%lx, size:0x%lx, cid %d, request %d, ret %d",
+	pr_debug("%s(), addr:0x%lx, size:0x%lx, cid %d, request %d, ret %d",
 		__func__, info[0], info[1], cid, request, ret);
 
 	_adsp_register_feature(cid, SYSTEM_FEATURE_ID, 0);
@@ -363,7 +363,7 @@ static void adsp_slb_init_handler(int id, void *data, unsigned int len)
 	_adsp_deregister_feature(cid, SYSTEM_FEATURE_ID, 0);
 
 	if (ret != ADSP_IPI_DONE)
-		pr_info("%s, fail send msg to cid %d, ret %d", __func__, cid, ret);
+		pr_debug("%s, fail send msg to cid %d, ret %d", __func__, cid, ret);
 }
 
 int adsp_core_common_init(struct adsp_priv *pdata)
@@ -394,7 +394,7 @@ int adsp_core_common_init(struct adsp_priv *pdata)
 
 	ret = misc_register(&pdata->mdev);
 	if (unlikely(ret != 0))
-		pr_info("%s(), misc_register fail, %d\n", __func__, ret);
+		pr_debug("%s(), misc_register fail, %d\n", __func__, ret);
 	return ret;
 }
 

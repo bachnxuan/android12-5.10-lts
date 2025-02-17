@@ -7,7 +7,7 @@
 #define DRIVER_NAME "XIAOMI_OIS_CORE"
 
 #define LOG_INF(format, args...)                                               \
-	pr_info(DRIVER_NAME " [%s] " format, __func__, ##args)
+	pr_debug(DRIVER_NAME " [%s] " format, __func__, ##args)
 
 #define MAX_BUF_SIZE 255
 #define MAX_MSG_NUM_U8 (MAX_BUF_SIZE / 3)

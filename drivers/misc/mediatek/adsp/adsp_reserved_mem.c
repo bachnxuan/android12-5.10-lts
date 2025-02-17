@@ -54,11 +54,11 @@ static struct adsp_reserve_mblock *adsp_get_reserve_mblock(
 	void *va_start = adsp_reserve_mblocks[0].virt_addr;
 
 	if (id >= ADSP_NUMS_MEM_ID) {
-		pr_info("%s no reserve memory for %d\n", __func__, id);
+		pr_debug("%s no reserve memory for %d\n", __func__, id);
 		return NULL;
 	}
 	if (!va_start) {
-		pr_info("%s va_start is NULL\n", __func__);
+		pr_debug("%s va_start is NULL\n", __func__);
 		return NULL;
 	}
 
@@ -99,7 +99,7 @@ void adsp_set_emimpu_shared_region(void)
 	ret = mtk_emimpu_init_region(&adsp_region,
 				     MPU_PROCT_REGION_ADSP_SHARED);
 	if (ret < 0)
-		pr_info("%s fail to init emimpu region\n", __func__);
+		pr_debug("%s fail to init emimpu region\n", __func__);
 	mtk_emimpu_set_addr(&adsp_region, mem->phys_addr,
 			    (mem->phys_addr + mem->size - 0x1));
 	mtk_emimpu_set_apc(&adsp_region, MPU_PROCT_D0_AP,
@@ -108,10 +108,10 @@ void adsp_set_emimpu_shared_region(void)
 			   MTK_EMIMPU_NO_PROTECTION);
 	ret = mtk_emimpu_set_protection(&adsp_region);
 	if (ret < 0)
-		pr_info("%s fail to set emimpu protection\n", __func__);
+		pr_debug("%s fail to set emimpu protection\n", __func__);
 	mtk_emimpu_free_region(&adsp_region);
 #else
-	pr_info("%s(), emi config not enable\n", __func__);
+	pr_debug("%s(), emi config not enable\n", __func__);
 #endif
 }
 
@@ -128,24 +128,24 @@ static int adsp_init_reserve_memory(struct platform_device *pdev, struct adsp_re
 	if (!ret) {
 		mem->phys_addr = (phys_addr_t)mem_info[0];
 		mem->size = (size_t)mem_info[1];
-		pr_info("%s(), get \"shared_memory\" property from dts, (%llx, %zx)\n",
+		pr_debug("%s(), get \"shared_memory\" property from dts, (%llx, %zx)\n",
 				__func__, mem->phys_addr, mem->size);
 		goto RSV_IOREMAP;
 	}
 	/* Otherwise, get reserved memory from reserved node */
 	node = of_find_compatible_node(NULL, NULL, ADSP_MEM_RESERVED_KEY);
 	if (!node) {
-		pr_info("%s(), no node for reserved memory\n", __func__);
+		pr_debug("%s(), no node for reserved memory\n", __func__);
 		return -ENOMEM;
 	}
 	rmem = of_reserved_mem_lookup(node);
 	if (!rmem) {
-		pr_info("%s(), cannot lookup reserved memory\n", __func__);
+		pr_debug("%s(), cannot lookup reserved memory\n", __func__);
 		return -ENOMEM;
 	}
 
 	if (!rmem->base || !rmem->size) {
-		pr_info("%s() reserve memory illegal addr:%llx, size:%llx\n",
+		pr_debug("%s() reserve memory illegal addr:%llx, size:%llx\n",
 			__func__, rmem->base, rmem->size);
 		return -ENOMEM;
 	} else {
@@ -158,7 +158,7 @@ static int adsp_init_reserve_memory(struct platform_device *pdev, struct adsp_re
 RSV_IOREMAP:
 	mem->virt_addr = ioremap_wc(mem->phys_addr, mem->size);
 	if (!mem->virt_addr) {
-		pr_info("%s() ioremap fail\n", __func__);
+		pr_debug("%s() ioremap fail\n", __func__);
 		return -ENOMEM;
 	}
 
@@ -191,7 +191,7 @@ int adsp_mem_device_probe(struct platform_device *pdev)
 		adsp_reserve_mblocks[id].virt_addr = mem->virt_addr + acc_size;
 		acc_size += ALIGN(adsp_reserve_mblocks[id].size, RSV_BLOCK_ALIGN);
 #ifdef MEM_DEBUG
-		pr_info("adsp_reserve_mblocks[%d] phys_addr:%llx, size:0x%zx\n",
+		pr_debug("adsp_reserve_mblocks[%d] phys_addr:%llx, size:0x%zx\n",
 			id,
 			adsp_reserve_mblocks[id].phys_addr,
 			adsp_reserve_mblocks[id].size);
@@ -199,7 +199,7 @@ int adsp_mem_device_probe(struct platform_device *pdev)
 	}
 
 	if (acc_size > mem->size) {
-		pr_info("%s(), not enough of memory use(0x%zx) > total(0x%zx)\n",
+		pr_debug("%s(), not enough of memory use(0x%zx) > total(0x%zx)\n",
 			__func__, acc_size, mem->size);
 		return -ENOMEM;
 	}
@@ -233,7 +233,7 @@ void adsp_update_mpu_memory_info(struct adsp_priv *pdata)
 	mpu_info.share_dram_addr = (u32)adsp_reserve_mem.phys_addr;
 	mpu_info.share_dram_size = (u32)adsp_reserve_mem.size;
 
-	pr_info("[ADSP] mpu info=(0x%x, 0x%x)\n",
+	pr_debug("[ADSP] mpu info=(0x%x, 0x%x)\n",
 		 mpu_info.share_dram_addr, mpu_info.share_dram_size);
 	adsp_copy_to_sharedmem(pdata, ADSP_SHAREDMEM_MPUINFO,
 		&mpu_info, sizeof(struct adsp_mpu_info_t));

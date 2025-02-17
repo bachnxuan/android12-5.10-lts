@@ -177,7 +177,7 @@ static int scp_ipi_dbg_resume_noirq(struct device *dev)
 			IRQCHIP_STATE_PENDING, &state);
 		if (!ret && state) {
 			if (i < 2)
-				pr_info("[SCP] ipc%d wakeup\n", i);
+				pr_debug("[SCP] ipc%d wakeup\n", i);
 			else
 				mt_print_scp_ipi_id(i - 2);
 			break;
@@ -1017,7 +1017,7 @@ static inline ssize_t scp_ipi_test_store(struct device *kobj
 		ipi_monitor_dump(&scp_ipidev);
 		break;
 	default:
-		pr_info("cmd '%d' is not supported.\n", opt);
+		pr_debug("cmd '%d' is not supported.\n", opt);
 		break;
 	}
 
@@ -1328,20 +1328,20 @@ static int scp_reserve_memory_ioremap(struct platform_device *pdev)
 	ret = of_property_read_string(pdev->dev.of_node, "scp_mem_key",
 			&mem_key);
 	if (ret) {
-		pr_info("[SCP] cannot find property\n");
+		pr_debug("[SCP] cannot find property\n");
 		return -EINVAL;
 	}
 
 	rmem_node = of_find_compatible_node(NULL, NULL, mem_key);
 
 	if (!rmem_node) {
-		pr_info("[SCP] no node for reserved memory\n");
+		pr_debug("[SCP] no node for reserved memory\n");
 		return -EINVAL;
 	}
 
 	rmem = of_reserved_mem_lookup(rmem_node);
 	if (!rmem) {
-		pr_info("[SCP] cannot lookup reserved memory\n");
+		pr_debug("[SCP] cannot lookup reserved memory\n");
 		return -EINVAL;
 	}
 
@@ -1561,7 +1561,7 @@ void scp_register_sensor(enum feature_id id, int sensor_id)
 	}
 
 	if (sensor_id >= NUM_SENSOR_TYPE) {
-		pr_info("[SCP] sensor id not in sensor freq table");
+		pr_debug("[SCP] sensor id not in sensor freq table");
 		return;
 	}
 	/* because feature_table is a global variable
@@ -1596,7 +1596,7 @@ void scp_deregister_sensor(enum feature_id id, int sensor_id)
 	}
 
 	if (sensor_id >= NUM_SENSOR_TYPE) {
-		pr_info("[SCP] sensor id not in sensor freq table");
+		pr_debug("[SCP] sensor id not in sensor freq table");
 		return;
 	}
 	/* because feature_table is a global variable
@@ -2433,14 +2433,14 @@ static int scp_device_probe(struct platform_device *pdev)
 		node = of_find_compatible_node(NULL, NULL,
 					      scp_ipi_irqs[i].name);
 		if (!node) {
-			pr_info("[SCP] find '%s' node failed\n",
+			pr_debug("[SCP] find '%s' node failed\n",
 				scp_ipi_irqs[i].name);
 			continue;
 		}
 		scp_ipi_irqs[i].irq_no =
 			irq_of_parse_and_map(node, scp_ipi_irqs[i].order);
 		if (!scp_ipi_irqs[i].irq_no)
-			pr_info("[SCP] get '%s' fail\n", scp_ipi_irqs[i].name);
+			pr_debug("[SCP] get '%s' fail\n", scp_ipi_irqs[i].name);
 	}
 
 	ret = mtk_ipi_device_register(&scp_ipidev, pdev, &scp_mboxdev,
@@ -2629,19 +2629,19 @@ static int __init scp_init(void)
 	if (mbox_check_recv_table(IPI_IN_SCP_MPOOL_0))
 		scp_legacy_ipi_init();
 	else
-		pr_info("Skip legacy ipi init\n");
+		pr_debug("Skip legacy ipi init\n");
 
 	if (mbox_check_recv_table(IPI_IN_SCP_READY_0))
 		mtk_ipi_register(&scp_ipidev, IPI_IN_SCP_READY_0,
 			(void *)scp_A_ready_ipi_handler, NULL, &msg_scp_ready0);
 	else
-		pr_info("Dosen't support IPI_IN_SCP_READY_0");
+		pr_debug("Dosen't support IPI_IN_SCP_READY_0");
 
 	if (mbox_check_recv_table(IPI_IN_SCP_READY_1))
 		mtk_ipi_register(&scp_ipidev, IPI_IN_SCP_READY_1,
 			(void *)scp_A_ready_ipi_handler, NULL, &msg_scp_ready1);
 	else
-		pr_info("Dosen't support IPI_IN_SCP_READY_1");
+		pr_debug("Dosen't support IPI_IN_SCP_READY_1");
 
 	mtk_ipi_register(&scp_ipidev, IPI_IN_SCP_ERROR_INFO_0,
 			(void *)scp_err_info_handler, NULL, msg_scp_err_info0);

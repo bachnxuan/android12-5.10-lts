@@ -50,8 +50,8 @@
 #define write_cmos_sensor(...) subdrv_i2c_wr_u16(__VA_ARGS__)
 #define daumiers5k5e9_table_write_cmos_sensor(...) subdrv_i2c_wr_regs_u8(__VA_ARGS__)
 #define LOG_TAG "[daumiers5k5e9]"
-#define S5K5E9_LOG_INF(format, args...) pr_info(LOG_TAG "[%s] " format, __func__, ##args)
-#define S5K5E9_LOG_DBG(format, args...) pr_info(LOG_TAG "[%s] " format, __func__, ##args)
+#define S5K5E9_LOG_INF(format, args...) pr_debug(LOG_TAG "[%s] " format, __func__, ##args)
+#define S5K5E9_LOG_DBG(format, args...) pr_debug(LOG_TAG "[%s] " format, __func__, ##args)
 
 #undef VENDOR_EDIT
 

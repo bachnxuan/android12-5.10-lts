@@ -6224,7 +6224,7 @@ static kal_uint32 feature_control(MSDK_SENSOR_FEATURE_ENUM feature_id,
 			pr_debug("warning! no ae_ctrl input");
 
 		if (feature_data == NULL) {
-			pr_info("error! input scenario is null!");
+			pr_debug("error! input scenario is null!");
 			return ERROR_INVALID_SCENARIO_ID;
 		}
 		LOG_INF("call seamless_switch");
@@ -6244,7 +6244,7 @@ static kal_uint32 feature_control(MSDK_SENSOR_FEATURE_ENUM feature_id,
 		if ((feature_data + 1) != NULL)
 			pScenarios = (MUINT32 *)((uintptr_t)(*(feature_data + 1)));
 		else {
-			pr_info("SENSOR_FEATURE_GET_SEAMLESS_SCENARIOS input pScenarios vector is NULL!\n");
+			pr_debug("SENSOR_FEATURE_GET_SEAMLESS_SCENARIOS input pScenarios vector is NULL!\n");
 			return ERROR_INVALID_SCENARIO_ID;
 		}
 		switch (*feature_data) {

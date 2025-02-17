@@ -202,7 +202,7 @@ static int adspsys_drv_probe(struct platform_device *pdev)
 
 	ret = adsp_mem_device_probe(pdev);
 	if (ret) {
-		pr_info("%s(), memory probe fail, %d\n", __func__, ret);
+		pr_debug("%s(), memory probe fail, %d\n", __func__, ret);
 		goto ERROR;
 	}
 
@@ -224,7 +224,7 @@ static int adspsys_drv_probe(struct platform_device *pdev)
 
 	register_adspsys(adspsys);
 
-	pr_info("%s, success\n", __func__);
+	pr_debug("%s, success\n", __func__);
 ERROR:
 	return ret;
 }
@@ -246,7 +246,7 @@ static int adsp_core_drv_probe(struct platform_device *pdev)
 	struct of_phandle_args spec;
 	u64 system_info[2];
 
-	pr_info("%s: adsp core init\n", __func__);
+	pr_debug("%s: adsp core init\n", __func__);
 
 	/* create private data */
 	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
@@ -255,7 +255,7 @@ static int adsp_core_drv_probe(struct platform_device *pdev)
 
 	match = of_match_node(adsp_core_of_ids, dev->of_node);
 	if (!match) {
-		pr_info("%s: cannot find match node\n", __func__);
+		pr_debug("%s: cannot find match node\n", __func__);
 		return -ENODEV;
 	}
 
@@ -290,7 +290,7 @@ static int adsp_core_drv_probe(struct platform_device *pdev)
 	pdata->sysram_size = (size_t)system_info[1];
 
 	if (pdata->sysram_phys == 0 || pdata->sysram_size == 0) {
-		pr_info("%s: get property fail, sysram_phys: 0x%llx, sysram_size: %zu\n",
+		pr_debug("%s: get property fail, sysram_phys: 0x%llx, sysram_size: %zu\n",
 			__func__, pdata->sysram_phys, pdata->sysram_size);
 		return -ENODEV;
 	}
@@ -302,14 +302,14 @@ static int adsp_core_drv_probe(struct platform_device *pdev)
 	/* mailbox channel parsing */
 	if (of_parse_phandle_with_args(dev->of_node, "mboxes",
 				       "#mbox-cells", 0, &spec)) {
-		pr_info("%s: can't parse \"mboxes\" property\n", __func__);
+		pr_debug("%s: can't parse \"mboxes\" property\n", __func__);
 		return -ENODEV;
 	}
 	pdata->send_mbox = get_adsp_mbox_pin_send(spec.args[0]);
 
 	if (of_parse_phandle_with_args(dev->of_node, "mboxes",
 				       "#mbox-cells", 1, &spec)) {
-		pr_info("%s: can't parse \"mboxes\" property\n", __func__);
+		pr_debug("%s: can't parse \"mboxes\" property\n", __func__);
 		return -ENODEV;
 	}
 	pdata->recv_mbox = get_adsp_mbox_pin_recv(spec.args[0]);
@@ -317,7 +317,7 @@ static int adsp_core_drv_probe(struct platform_device *pdev)
 	/* add to adsp_core list */
 	register_adsp_core(pdata);
 
-	pr_info("%s, id:%d success\n", __func__, pdata->id);
+	pr_debug("%s, id:%d success\n", __func__, pdata->id);
 	return ret;
 }
 
@@ -408,7 +408,7 @@ static void __exit platform_adsp_exit(void)
 {
 	unregister_3way_semaphore_notifier(&adsp_semaphore_init_notifier);
 	platform_unregister_drivers(drivers, ARRAY_SIZE(drivers));
-	pr_info("[ADSP] platform-adsp Exit.\n");
+	pr_debug("[ADSP] platform-adsp Exit.\n");
 }
 
 module_init(platform_adsp_init);

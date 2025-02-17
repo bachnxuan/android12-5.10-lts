@@ -24,31 +24,31 @@ bool is_srclken_initiated;
 
 int __attribute__((weak)) srclken_hw_get_cfg(void)
 {
-	pr_info("%s: dummy func\n", __func__);
+	pr_debug("%s: dummy func\n", __func__);
 	return SRCLKEN_NOT_SUPPORT;
 }
 
 bool __attribute__((weak)) srclken_hw_get_debug_cfg(void)
 {
-	pr_info("%s: dummy func\n", __func__);
+	pr_debug("%s: dummy func\n", __func__);
 	return SRCLKEN_NOT_SUPPORT;
 }
 
 int __attribute__((weak)) srclken_hw_dump_cfg_log(void)
 {
-	pr_info("%s: dummy func\n", __func__);
+	pr_debug("%s: dummy func\n", __func__);
 	return SRCLKEN_NOT_SUPPORT;
 }
 
 int __attribute__((weak)) srclken_hw_dump_sta_log(void)
 {
-	pr_info("%s: dummy func\n", __func__);
+	pr_debug("%s: dummy func\n", __func__);
 	return SRCLKEN_NOT_SUPPORT;
 }
 
 int __attribute__((weak)) srclken_hw_dump_last_sta_log(void)
 {
-	pr_info("%s: dummy func\n", __func__);
+	pr_debug("%s: dummy func\n", __func__);
 	return SRCLKEN_NOT_SUPPORT;
 }
 

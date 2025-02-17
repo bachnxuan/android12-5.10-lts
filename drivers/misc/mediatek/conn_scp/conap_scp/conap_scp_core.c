@@ -105,7 +105,7 @@ static int _send_msg(enum conap_scp_drv_type drv_type, uint16_t msg_id,
 		return CONN_TIMEOUT;
 	}
 
-	pr_info("[%s] >>>> type=[%d] id=[%d] sz=[%d] ipi_sz=[%d]", __func__,
+	pr_debug("[%s] >>>> type=[%d] id=[%d] sz=[%d] ipi_sz=[%d]", __func__,
 			drv_type, msg_id, msg_sz, ipi_msg_data_sz);
 	while (sent_len <= msg_sz) {
 		sz = min(ipi_msg_data_sz, msg_sz - sent_len);
@@ -120,7 +120,7 @@ static int _send_msg(enum conap_scp_drv_type drv_type, uint16_t msg_id,
 		if (sent_len >= msg_sz)
 			break;
 	}
-	//pr_info("[_send_msg] send data done");
+	//pr_debug("[_send_msg] send data done");
 	return 0;
 }
 
@@ -142,7 +142,7 @@ static int opfunc_is_drv_ready(struct msg_op_data *op)
 	int ret = 0;
 	unsigned int drv_type = (unsigned int)op->op_data[0];
 
-	pr_info("[%s] drv=[%d] ", __func__, drv_type);
+	pr_debug("[%s] drv=[%d] ", __func__, drv_type);
 	ret = conap_scp_ipi_send_cmd(DRV_TYPE_CORE, CONAP_SCP_CORE_DRV_QRY, drv_type, 0);
 
 	if (ret) {
@@ -158,7 +158,7 @@ static int opfunc_is_drv_ready_ack(struct msg_op_data *op)
 	int ret;
 
 	ret = g_drv_user[drv_type].enable;
-	pr_info("[%s] ack type=[%d] ret=[%d]", __func__, drv_type, ret);
+	pr_debug("[%s] ack type=[%d] ret=[%d]", __func__, drv_type, ret);
 	ret = conap_scp_ipi_send_cmd(DRV_TYPE_CORE, CONAP_SCP_CORE_DRV_QRY_ACK, drv_type, ret);
 	if (ret)
 		pr_warn("[%s] send ipi cmd fail [%d]", __func__, ret);
@@ -176,25 +176,25 @@ static int opfunc_scp_state_change(struct msg_op_data *op)
 		return -1;
 
 
-	pr_info("[%s] type=[%d] state=[%d] conn=[%d] scp ready=[%d]", __func__,
+	pr_debug("[%s] type=[%d] state=[%d] conn=[%d] scp ready=[%d]", __func__,
 				drv_type, cur_state, g_core_ctx.enable,
 				conap_scp_ipi_is_scp_ready());
 	if (g_core_ctx.enable == 0) {
-		pr_info("[%s] conn not enable yet", __func__);
+		pr_debug("[%s] conn not enable yet", __func__);
 		return 0;
 	}
 	if (cur_state == 1 && conap_scp_ipi_is_scp_ready() == 0) {
-		pr_info("[%s] scp not enable yet", __func__);
+		pr_debug("[%s] scp not enable yet", __func__);
 		return 0;
 	}
 
 	/* SCP ready */
 	if (cur_state == 1) {
-		pr_info("[%s] send init cmd", __func__);
+		pr_debug("[%s] send init cmd", __func__);
 		ret = conap_scp_ipi_send_cmd(DRV_TYPE_CORE, CONAP_SCP_CORE_INIT,
 					connsys_scp_shm_get_addr(), connsys_scp_shm_get_size());
 		if (ret) {
-			pr_info("[SCP_STATE_CHG] ipi handshake ret=[%d]", ret);
+			pr_debug("[SCP_STATE_CHG] ipi handshake ret=[%d]", ret);
 			return -1;
 		}
 	}
@@ -239,7 +239,7 @@ static int opfunc_recv_msg(struct msg_op_data *op)
 		return CONN_TIMEOUT;
 	}
 
-	//pr_info("[%s] recv done [%d][%d]", __func__, g_cur_recv_sz, msg_sz);
+	//pr_debug("[%s] recv done [%d][%d]", __func__, g_cur_recv_sz, msg_sz);
 	if (g_cur_recv_sz == msg_sz) {
 		if (g_cur_msg_drv < CONAP_SCP_DRV_NUM && g_drv_user[g_cur_msg_drv].enable) {
 			(*g_drv_user[g_cur_msg_drv].drv_cb.conap_scp_msg_notify_cb)(g_cur_msg_id,
@@ -344,7 +344,7 @@ static void conap_scp_ipi_ctrl_notify(unsigned int state)
 		(g_core_ctx.state == 0 && state == 0))
 		return;
 
-	pr_info("[%s] state=[%d]->[%d]", __func__, g_core_ctx.state, state);
+	pr_debug("[%s] state=[%d]->[%d]", __func__, g_core_ctx.state, state);
 
 	ret = msg_thread_send_2(&g_core_ctx.tx_msg_thread,
 			CONAP_SCP_OPID_STATE_CHANGE, STATE_CHG_DRV_SCP, (size_t)state);
@@ -368,7 +368,7 @@ int conn_state_event_handler(struct notifier_block *this,
 		return 0;
 	}
 
-	pr_info("[%s] ========= event =[%d] [%x][%llu]",
+	pr_debug("[%s] ========= event =[%d] [%x][%llu]",
 				__func__, event, info->chip_info, info->emi_phy_addr);
 
 	g_core_ctx.chip_info = info->chip_info;
@@ -376,11 +376,11 @@ int conn_state_event_handler(struct notifier_block *this,
 
 	ret = connsys_scp_platform_data_init(info->chip_info, info->emi_phy_addr);
 	/* check if platform support */
-	pr_info("[%s] chip_info=[%x] addr[%x] ret=[%d]", __func__,
+	pr_debug("[%s] chip_info=[%x] addr[%x] ret=[%d]", __func__,
 						info->chip_info, info->emi_phy_addr, ret);
 
 	if (ret) {
-		pr_info("[%s] conap not support", __func__);
+		pr_debug("[%s] conap not support", __func__);
 		return 0;
 	}
 	g_core_ctx.enable = 1;
@@ -458,7 +458,7 @@ int conap_scp_is_drv_ready(enum conap_scp_drv_type type)
 	}
 
 	is_ready = user->is_rdy_ret;
-	pr_info("[%s] is drv ready type=[%d] ret=[%d]", __func__, type, is_ready);
+	pr_debug("[%s] is drv ready type=[%d] ret=[%d]", __func__, type, is_ready);
 
 	return is_ready;
 }
@@ -545,7 +545,7 @@ int conap_scp_init(void)
 
 	connectivity_register_state_notifier(&g_conn_state_notifier);
 
-	pr_info("[%s] DONE", __func__);
+	pr_debug("[%s] DONE", __func__);
 	return 0;
 }
 

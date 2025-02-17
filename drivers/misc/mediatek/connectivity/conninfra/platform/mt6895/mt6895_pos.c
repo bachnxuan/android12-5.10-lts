@@ -110,7 +110,7 @@ static void print_pmif_reg(void)
 	}
 	v = CONSYS_REG_READ(addr);
 	iounmap(addr);
-	pr_info("[consys]DEBUGTOP_MON:%x\n", v);
+	pr_debug("[consys]DEBUGTOP_MON:%x\n", v);
 }
 
 void consys_set_if_pinmux_mt6895(unsigned int enable)
@@ -191,7 +191,7 @@ int connsys_d_die_cfg_mt6895(void)
 
 #if defined(CONNINFRA_PLAT_BUILD_MODE)
 	CONSYS_REG_WRITE(CONN_INFRA_SYSRAM_SW_CR_BUILD_MODE, CONNINFRA_PLAT_BUILD_MODE);
-	pr_info("[%s] Write CONN_INFRA_SYSRAM_SW_CR_BUILD_MODE to 0x%08x\n",
+	pr_debug("[%s] Write CONN_INFRA_SYSRAM_SW_CR_BUILD_MODE to 0x%08x\n",
 		__func__, CONSYS_REG_READ(CONN_INFRA_SYSRAM_SW_CR_BUILD_MODE));
 #endif
 
@@ -239,7 +239,7 @@ int consys_get_sleep_mode_mt6895(void)
 int connsys_a_die_cfg_mt6895(void)
 {
 #ifdef CONFIG_FPGA_EARLY_PORTING
-	pr_info("[%s] not support on FPGA", __func__);
+	pr_debug("[%s] not support on FPGA", __func__);
 #else /* CONFIG_FPGA_EARLY_PORTING */
 	unsigned int adie_id = 0;
 	unsigned int hw_ver_id = 0;
@@ -297,7 +297,7 @@ int connsys_a_die_cfg_mt6895(void)
 	sysram_efuse_list[3] = (void __iomem *)CONN_INFRA_SYSRAM_SW_CR_A_DIE_EFUSE_DATA_3;
 	connsys_a_die_efuse_read_get_efuse_info_mt6895_gen(sysram_efuse_list,
 			&(input.slop_molecule), &(input.thermal_b), &(input.offset));
-	pr_info("slop_molecule=[%d], thermal_b =[%d], offset=[%d]", input.slop_molecule, input.thermal_b, input.offset);
+	pr_debug("slop_molecule=[%d], thermal_b =[%d], offset=[%d]", input.slop_molecule, input.thermal_b, input.offset);
 	update_thermal_data_mt6895(&input);
 
 	connsys_a_die_cfg_PART2_mt6895_gen(hw_ver_id);
@@ -309,7 +309,7 @@ int connsys_a_die_cfg_mt6895(void)
 	conn_hw_env.is_rc_mode = consys_is_rc_mode_enable_mt6895();
 
 	sleep_mode = consys_get_sleep_mode_mt6895();
-	pr_info("[%s] sleep_mode=[%d]\n", __func__, sleep_mode);
+	pr_debug("[%s] sleep_mode=[%d]\n", __func__, sleep_mode);
 	connsys_wt_slp_top_power_saving_ctrl_adie6637_mt6895_gen(adie_id, sleep_mode);
 #endif /* CONFIG_FPGA_EARLY_PORTING */
 	return 0;
@@ -708,7 +708,7 @@ int consys_spi_clock_switch_mt6895(enum connsys_spi_speed_type type)
 			CONSYS_REG_WRITE_HW_ENTRY(CONN_RF_SPI_MST_REG_SPI_HSCK_CTL_SET_FM_HS_EN, 1);
 		} else {
 			ret = -1;
-			pr_info("[%s] BPLL enable fail: 0x%08x",
+			pr_debug("[%s] BPLL enable fail: 0x%08x",
 				__func__, CONSYS_REG_READ(CONN_CFG_PLL_STATUS_ADDR));
 		}
 	} else {

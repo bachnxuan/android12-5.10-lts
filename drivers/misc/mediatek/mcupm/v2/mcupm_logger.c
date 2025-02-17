@@ -213,7 +213,7 @@ static unsigned int mcupm_log_enable_set(unsigned int enable)
 		}
 
 		log_ctl->enable = enable;
-		pr_info("MCUPM: logger IPI success ret=%d, ackdata = %d\n",
+		pr_debug("MCUPM: logger IPI success ret=%d, ackdata = %d\n",
 			ret, mcupm_plt_ackdata);
 	}
 

@@ -11,7 +11,7 @@
 #define MOD                         "MASP"
 
 #define SEC_DEBUG                   (0)
-#define SMSG                        pr_info
+#define SMSG                        pr_debug
 #define DMSG                        pr_debug
 
 static const unsigned int g_CFG_RANDOM_PATTERN[3][4] = {

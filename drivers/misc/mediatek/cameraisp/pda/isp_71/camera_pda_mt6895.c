@@ -43,7 +43,7 @@
 #define PDA_DEV_NAME "camera-pda"
 
 #define LOG_INF(format, args...)                                               \
-	pr_info(PDA_DEV_NAME " [%s] " format, __func__, ##args)
+	pr_debug(PDA_DEV_NAME " [%s] " format, __func__, ##args)
 
 #ifndef MTRUE
 #define MTRUE 1

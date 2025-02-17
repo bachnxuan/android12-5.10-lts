@@ -26,7 +26,7 @@ static int qos_ipi_recv_thread(void *arg)
 	struct qos_ipi_data *qos_ipi_d;
 	int bound_cmd_id = qos_get_ipi_cmd(QOS_IPI_QOS_BOUND);
 
-	pr_info("%s start!\n", __func__);
+	pr_debug("%s start!\n", __func__);
 	do {
 		mtk_ipi_recv(&sspm_ipidev, IPIR_I_QOS);
 
@@ -37,7 +37,7 @@ static int qos_ipi_recv_thread(void *arg)
 					qos_ipi_d->u.qos_bound.state,
 					get_qos_bound());
 		else
-			pr_info("wrong QoS IPI command: %d\n", qos_ipi_d->cmd);
+			pr_debug("wrong QoS IPI command: %d\n", qos_ipi_d->cmd);
 
 	} while (!kthread_should_stop());
 
@@ -57,7 +57,7 @@ int qos_ipi_to_sspm_command(void *buffer, int slot)
 	ret = qos_get_ipi_cmd(qos_ipi_d->cmd);
 
 	if (qos_ipi_d->cmd < 0) {
-		pr_info("qos ipi cmd get error (in= %d, out = %d)\n",
+		pr_debug("qos ipi cmd get error (in= %d, out = %d)\n",
 			qos_ipi_d->cmd, ret);
 		goto error;
 	}
@@ -65,16 +65,16 @@ int qos_ipi_to_sspm_command(void *buffer, int slot)
 	qos_ipi_d->cmd = ret;
 
 	if (qos_sspm_ready != 1) {
-		pr_info("qos ipi not ready, skip cmd=%d\n", qos_ipi_d->cmd);
+		pr_debug("qos ipi not ready, skip cmd=%d\n", qos_ipi_d->cmd);
 		goto error;
 	}
 
-	pr_info("qos ipi cmd(%d) send\n", qos_ipi_d->cmd);
+	pr_debug("qos ipi cmd(%d) send\n", qos_ipi_d->cmd);
 
 	qos_ipi_ackdata = 0;
 
 	if (slot > slot_num) {
-		pr_info("qos ipi cmd %d req slot error(%d > %d)\n",
+		pr_debug("qos ipi cmd %d req slot error(%d > %d)\n",
 			qos_ipi_d->cmd, slot, slot_num);
 		goto error;
 	}
@@ -83,13 +83,13 @@ int qos_ipi_to_sspm_command(void *buffer, int slot)
 		IPI_SEND_POLLING, buffer,
 		slot_num, 2000);
 	if (ret) {
-		pr_info("qos ipi cmd %d send fail,ret=%d\n",
+		pr_debug("qos ipi cmd %d send fail,ret=%d\n",
 		qos_ipi_d->cmd, ret);
 		goto error;
 	}
 
 	if (!qos_ipi_ackdata) {
-		pr_info("qos ipi cmd %d ack fail, ackdata=%d\n",
+		pr_debug("qos ipi cmd %d ack fail, ackdata=%d\n",
 		qos_ipi_d->cmd, qos_ipi_ackdata);
 		goto error;
 	}
@@ -119,7 +119,7 @@ void qos_ipi_init(struct mtk_qos *qos)
 	ret = mtk_ipi_register(&sspm_ipidev, IPIS_C_QOS, NULL, NULL,
 				(void *) &qos_ipi_ackdata);
 	if (ret) {
-		pr_info("qos IPIS_C_QOS ipi_register fail, ret %d\n", ret);
+		pr_debug("qos IPIS_C_QOS ipi_register fail, ret %d\n", ret);
 		qos_sspm_ready = -1;
 		return;
 	}
@@ -128,13 +128,13 @@ void qos_ipi_init(struct mtk_qos *qos)
 	ret = mtk_ipi_register(&sspm_ipidev, IPIR_I_QOS, NULL, NULL,
 				(void *) &qos_recv_ackdata);
 	if (ret) {
-		pr_info("qos IPIR_I_QOS ipi_register fail, ret %d\n", ret);
+		pr_debug("qos IPIR_I_QOS ipi_register fail, ret %d\n", ret);
 		qos_sspm_ready = -2;
 		return;
 	}
 	qos_sspm_ready = 1;
 	qos_sspm_enable();
-	pr_info("%s ready!\n", __func__);
+	pr_debug("%s ready!\n", __func__);
 #endif
 }
 EXPORT_SYMBOL_GPL(qos_ipi_init);
@@ -143,7 +143,7 @@ void qos_ipi_recv_init(struct mtk_qos *qos)
 {
 #if defined(CONFIG_MTK_TINYSYS_SSPM_V2)
 	if (qos_sspm_ready != 1) {
-		pr_info("QOS SSPM not ready, recv thread not start!\n");
+		pr_debug("QOS SSPM not ready, recv thread not start!\n");
 		return;
 	}
 	kthread_run(qos_ipi_recv_thread, NULL, "qos_ipi_recv");

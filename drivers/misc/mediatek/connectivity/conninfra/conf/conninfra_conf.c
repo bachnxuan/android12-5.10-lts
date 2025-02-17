@@ -565,7 +565,7 @@ int conninfra_conf_init(void)
 
 	pr_debug("config file:%s\n", &(g_conninfra_conf.conf_name[0]));
 #ifdef CONFIG_FPGA_EARLY_PORTING
-	pr_info("For FPGA, skip %s\n", __func__);
+	pr_debug("For FPGA, skip %s\n", __func__);
 	g_conninfra_conf.cfg_exist = 0;
 	return 0;
 #endif

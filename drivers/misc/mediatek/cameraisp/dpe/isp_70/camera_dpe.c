@@ -172,15 +172,15 @@ struct DPE_CLK_STRUCT dpe_clk;
 #define LOG_VRB(format, args...) pr_debug(MyTag format, ##args)
 //#define DPE_DEBUG_USE
 #ifdef DPE_DEBUG_USE
-#define LOG_DBG(format, args...) pr_info(MyTag format, ##args)
+#define LOG_DBG(format, args...) pr_debug(MyTag format, ##args)
 #else
 #define LOG_DBG(format, args...)
 #endif
-#define LOG_INF(format, args...) pr_info(MyTag format, ##args)
+#define LOG_INF(format, args...) pr_debug(MyTag format, ##args)
 #define LOG_NOTICE(format, args...) pr_notice(MyTag format, ##args)
-#define LOG_WRN(format, args...) pr_info(MyTag format, ##args)
-#define LOG_ERR(format, args...) pr_info(MyTag format, ##args)
-#define LOG_AST(format, args...) pr_info(MyTag format, ##args)
+#define LOG_WRN(format, args...) pr_debug(MyTag format, ##args)
+#define LOG_ERR(format, args...) pr_debug(MyTag format, ##args)
+#define LOG_AST(format, args...) pr_debug(MyTag format, ##args)
 /**************************************************************
  *
  **************************************************************/
@@ -6684,7 +6684,7 @@ enum m4u_callback_ret_t DPE_M4U_TranslationFault_callback(int port,
 	unsigned int mva, void *data)
 #endif
 {
-	pr_info("[ISP_M4U]fault call port=%d, mva=0x%lx", port, mva);
+	pr_debug("[ISP_M4U]fault call port=%d, mva=0x%lx", port, mva);
 	switch (port) {
 	default:
 		DPE_DumpReg();

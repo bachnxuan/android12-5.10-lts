@@ -13,14 +13,14 @@
 
 int fw_log_mcu_open(struct inode *inode, struct file *file)
 {
-	pr_info("[%s] major %d minor %d (pid %d)\n",
+	pr_debug("[%s] major %d minor %d (pid %d)\n",
 		__func__, imajor(inode), iminor(inode), current->pid);
 	return 0;
 }
 
 int fw_log_mcu_close(struct inode *inode, struct file *file)
 {
-	pr_info("[%s] major %d minor %d (pid %d)\n",
+	pr_debug("[%s] major %d minor %d (pid %d)\n",
 		__func__, imajor(inode), iminor(inode), current->pid);
 	return 0;
 }
@@ -70,7 +70,7 @@ int fw_log_mcu_init(struct fw_log_mcu_info *info, const struct file_operations *
 
 	init_waitqueue_head(&info->wq);
 
-	pr_info("[%s] conn_type=[%d] major=[%d] init done\n",
+	pr_debug("[%s] conn_type=[%d] major=[%d] init done\n",
 		__func__, info->conn_type, MAJOR(info->dev_id));
 
 	return 0;
@@ -106,7 +106,7 @@ void fw_log_mcu_deinit(struct fw_log_mcu_info *info)
 
 	cdev_del(&info->mcu_cdev);
 	unregister_chrdev_region(info->dev_id, 1);
-	pr_info("[%s] conn_type=[%d] major=[%d] deinit done\n",
+	pr_debug("[%s] conn_type=[%d] major=[%d] deinit done\n",
 		__func__, info->conn_type, MAJOR(info->dev_id));
 }
 EXPORT_SYMBOL(fw_log_mcu_deinit);

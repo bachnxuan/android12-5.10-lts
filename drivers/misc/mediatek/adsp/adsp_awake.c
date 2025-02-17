@@ -48,7 +48,7 @@ int adsp_awake_lock(u32 cid)
 	return ADSP_IPI_DONE;
 
 ERROR:
-	pr_info("%s, lock fail, ret = %d", __func__, ret);
+	pr_debug("%s, lock fail, ret = %d", __func__, ret);
 	return ret;
 }
 
@@ -81,7 +81,7 @@ int adsp_awake_unlock(u32 cid)
 	return ADSP_IPI_DONE;
 
 ERROR:
-	pr_info("%s, unlock fail, ret = %d", __func__, ret);
+	pr_debug("%s, unlock fail, ret = %d", __func__, ret);
 	return ret;
 }
 

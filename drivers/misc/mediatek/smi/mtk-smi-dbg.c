@@ -548,7 +548,7 @@ static void mtk_smi_dbg_monitor_run(struct mtk_smi_dbg *smi)
 
 	smi->exec = sched_clock();
 	smi->frame = smi->frame ? smi->frame : 10;
-	pr_info("%s: exec:%llu frame:%u\n", __func__, smi->exec, smi->frame);
+	pr_debug("%s: exec:%llu frame:%u\n", __func__, smi->exec, smi->frame);
 
 	for (i = 0; i < ARRAY_SIZE(smi->larb); i++) {
 		if (!smi->larb[i].dev)
@@ -593,7 +593,7 @@ static void mtk_smi_dbg_monitor_set(struct mtk_smi_dbg *smi, const u64 val)
 	u32	i, *mon, mstr = SMI_MON_DEC(val, MON_BIT_MSTR);
 
 	if (mstr >= MTK_LARB_NR_MAX || !nodes[mstr].dev || !nodes[mstr].va) {
-		pr_info("%s: invalid %s:%d\n", __func__, name, mstr);
+		pr_debug("%s: invalid %s:%d\n", __func__, name, mstr);
 		return;
 	}
 	mon = nodes[mstr].mon;
@@ -605,11 +605,11 @@ static void mtk_smi_dbg_monitor_set(struct mtk_smi_dbg *smi, const u64 val)
 		}
 
 	if (i == SMI_MON_BUS_NR)
-		pr_info("%s: over monitor: %pa.%s:%u mon:%#x %#x %#x %#x\n",
+		pr_debug("%s: over monitor: %pa.%s:%u mon:%#x %#x %#x %#x\n",
 			__func__, &nodes[mstr].pa, name, mstr,
 			mon[0], mon[1], mon[2], mon[3]);
 	else
-		pr_info("%s: %pa.%s:%u mon:%#x %#x %#x %#x\n",
+		pr_debug("%s: %pa.%s:%u mon:%#x %#x %#x %#x\n",
 			__func__, &nodes[mstr].pa, name, mstr,
 			mon[0], mon[1], mon[2], mon[3]);
 }
@@ -665,7 +665,7 @@ static s32 mtk_smi_dbg_probe(struct mtk_smi_dbg *smi)
 	void __iomem	*va;
 	s32			larb_nr = 0, comm_nr = 0, rsi_nr = 0, id, ret;
 
-	pr_info("%s: comp[%d]:%s\n", __func__, 0, mtk_smi_dbg_comp[0]);
+	pr_debug("%s: comp[%d]:%s\n", __func__, 0, mtk_smi_dbg_comp[0]);
 
 	for_each_compatible_node(node, NULL, mtk_smi_dbg_comp[0]) {
 		if (!node)
@@ -759,7 +759,7 @@ s32 mtk_smi_dbg_hang_detect(const char *user)
 	s32			i, j, ret, busy = 0, time = 5, PRINT_NR = 1;
 	u32			val;
 
-	pr_info("%s: check caller:%s\n", __func__, user);
+	pr_debug("%s: check caller:%s\n", __func__, user);
 
 	if (!smi->probe) {
 		ret = mtk_smi_dbg_probe(smi);
@@ -817,7 +817,7 @@ s32 mtk_smi_dbg_hang_detect(const char *user)
 	}
 
 	if (PRINT_NR == 1)
-		pr_info("%s: ===== SMI MM bus NOT hang =====:%s\n", __func__, user);
+		pr_debug("%s: ===== SMI MM bus NOT hang =====:%s\n", __func__, user);
 
 	for (j = 0; j < PRINT_NR; j++) {
 		for (i = 0; i < ARRAY_SIZE(smi->larb); i++)
@@ -876,7 +876,7 @@ EXPORT_SYMBOL_GPL(mtk_smi_dbg_cg_status);
 
 static int mtk_smi_dbg_get(void *data, u64 *val)
 {
-	pr_info("%s: val:%llu\n", __func__, *val);
+	pr_debug("%s: val:%llu\n", __func__, *val);
 	return 0;
 }
 
@@ -886,7 +886,7 @@ static int mtk_smi_dbg_set(void *data, u64 val)
 	u64			exval;
 	s32			ret;
 
-	pr_info("%s: val:%#llx\n", __func__, val);
+	pr_debug("%s: val:%#llx\n", __func__, val);
 
 	if (!smi->probe) {
 		ret = mtk_smi_dbg_probe(smi);

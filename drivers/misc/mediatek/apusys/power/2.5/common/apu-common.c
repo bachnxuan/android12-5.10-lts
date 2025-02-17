@@ -70,7 +70,7 @@ struct apu_dev *apu_find_device(enum DVFS_USER user)
 	struct apu_dev *ret_dev = NULL;
 
 	if (user > APUSYS_POWER_USER_NUM) {
-		pr_info("%s: user %d Invalid parameters\n",
+		pr_debug("%s: user %d Invalid parameters\n",
 			__func__, user);
 		return ERR_PTR(-EINVAL);
 	}
@@ -154,7 +154,7 @@ int apu_del_devfreq(struct apu_dev *del_dev)
 {
 
 	if (IS_ERR(del_dev)) {
-		pr_info("%s: Invalid parameters.\n", __func__);
+		pr_debug("%s: Invalid parameters.\n", __func__);
 		return -EINVAL;
 	}
 

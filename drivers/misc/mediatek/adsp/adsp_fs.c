@@ -45,7 +45,7 @@ static void ipi_test_handler(int id, void *data, unsigned int len)
 {
 	unsigned long long ns = *(unsigned long long *)data;
 
-	pr_info("%s, receive ipi_test from adsp, adsp_time[%llu.%llu]",
+	pr_debug("%s, receive ipi_test from adsp, adsp_time[%llu.%llu]",
 		__func__, ns / 1000000000, (ns / 1000000) % 1000);
 }
 
@@ -82,7 +82,7 @@ static inline ssize_t ipi_test_show(struct device *dev,
 	adsp_ipi_registration(ADSP_IPI_TEST1, ipi_test_handler, "ipi_test");
 
 	if (_adsp_register_feature(pdata->id, SYSTEM_FEATURE_ID, 0) == 0) {
-		pr_info("%s, send ipi_test to adsp%d", __func__, pdata->id);
+		pr_debug("%s, send ipi_test to adsp%d", __func__, pdata->id);
 
 		ret = adsp_push_message(ADSP_IPI_TEST1, &value,
 					sizeof(value), 20, pdata->id);
@@ -342,7 +342,7 @@ static long adsp_driver_ioctl(
 	}
 
 	if (ret < 0)
-		pr_info("%s(), ioctl error %d\n", __func__, ret);
+		pr_debug("%s(), ioctl error %d\n", __func__, ret);
 
 	return ret;
 }

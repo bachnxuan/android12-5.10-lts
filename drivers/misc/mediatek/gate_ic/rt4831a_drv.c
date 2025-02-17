@@ -85,7 +85,7 @@ static void _gate_ic_backlight_enable(void)
 	/*BL enable*/
 	struct gate_ic_client *gate_client = i2c_get_clientdata(_gate_ic_i2c_client);
 
-	pr_info("%s+\n", __func__);
+	pr_debug("%s+\n", __func__);
 
 	if (gate_client->pwm_enable) {
 		_gate_ic_i2c_write_bytes(BACKLIGHT_CONFIG_1, 0x6B);
@@ -151,7 +151,7 @@ int _gate_ic_backlight_set(unsigned int hw_level)
 
 	ret = i2c_master_send(client, cmd_buf, 3);
 	if (ret < 0)
-		pr_info("ERROR %d!! i2c write data fail 0x%0x, 0x%0x, 0x%0x !!\n",
+		pr_debug("ERROR %d!! i2c write data fail 0x%0x, 0x%0x, 0x%0x !!\n",
 				ret, cmd_buf[0], cmd_buf[1], cmd_buf[2]);
 	return ret;
 }
@@ -165,7 +165,7 @@ int _gate_ic_i2c_read_bytes(unsigned char addr, unsigned char *returnData)
 	struct i2c_client *client = _gate_ic_i2c_client;
 
 	if (client == NULL) {
-		pr_info("ERROR!! _gate_ic_i2c_client is null\n");
+		pr_debug("ERROR!! _gate_ic_i2c_client is null\n");
 		return 0;
 	}
 
@@ -173,7 +173,7 @@ int _gate_ic_i2c_read_bytes(unsigned char addr, unsigned char *returnData)
 	ret = i2c_master_send(client, &cmd_buf[0], 1);
 	ret = i2c_master_recv(client, &cmd_buf[1], 1);
 	if (ret < 0)
-		pr_info("ERROR %d!! i2c read data 0x%0x fail !!\n", ret, addr);
+		pr_debug("ERROR %d!! i2c read data 0x%0x fail !!\n", ret, addr);
 
 	readData = cmd_buf[1];
 	*returnData = readData;
@@ -189,7 +189,7 @@ int _gate_ic_i2c_write_bytes(unsigned char addr, unsigned char value)
 	char write_data[2] = { 0 };
 
 	if (client == NULL) {
-		pr_info("ERROR!! _gate_ic_i2c_client is null\n");
+		pr_debug("ERROR!! _gate_ic_i2c_client is null\n");
 		return 0;
 	}
 
@@ -197,7 +197,7 @@ int _gate_ic_i2c_write_bytes(unsigned char addr, unsigned char value)
 	write_data[1] = value;
 	ret = i2c_master_send(client, write_data, 2);
 	if (ret < 0)
-		pr_info("ERROR %d!! i2c write data fail 0x%0x, 0x%0x !!\n",
+		pr_debug("ERROR %d!! i2c write data fail 0x%0x, 0x%0x !!\n",
 				ret, addr, value);
 
 	return ret;
@@ -208,17 +208,17 @@ void _gate_ic_Power_on(void)
 {
 	struct gate_ic_client *gate_client = i2c_get_clientdata(_gate_ic_i2c_client);
 
-	pr_info("%s+: status = (%d, %d)\n", __func__,
+	pr_debug("%s+: status = (%d, %d)\n", __func__,
 		atomic_read(&gate_client->gate_ic_power_status),
 		atomic_read(&gate_client->backlight_status));
 
 	if (IS_ERR(gate_client->pinctrl)) {
-		pr_info("ERROR!! pinctrl is error!\n");
+		pr_debug("ERROR!! pinctrl is error!\n");
 	} else if (!atomic_read(&gate_client->gate_ic_power_status)) {
 		gate_client->pinctrl = devm_gpiod_get(gate_client->dev, "gate-power",
 				   GPIOD_OUT_HIGH);
 		if (IS_ERR(gate_client->pinctrl)) {
-			pr_info("ERROR!! Failed to get gpio: %d\n",
+			pr_debug("ERROR!! Failed to get gpio: %d\n",
 				PTR_ERR(gate_client->pinctrl));
 			return;
 		}
@@ -235,18 +235,18 @@ void _gate_ic_Power_off(void)
 {
 	struct gate_ic_client *gate_client = i2c_get_clientdata(_gate_ic_i2c_client);
 
-	pr_info("%s+: status = (%d, %d)\n", __func__,
+	pr_debug("%s+: status = (%d, %d)\n", __func__,
 		atomic_read(&gate_client->gate_ic_power_status),
 		atomic_read(&gate_client->backlight_status));
 
 	if (IS_ERR(gate_client->pinctrl)) {
-		pr_info("ERROR!! pinctrl is error!\n");
+		pr_debug("ERROR!! pinctrl is error!\n");
 	} else if (atomic_read(&gate_client->gate_ic_power_status) &&
 			!atomic_read(&gate_client->backlight_status)) {
 		gate_client->pinctrl = devm_gpiod_get(gate_client->dev, "gate-power",
 				   GPIOD_OUT_HIGH);
 		if (IS_ERR(gate_client->pinctrl)) {
-			pr_info("ERROR!! Failed to get gpio: %d\n",
+			pr_debug("ERROR!! Failed to get gpio: %d\n",
 				PTR_ERR(gate_client->pinctrl));
 			return;
 		}
@@ -260,7 +260,7 @@ EXPORT_SYMBOL_GPL(_gate_ic_Power_off);
 
 void _gate_ic_i2c_panel_bias_enable(unsigned int power_status)
 {
-	pr_info("%s+\n", __func__);
+	pr_debug("%s+\n", __func__);
 
 	if (power_status) {
 		_gate_ic_i2c_write_bytes(DISPLAY_BIAS_CONFIGURATION_2, 0x11);
@@ -292,7 +292,7 @@ static int _gate_ic_i2c_probe(struct i2c_client *client,
 	int status;
 	int pwm_enable;
 
-	pr_info("%s+: client name=%s addr=0x%x\n",
+	pr_debug("%s+: client name=%s addr=0x%x\n",
 		__func__, client->name, client->addr);
 
 	gate_client = devm_kzalloc(&client->dev, sizeof(struct gate_ic_client), GFP_KERNEL);
@@ -306,7 +306,7 @@ static int _gate_ic_i2c_probe(struct i2c_client *client,
 				   GPIOD_OUT_HIGH);
 	if (IS_ERR(gate_client->pinctrl)) {
 		status = PTR_ERR(gate_client->pinctrl);
-		pr_info("ERROR!! Failed to enable gpio: %d\n", status);
+		pr_debug("ERROR!! Failed to enable gpio: %d\n", status);
 		return status;
 	}
 	devm_gpiod_put(gate_client->dev, gate_client->pinctrl);
@@ -318,7 +318,7 @@ static int _gate_ic_i2c_probe(struct i2c_client *client,
 	status = of_property_read_u32(dev->of_node, "pwm-enable", &pwm_enable);
 	if (status) {
 		gate_client->pwm_enable = 0;
-		pr_info("ERROR!! Failed to get pwm-enable, use default value 0");
+		pr_debug("ERROR!! Failed to get pwm-enable, use default value 0");
 	} else {
 		gate_client->pwm_enable = pwm_enable;
 	}
@@ -326,7 +326,7 @@ static int _gate_ic_i2c_probe(struct i2c_client *client,
 	mtk_leds_register_notifier(&leds_init_notifier);
 #endif
 
-	pr_info("%s-: pwm-enable is %d", __func__, pwm_enable);
+	pr_debug("%s-: pwm-enable is %d", __func__, pwm_enable);
 
 	return 0;
 }
@@ -335,7 +335,7 @@ static int _gate_ic_i2c_remove(struct i2c_client *client)
 {
 	struct gate_ic_client *gate_client;
 
-	pr_info("%s+\n", __func__);
+	pr_debug("%s+\n", __func__);
 
 	gate_client = i2c_get_clientdata(client);
 

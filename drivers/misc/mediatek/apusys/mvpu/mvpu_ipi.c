@@ -74,7 +74,7 @@ int mvpu_ipi_recv(int type_0, u64 *val)
 			&mvpu_tx_rpm_dev.ack,
 			msecs_to_jiffies(10)) == 0) {
 		mutex_unlock(&mvpu_ipi_mtx);
-		pr_info("timeout\n", __func__);
+		pr_debug("timeout\n", __func__);
 		return -1;
 	}
 
@@ -94,7 +94,7 @@ static int mvpu_rpmsg_tx_cb(struct rpmsg_device *rpdev, void *data,
 		return 0;
 
 	if (d->type0 == MVPU_IPI_MICROP_MSG) {
-		pr_info("Receive uP message -> use the wrong channel!?\n");
+		pr_debug("Receive uP message -> use the wrong channel!?\n");
 	} else {
 		ipi_tx_recv_buf.type0  = d->type0;
 		ipi_tx_recv_buf.dir    = d->dir;
@@ -126,7 +126,7 @@ static int mvpu_rpmsg_rx_cb(struct rpmsg_device *rpdev, void *data,
 
 		mvpu_ipi_up_msg(d->type0, d->data);
 	} else {
-		pr_info("Receive command ack -> use the wrong channel!?\n");
+		pr_debug("Receive command ack -> use the wrong channel!?\n");
 	}
 
 	return 0;
@@ -199,7 +199,7 @@ int mvpu_ipi_init(void)
 {
 	int ret;
 
-	pr_info("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	init_completion(&mvpu_rx_rpm_dev.ack);
 	init_completion(&mvpu_tx_rpm_dev.ack);
@@ -207,11 +207,11 @@ int mvpu_ipi_init(void)
 
 	ret = register_rpmsg_driver(&mvpu_rpmsg_rx_drv);
 	if (ret)
-		pr_info("failed to register mvpu rx rpmsg\n");
+		pr_debug("failed to register mvpu rx rpmsg\n");
 
 	ret = register_rpmsg_driver(&mvpu_rpmsg_tx_drv);
 	if (ret)
-		pr_info("failed to register mvpu tx rpmsg\n");
+		pr_debug("failed to register mvpu tx rpmsg\n");
 
 	return 0;
 }

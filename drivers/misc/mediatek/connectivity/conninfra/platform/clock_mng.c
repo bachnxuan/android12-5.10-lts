@@ -91,7 +91,7 @@ static int consys_mt6685_probe(struct platform_device *pdev)
 	g_regmap_mt6685 = dev_get_regmap(pdev->dev.parent, NULL);
 
 	if (!g_regmap_mt6685) {
-		pr_info("%s failed to get g_regmap_mt6685\n", __func__);
+		pr_debug("%s failed to get g_regmap_mt6685\n", __func__);
 		return 0;
 	}
 
@@ -111,7 +111,7 @@ int clock_mng_register_device(void)
 	if (ret)
 		pr_err("Conninfra clock ic mt6685 driver registered failed(%d)\n", ret);
 	else
-		pr_info("%s mt6685 ok.\n", __func__);
+		pr_debug("%s mt6685 ok.\n", __func__);
 
 	return 0;
 }

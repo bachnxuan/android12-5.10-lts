@@ -600,10 +600,10 @@ static int btmtk_skb_enq_fwlog(struct btmtk_dev *bdev, void *src, u32 len, u8 ty
 		if (skb_tmp != NULL)
 			break;
 		else if (retry <= 0) {
-			pr_info("%s: alloc_skb return 0, error", __func__);
+			pr_debug("%s: alloc_skb return 0, error", __func__);
 			return -ENOMEM;
 		}
-		pr_info("%s: alloc_skb return 0, error, retry = %d", __func__, retry);
+		pr_debug("%s: alloc_skb return 0, error, retry = %d", __func__, retry);
 	} while (retry-- > 0);
 
 	if (type) {
@@ -656,7 +656,7 @@ int btmtk_dispatch_fwlog_bluetooth_kpi(struct btmtk_dev *bdev, u8 *buf, int len,
 	} else {
 		if (fwlog_blocking_warn == 0) {
 			fwlog_blocking_warn = 1;
-			pr_info("btmtk_usb fwlog queue size is full(bluetooth_kpi)");
+			pr_debug("btmtk_usb fwlog queue size is full(bluetooth_kpi)");
 		}
 	}
 	return ret;
@@ -723,7 +723,7 @@ int btmtk_dispatch_fwlog(struct btmtk_dev *bdev, struct sk_buff *skb)
 		} else {
 			if (fwlog_fwdump_blocking_warn == 0) {
 				fwlog_fwdump_blocking_warn = 1;
-				pr_info("btmtk fwlog queue size is full(coredump)");
+				pr_debug("btmtk fwlog queue size is full(coredump)");
 			}
 		}
 
@@ -743,7 +743,7 @@ int btmtk_dispatch_fwlog(struct btmtk_dev *bdev, struct sk_buff *skb)
 		} else {
 			if (fwlog_picus_blocking_warn == 0) {
 				fwlog_picus_blocking_warn = 1;
-				pr_info("btmtk fwlog queue size is full(picus)");
+				pr_debug("btmtk fwlog queue size is full(picus)");
 			}
 		}
 		return 1;

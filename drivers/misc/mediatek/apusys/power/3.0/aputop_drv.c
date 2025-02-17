@@ -120,7 +120,7 @@ static int device_linker(struct platform_device *pdev)
 static int check_pwr_data(void)
 {
 	if (!pwr_data) {
-		pr_info("%s error : has no platform data\n", __func__);
+		pr_debug("%s error : has no platform data\n", __func__);
 		return -ENODEV;
 	}
 
@@ -209,7 +209,7 @@ static int apu_top_suspend(struct device *dev)
 	if (check_pwr_data())
 		return -ENODEV;
 
-	pr_info("%s +\n", __func__);
+	pr_debug("%s +\n", __func__);
 
 	if (IS_ERR_OR_NULL(pwr_data->plat_aputop_suspend))
 		return 0;
@@ -222,7 +222,7 @@ static int apu_top_resume(struct device *dev)
 	if (check_pwr_data())
 		return -ENODEV;
 
-	pr_info("%s +\n", __func__);
+	pr_debug("%s +\n", __func__);
 
 	if (IS_ERR_OR_NULL(pwr_data->plat_aputop_resume))
 		return 0;
@@ -286,7 +286,7 @@ static int set_aputop_func_param(const char *buf,
 		return -EINVAL;
 	}
 
-	pr_info(
+	pr_debug(
 		"%s (func_id, param1, param2, param3, param4): (%d,%d,%d,%d,%d)\n",
 		__func__, aputop.func_id,
 		aputop.param1, aputop.param2,
@@ -318,7 +318,7 @@ MODULE_PARM_DESC(aputop_func_sel, "trigger apu top func by parameter");
 #if IS_ENABLED(CONFIG_DEBUG_FS)
 static int aputop_dbg_open(struct inode *inode, struct file *file)
 {
-	pr_info("%s ++\n", __func__);
+	pr_debug("%s ++\n", __func__);
 	if (pwr_data->plat_aputop_dbg_open)
 		return pwr_data->plat_aputop_dbg_open(inode, file);
 	else
@@ -328,7 +328,7 @@ static int aputop_dbg_open(struct inode *inode, struct file *file)
 static ssize_t aputop_dbg_write(struct file *flip, const char __user *buffer,
 		size_t count, loff_t *f_pos)
 {
-	pr_info("%s ++\n", __func__);
+	pr_debug("%s ++\n", __func__);
 	if (pwr_data->plat_aputop_dbg_write)
 		return pwr_data->plat_aputop_dbg_write(
 				flip, buffer, count, f_pos);
@@ -350,7 +350,7 @@ int aputop_dbg_init(struct apusys_core_info *info)
 	aputop_dbg.file = debugfs_create_file("power", (0644),
 			info->dbg_root, NULL, &aputop_dbg_fops);
 	if (IS_ERR_OR_NULL(aputop_dbg.file)) {
-		pr_info("failed to create \"power\" debug file.\n");
+		pr_debug("failed to create \"power\" debug file.\n");
 		return -1;
 	}
 
@@ -367,17 +367,17 @@ int apu_top_3_init(void)
 {
 	int ret = 0;
 
-	pr_info("%s register platform driver...\n", __func__);
+	pr_debug("%s register platform driver...\n", __func__);
 	ret = platform_driver_register(&apu_top_drv);
 	if (ret) {
-		pr_info("failed to register aputop platform driver\n");
+		pr_debug("failed to register aputop platform driver\n");
 		return -1;
 	}
 
-	pr_info("%s register rpmsg driver...\n", __func__);
+	pr_debug("%s register rpmsg driver...\n", __func__);
 	ret = aputop_register_rpmsg();
 	if (ret) {
-		pr_info("failed to register aputop rpmsg driver\n");
+		pr_debug("failed to register aputop rpmsg driver\n");
 		platform_driver_unregister(&apu_top_drv);
 		return -1;
 	}

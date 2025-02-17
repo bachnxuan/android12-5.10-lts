@@ -27,7 +27,7 @@ static void create_dbg_root(void)
 
 	/* check dbg root create status */
 	if (IS_ERR_OR_NULL(g_core_info.dbg_root))
-		pr_info("failed to create debug dir.\n");
+		pr_debug("failed to create debug dir.\n");
 }
 
 static void destroy_dbg_root(void)
@@ -50,7 +50,7 @@ static int __init apusys_init(void)
 
 		ret = apusys_init_func[i](&g_core_info);
 		if (ret) {
-			pr_info("init function(%d) fail(%d)", i, ret);
+			pr_debug("init function(%d) fail(%d)", i, ret);
 
 			/* exit device */
 			for (j = i-1; j >= 0; j--)

@@ -29,7 +29,7 @@
 #define PCM_32K_TICKS_PER_SEC		(32768)
 #define PCM_TICK_TO_SEC(TICK)	(TICK / PCM_32K_TICKS_PER_SEC)
 
-#define aee_sram_printk pr_info
+#define aee_sram_printk pr_debug
 
 static char *mt6895_spm_cond_cg_str[PLAT_SPM_COND_MAX] = {
 	[PLAT_SPM_COND_MTCMOS_0]	= "MTCMOS_0",
@@ -187,7 +187,7 @@ static void lpm_get_spm_wakesrc_irq(void)
 		node = of_find_compatible_node(NULL, NULL,
 			mt6895_spm_wakesrc_irqs[i].name);
 		if (!node) {
-			pr_info("[name:spm&][SPM] find '%s' node failed\n",
+			pr_debug("[name:spm&][SPM] find '%s' node failed\n",
 				mt6895_spm_wakesrc_irqs[i].name);
 			continue;
 		}
@@ -197,7 +197,7 @@ static void lpm_get_spm_wakesrc_irq(void)
 				mt6895_spm_wakesrc_irqs[i].order);
 
 		if (!mt6895_spm_wakesrc_irqs[i].irq_no) {
-			pr_info("[name:spm&][SPM] get '%s' failed\n",
+			pr_debug("[name:spm&][SPM] get '%s' failed\n",
 				mt6895_spm_wakesrc_irqs[i].name);
 		}
 	}
@@ -328,7 +328,7 @@ static void dump_lp_cond(void)
 	for (i = 1 ; i < PLAT_SPM_COND_MAX ; i++) {
 		blkcg = lpm_smc_spm_dbg(MT_SPM_DBG_SMC_UID_BLOCK_DETAIL, MT_LPM_SMC_ACT_GET, 0, i);
 		if (blkcg != 0)
-			pr_info("suspend warning: CG: %6s = 0x%08lx\n"
+			pr_debug("suspend warning: CG: %6s = 0x%08lx\n"
 				, mt6895_spm_cond_cg_str[i], blkcg);
 
 	}
@@ -422,7 +422,7 @@ static u32 is_blocked_cnt;
 	}
 	WARN_ON(strlen(log_buf) >= LOG_BUF_SIZE);
 
-	pr_info("[name:spm&][SPM] %s\n", log_buf);
+	pr_debug("[name:spm&][SPM] %s\n", log_buf);
 }
 
 static int lpm_show_message(int type, const char *prefix, void *data)
@@ -673,10 +673,10 @@ static int lpm_show_message(int type, const char *prefix, void *data)
 	WARN_ON(log_size >= LOG_BUF_OUT_SZ);
 
 	if (type == LPM_ISSUER_SUSPEND) {
-		pr_info("[name:spm&][SPM] %s", log_buf);
+		pr_debug("[name:spm&][SPM] %s", log_buf);
 		mt6895_suspend_show_detailed_wakeup_reason(wakesrc);
 		mt6895_suspend_spm_rsc_req_check(wakesrc);
-		pr_info("[name:spm&][SPM] Suspended for %d.%03d seconds",
+		pr_debug("[name:spm&][SPM] Suspended for %d.%03d seconds",
 			PCM_TICK_TO_SEC(wakesrc->timer_out),
 			PCM_TICK_TO_SEC((wakesrc->timer_out %
 				PCM_32K_TICKS_PER_SEC)
@@ -685,7 +685,7 @@ static int lpm_show_message(int type, const char *prefix, void *data)
 		/* Eable rcu lock checking */
 //		rcu_irq_exit_irqson();
 	} else
-		pr_info("[name:spm&][SPM] %s", log_buf);
+		pr_debug("[name:spm&][SPM] %s", log_buf);
 
 end:
 	return wr;

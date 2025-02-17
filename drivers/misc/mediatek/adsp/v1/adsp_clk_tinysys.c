@@ -129,7 +129,7 @@ int adsp_clk_probe(struct platform_device *pdev,
 		scp_clks[i].clock = devm_clk_get(dev, scp_clks[i].name);
 		if (IS_ERR(scp_clks[i].clock)) {
 			ret = PTR_ERR(scp_clks[i].clock);
-			pr_info("%s devm_clk_get %s fail %d\n", __func__,
+			pr_debug("%s devm_clk_get %s fail %d\n", __func__,
 				   scp_clks[i].name, ret);
 		}
 	}

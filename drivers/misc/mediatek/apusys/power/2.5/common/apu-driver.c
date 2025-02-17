@@ -93,7 +93,7 @@ void apu_device_set_opp(enum DVFS_USER user, uint8_t opp)
 
 	ad = apu_find_device(user);
 	if (IS_ERR(ad)) {
-		pr_info("[%s] %s not support\n", __func__, apu_dev_string(user));
+		pr_debug("[%s] %s not support\n", __func__, apu_dev_string(user));
 		return;
 	}
 
@@ -223,10 +223,10 @@ bool apusys_power_check(void)
  *				"apusys_status=normal");
  *	if (pwr_ptr == 0) {
  *		pwr_status = false;
- *		pr_info("apusys power disable !!, pwr_status=%d\n",
+ *		pr_debug("apusys power disable !!, pwr_status=%d\n",
  *			pwr_status);
  *	}
- *	pr_info("apusys power check, pwr_status=%d\n",
+ *	pr_debug("apusys power check, pwr_status=%d\n",
  *			pwr_status);
  *	return pwr_status;
  */
@@ -397,21 +397,21 @@ void apu_power_exit(void)
 
 	ret = devfreq_remove_governor(&agov_constrain);
 	if (ret)
-		pr_info("[%s] failed remove gov %s %d\n",
+		pr_debug("[%s] failed remove gov %s %d\n",
 			__func__, agov_constrain.name, ret);
 
 	ret = devfreq_remove_governor(&agov_passive);
 	if (ret)
-		pr_info("[%s] failed remove gov %s %d\n",
+		pr_debug("[%s] failed remove gov %s %d\n",
 			__func__, agov_passive.name, ret);
 
 	ret = devfreq_remove_governor(&agov_userspace);
 	if (ret)
-		pr_info("[%s] failed remove gov %s %d\n",
+		pr_debug("[%s] failed remove gov %s %d\n",
 			__func__, agov_userspace.name, ret);
 
 	ret = devfreq_remove_governor(&agov_passive_pe);
 	if (ret)
-		pr_info("[%s] failed remove gov %s %d\n",
+		pr_debug("[%s] failed remove gov %s %d\n",
 			__func__, agov_passive_pe.name, ret);
 }

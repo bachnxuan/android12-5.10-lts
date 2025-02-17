@@ -136,7 +136,7 @@ int sspm_reserve_memory_init(void)
 			ioremap_wc(sspm_mem_base_phys, sspm_mem_size);
 
 #ifdef DEBUG
-	pr_info("[SSPM]reserve mem: virt:0x%llx - 0x%llx (0x%llx)\n",
+	pr_debug("[SSPM]reserve mem: virt:0x%llx - 0x%llx (0x%llx)\n",
 			sspm_mem_base_virt,
 			sspm_mem_base_virt + sspm_mem_size,
 			sspm_mem_size);
@@ -155,8 +155,8 @@ int sspm_reserve_memory_init(void)
 
 #ifdef DEBUG
 	for (id = 0; id < NUMS_MEM_ID; id++) {
-		pr_info("[SSPM][mem_reserve-%d] ", id);
-		pr_info("phys:0x%llx, virt:0x%llx, size:0x%llx\n",
+		pr_debug("[SSPM][mem_reserve-%d] ", id);
+		pr_debug("phys:0x%llx, virt:0x%llx, size:0x%llx\n",
 			(unsigned long long)sspm_reserve_mem_get_phys(id),
 			(unsigned long long)sspm_reserve_mem_get_virt(id),
 			(unsigned long long)sspm_reserve_mem_get_size(id));

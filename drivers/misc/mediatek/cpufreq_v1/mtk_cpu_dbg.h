@@ -13,7 +13,7 @@
 #define csram_write(offs, val)	__raw_writel(val, csram_base + (offs))
 
 #define TAG	"[Power/cpufreq] "
-#define tag_pr_info(fmt, args...)	pr_info(TAG fmt, ##args)
+#define tag_pr_debug(fmt, args...)	pr_debug(TAG fmt, ##args)
 #define tag_pr_notice(fmt, args...)	pr_notice(TAG fmt, ##args)
 
 #define PROC_FOPS_RW(name)						\

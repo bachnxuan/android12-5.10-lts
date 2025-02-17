@@ -30,7 +30,7 @@ void generic_dump_pmic(const char *pmic_name, int pmic_num,
 	if (!pmic_name || !user)
 		goto ERROR;
 	if (IS_ERR(regmap)) {
-		pr_info("%s regmap get failed\n", __func__);
+		pr_debug("%s regmap get failed\n", __func__);
 		goto ERROR;
 	}
 	/* dump diff mode */
@@ -43,7 +43,7 @@ void generic_dump_pmic(const char *pmic_name, int pmic_num,
 		for (i = 0; i < user->array_sz; i += 3) {
 			ret = regmap_read(regmap, user->array[i], &val0);
 			if (ret) {
-				pr_info("read pmic-%d 0x%x error\n",
+				pr_debug("read pmic-%d 0x%x error\n",
 					pmic_num, user->array[i]);
 				goto ERROR;
 			}
@@ -65,14 +65,14 @@ void generic_dump_pmic(const char *pmic_name, int pmic_num,
 				p += snprintf(p, sizeof(buf) - (p - buf), "\n");
 				if (dump_cnt &&
 					((dump_cnt % PER_LINE_TO_PRINT) == 0)) {
-					pr_info("%s", buf);
+					pr_debug("%s", buf);
 					p = buf;
 					p += snprintf(p, sizeof(buf), "\n");
 				}
 			}
 		}
 		if (dump_cnt % PER_LINE_TO_PRINT)
-			pr_info("%s", buf);
+			pr_debug("%s", buf);
 	/* dump raw data mode */
 	} else {
 		p = buf;
@@ -82,7 +82,7 @@ void generic_dump_pmic(const char *pmic_name, int pmic_num,
 		for (i = 0; i < user->array_sz; i += 3) {
 			ret = regmap_read(regmap, user->array[i], &val0);
 			if (ret) {
-				pr_info("read pmic-%d 0x%x error\n",
+				pr_debug("read pmic-%d 0x%x error\n",
 				pmic_num, user->array[i]);
 				goto ERROR;
 			}
@@ -92,13 +92,13 @@ void generic_dump_pmic(const char *pmic_name, int pmic_num,
 				user->name, pmic_name, pmic_num,
 					user->array[i], 0);
 			if (dump_cnt && ((dump_cnt % PER_LINE_TO_PRINT) == 0)) {
-				pr_info("%s", buf);
+				pr_debug("%s", buf);
 				p = buf;
 				p += snprintf(p, sizeof(buf), "\n");
 			}
 		}
 		if (dump_cnt % PER_LINE_TO_PRINT)
-			pr_info("%s", buf);
+			pr_debug("%s", buf);
 	}
 ERROR:
 	return;
@@ -134,7 +134,7 @@ struct regmap *lpm_gs_get_regmap(struct lpm_gs_pmic const *pmic)
 
 	lpm = of_find_compatible_node(NULL, NULL, MTK_LPM_DTS_COMPATIBLE);
 	if (!lpm) {
-		pr_info("[name:mtk_lpm][P] - get lpm dts node fail!\n");
+		pr_debug("[name:mtk_lpm][P] - get lpm dts node fail!\n");
 		return NULL;
 	}
 	while ((np = of_parse_phandle(lpm, LPM_GS_NODE, idx))) {
@@ -142,19 +142,19 @@ struct regmap *lpm_gs_get_regmap(struct lpm_gs_pmic const *pmic)
 		if (regulator_name && !strcmp(regulator_name, pmic->regulator)) {
 			regulator_node = of_parse_phandle(np, LPM_GS_REGULATOR_NODE, 0);
 			if (!regulator_node) {
-				pr_info("[name:mtk_lpm][P] - get pwrap node fail!\n");
+				pr_debug("[name:mtk_lpm][P] - get pwrap node fail!\n");
 				break;
 			}
 			regulator_node = of_find_compatible_node(regulator_node,
 								 NULL, regulator_name);
 RETRY:
 			if (!regulator_node) {
-				pr_info("[name:mtk_lpm][P] - get pwrap node fail!\n");
+				pr_debug("[name:mtk_lpm][P] - get pwrap node fail!\n");
 				break;
 			}
 			pmic_pdev = of_find_device_by_node(regulator_node);
 			if (!pmic_pdev) {
-				pr_info("[name:mtk_lpm][P] - get pmic pdev fail!\n");
+				pr_debug("[name:mtk_lpm][P] - get pmic pdev fail!\n");
 				break;
 			}
 			chip = dev_get_drvdata(&(pmic_pdev->dev));
@@ -164,12 +164,12 @@ RETRY:
 				/* FIXME */
 				if (retry == 1)
 					goto RETRY;
-				pr_info("[name:mtk_lpm][P] - get pmic chip fail!\n");
+				pr_debug("[name:mtk_lpm][P] - get pmic chip fail!\n");
 				break;
 			}
 			regmap = chip->regmap;
 			if (IS_ERR(regmap)) {
-				pr_info("[name:mtk_lpm][P] - regmap get failed\n");
+				pr_debug("[name:mtk_lpm][P] - regmap get failed\n");
 				break;
 			}
 			of_node_put(regulator_node);

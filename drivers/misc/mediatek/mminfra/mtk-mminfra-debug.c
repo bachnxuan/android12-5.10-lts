@@ -330,7 +330,7 @@ int mtk_mminfra_dbg_hang_detect(const char *user)
 	if (!dev || !dbg || !dbg->comm_dev)
 		return -ENODEV;
 
-	pr_info("%s: check caller:%s\n", __func__, user);
+	pr_debug("%s: check caller:%s\n", __func__, user);
 	ret = pm_runtime_get_if_in_use(dbg->comm_dev);
 	if (ret <= 0) {
 		pr_notice("%s: mminfra is power off(%d)\n", __func__, ret);

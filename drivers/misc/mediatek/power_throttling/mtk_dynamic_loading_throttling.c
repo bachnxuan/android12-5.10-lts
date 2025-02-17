@@ -121,7 +121,7 @@ static void update_dlpt_imix_r(void)
 {
 	if (!PTR_ERR_OR_ZERO(dlpt.chan_imix_r))
 		iio_read_channel_raw(dlpt.chan_imix_r, &dlpt.imix_r);
-	pr_info("[dlpt] imix_r=%d\n", dlpt.imix_r);
+	pr_debug("[dlpt] imix_r=%d\n", dlpt.imix_r);
 }
 
 static int dlpt_adc_chan_init(struct platform_device *pdev)
@@ -172,7 +172,7 @@ void register_dlpt_notify(dlpt_callback dlpt_cb,
 		return;
 	}
 	dlptcb_tb[prio_val].dlptcb = dlpt_cb;
-	pr_info("[%s] prio_val=%d\n", __func__, prio_val);
+	pr_debug("[%s] prio_val=%d\n", __func__, prio_val);
 
 	if (dlpt.imix != 0) {
 		pr_notice("[%s] happen\n", __func__);
@@ -200,7 +200,7 @@ static int dlpt_get_rgs_chrdet(void)
 
 	ret = regmap_read(dlpt.regmap, dlpt.regs->rgs_chrdet.addr, &regval);
 	if (ret != 0) {
-		pr_info("%s Failed to get chrdet status\n", __func__);
+		pr_debug("%s Failed to get chrdet status\n", __func__);
 		return ret;
 	}
 	if (regval & dlpt.regs->rgs_chrdet.mask)
@@ -220,7 +220,7 @@ static int dlpt_check_power_off(void)
 		else
 			ret = 1; /* 2nd time get VBAT < 3.1V */
 		dlpt_power_off_cnt++;
-		pr_info("[%s] %d ret:%d\n", __func__, dlpt_power_off_cnt, ret);
+		pr_debug("[%s] %d ret:%d\n", __func__, dlpt_power_off_cnt, ret);
 	} else
 		dlpt_power_off_cnt = 0;
 
@@ -246,7 +246,7 @@ static struct power_supply *get_mtk_gauge_psy(void)
 	if (!psy) {
 		psy = power_supply_get_by_name("mtk-gauge");
 		if (!psy) {
-			pr_info("%s psy is not rdy\n", __func__);
+			pr_debug("%s psy is not rdy\n", __func__);
 			return NULL;
 		}
 	}
@@ -273,7 +273,7 @@ static void dlpt_set_shutdown_condition(void)
 	ret = power_supply_set_property(psy, POWER_SUPPLY_PROP_ENERGY_EMPTY,
 					&prop);
 	if (ret)
-		pr_info("%s fail\n", __func__);
+		pr_debug("%s fail\n", __func__);
 }
 
 static void dlpt_update_imix(int imix)
@@ -291,7 +291,7 @@ static void dlpt_update_imix(int imix)
 	ret = power_supply_set_property(psy, POWER_SUPPLY_PROP_ENERGY_EMPTY_DESIGN,
 					&prop);
 	if (ret)
-		pr_info("%s fail\n", __func__);
+		pr_debug("%s fail\n", __func__);
 }
 
 static int dlpt_get_uisoc(void)
@@ -366,7 +366,7 @@ static int get_dlpt_imix(void)
 
 	imix = (curr_avg + (volt_avg - lbatInt1) * 1000 / dlpt.imix_r) / 10;
 
-	pr_info("[%s] %d,%d,%d,%d\n"
+	pr_debug("[%s] %d,%d,%d,%d\n"
 		, __func__, volt_avg, curr_avg, dlpt.imix_r, imix);
 
 	if (imix < 0) {
@@ -402,9 +402,9 @@ static int dlpt_notify_handler(void *unused)
 		cur_ui_soc = dlpt_get_uisoc();
 
 		if (dlpt.imix_r == 0)
-			pr_info("[DLPT] imix_r==0, skip\n");
+			pr_debug("[DLPT] imix_r==0, skip\n");
 		else if (!get_mtk_gauge_psy())
-			pr_info("[DLPT] gauge disabled, skip\n");
+			pr_debug("[DLPT] gauge disabled, skip\n");
 		else {
 			if (dlpt_get_rgs_chrdet())
 				dlpt.imix = get_dlpt_imix_charging();
@@ -416,7 +416,7 @@ static int dlpt_notify_handler(void *unused)
 			dlpt_update_imix(dlpt.imix);
 			exec_dlpt_callback(dlpt.imix);
 
-			pr_info("[DLPT_final] %d,%d,%d,%d\n"
+			pr_debug("[DLPT_final] %d,%d,%d,%d\n"
 				, dlpt.imix, pre_ui_soc
 				, cur_ui_soc, IMAX_MAX_VALUE);
 		}
@@ -427,7 +427,7 @@ static int dlpt_notify_handler(void *unused)
 		if (dlpt_check_power_off()) {
 			/* notify battery driver to power off by SOC=0 */
 			dlpt_set_shutdown_condition();
-			pr_info("[DLPT] notify battery SOC=0 to power off.\n");
+			pr_debug("[DLPT] notify battery SOC=0 to power off.\n");
 		}
 		__pm_relax(dlpt.notify_ws);
 bypass:
@@ -497,7 +497,7 @@ static void pmic_uvlo_init(int uvlo_level)
 		regmap_update_bits(dlpt.regmap, dlpt.regs->uvlo_reg.addr,
 				   dlpt.regs->uvlo_reg.mask,
 				   val << dlpt.regs->uvlo_reg.shift);
-		pr_info("[dlpt] UVLO_VOLT_LEVEL = %d, RG_UVLO_VTHL = 0x%x\n",
+		pr_debug("[dlpt] UVLO_VOLT_LEVEL = %d, RG_UVLO_VTHL = 0x%x\n",
 			uvlo_level, val);
 	} else
 		pr_notice("[dlpt] Invalid uvlo_level (%d)\n", uvlo_level);

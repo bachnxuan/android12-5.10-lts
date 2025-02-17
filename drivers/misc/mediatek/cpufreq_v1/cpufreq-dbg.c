@@ -389,7 +389,7 @@ static ssize_t cpufreq_cci_mode_proc_write(struct file *file,
 	rc = kstrtoint(buf, 10, &mode);
 
 	if (rc < 0)
-		tag_pr_info(
+		tag_pr_debug(
 		"Usage: echo <mode>(0:Nom 1:Perf)\n");
 	else
 		update_cci_mode(mode, 0);
@@ -567,7 +567,7 @@ static int create_cpufreq_debug_fs(void)
 	/* create /proc/cpuhvfs */
 	dir = proc_mkdir("cpuhvfs", NULL);
 	if (!dir) {
-		pr_info("fail to create /proc/cpuhvfs @ %s()\n",
+		pr_debug("fail to create /proc/cpuhvfs @ %s()\n",
 								__func__);
 		return -ENOMEM;
 	}
@@ -576,20 +576,20 @@ static int create_cpufreq_debug_fs(void)
 		if (!proc_create_data
 			(entries[i].name, 0664,
 			dir, entries[i].fops, csram_base))
-			pr_info("%s(), create /proc/cpuhvfs/%s failed\n",
+			pr_debug("%s(), create /proc/cpuhvfs/%s failed\n",
 						__func__, entries[0].name);
 	}
 	i = ARRAY_SIZE(entries)-1;
 	proc_create_data(entries[i].name, 0664, dir, entries[i].fops, usram_base);
 
 	if (g_num_cluster > MAX_CLUSTER_NRS) {
-		pr_info("fail to create CX_opp_idx @ %s()\n", __func__);
+		pr_debug("fail to create CX_opp_idx @ %s()\n", __func__);
 		return -EINVAL;
 	}
 	// CPU Clusters + CCI cluster
 	for (i = 0; i < g_num_cluster; i++) {
 		if (!proc_create_data(clusters[i].name, 0664, dir, clusters[i].fops, csram_base))
-			pr_info("%s(), create /proc/cpuhvfs/%s failed\n",
+			pr_debug("%s(), create /proc/cpuhvfs/%s failed\n",
 				__func__, entries[0].name);
 	}
 
@@ -697,9 +697,9 @@ static int mtk_cpuhvfs_init(void)
 	for (i = 0; i < g_num_cluster; i++) {
 		vprocs[i] = devm_regulator_get_optional(&pdev->dev, vproc_names[i]);
 		if (!IS_ERR(vprocs[i]) && vprocs[i])
-			pr_info("regulator used for %s was found\n", vproc_names[i]);
+			pr_debug("regulator used for %s was found\n", vproc_names[i]);
 		else
-			pr_info("regulator used for %s was not found\n", vproc_names[i]);
+			pr_debug("regulator used for %s was not found\n", vproc_names[i]);
 
 		/* if we need to add some step */
 		ret = of_property_read_u32(hvfs_node, vproc_names[i], vprocs_step + i);
@@ -711,7 +711,7 @@ static int mtk_cpuhvfs_init(void)
 #ifdef EEM_DBG
 	ret = mtk_eem_init(pdev);
 	if (ret)
-		pr_info("eem dbg init fail: %d\n", ret);
+		pr_debug("eem dbg init fail: %d\n", ret);
 #endif
 	ret = mtk_ipi_register(get_mcupm_ipidev(), CH_S_CPU_DVFS, NULL, NULL,
 		(void *)&dvfs_ackdata);

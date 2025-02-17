@@ -6270,12 +6270,12 @@ static int btmtk_fops_close(struct inode *inode, struct file *file)
 	}
 
 	if (g_priv == NULL) {
-		pr_info("%s g_priv is NULL\n", __func__);
+		pr_debug("%s g_priv is NULL\n", __func__);
 		return -ENOENT;
 	}
 
 	if (g_priv->adapter == NULL) {
-		pr_info("%s g_priv->adapter is NULL\n", __func__);
+		pr_debug("%s g_priv->adapter is NULL\n", __func__);
 		return -ENOENT;
 	}
 

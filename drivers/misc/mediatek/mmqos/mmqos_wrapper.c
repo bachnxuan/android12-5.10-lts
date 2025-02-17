@@ -45,26 +45,26 @@ s32 mm_qos_add_request(struct list_head *owner_list,
 		pr_notice("mm_add(0x%08x) req is init\n", req->master_id);
 		return -EINVAL;
 	}
-	pr_info("[mmqos]mm_qos_add_request1\n");
+	pr_debug("[mmqos]mm_qos_add_request1\n");
 	req->master_id = smi_master_id;
-	pr_info("[mmqos]mm_qos_add_request2\n");
+	pr_debug("[mmqos]mm_qos_add_request2\n");
 	req->bw_value = 0;
 	req->hrt_value = 0;
-	pr_info("[mmqos]mm_qos_add_request3\n");
+	pr_debug("[mmqos]mm_qos_add_request3\n");
 	INIT_LIST_HEAD(&(req->owner_node));
-	pr_info("[mmqos]mm_qos_add_request4\n");
+	pr_debug("[mmqos]mm_qos_add_request4\n");
 	list_add_tail(&(req->owner_node), owner_list);
-	pr_info("[mmqos]mm_qos_add_request5\n");
+	pr_debug("[mmqos]mm_qos_add_request5\n");
 	req->icc_path = mtk_icc_get(dev, smi_master_id, mmqos_wrapper->icc_dst_id);
-	pr_info("[mmqos]mm_qos_add_request6\n");
+	pr_debug("[mmqos]mm_qos_add_request6\n");
 	if (IS_ERR_OR_NULL(req->icc_path)) {
 		pr_notice("get icc path fail: src=%#x dst=%#x\n",
 			smi_master_id, mmqos_wrapper->icc_dst_id);
 		return -EINVAL;
 	}
-	pr_info("[mmqos]mm_qos_add_request7\n");
+	pr_debug("[mmqos]mm_qos_add_request7\n");
 	req->init = true;
-	pr_info("[mmqos]mm_qos_add_request8\n");
+	pr_debug("[mmqos]mm_qos_add_request8\n");
 	return 0;
 }
 EXPORT_SYMBOL_GPL(mm_qos_add_request);

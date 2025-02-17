@@ -15,7 +15,7 @@
 #define GT9772B_I2C_SLAVE_ADDR 0x18
 
 #define LOG_INF(format, args...)                                               \
-	pr_info(DRIVER_NAME " [%s] " format, __func__, ##args)
+	pr_debug(DRIVER_NAME " [%s] " format, __func__, ##args)
 
 #define GT9772B_NAME				"gt9772b"
 #define GT9772B_MAX_FOCUS_POS			1023

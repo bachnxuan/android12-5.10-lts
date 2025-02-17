@@ -25,7 +25,7 @@ void apu_config_user_ptr_init(const struct mtk_apu *apu)
 	struct config_v1_entry_table *entry_table;
 
 	if (!apu || !apu->conf_buf) {
-		pr_info("%s: error\n", __func__);
+		pr_debug("%s: error\n", __func__);
 		return;
 	}
 	dev = apu->dev;

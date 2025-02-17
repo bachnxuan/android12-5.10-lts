@@ -15,7 +15,7 @@
 #define DW9800W_I2C_SLAVE_ADDR 0x18
 
 #define LOG_INF(format, args...)                                               \
-	pr_info(DRIVER_NAME " [%s] " format, __func__, ##args)
+	pr_debug(DRIVER_NAME " [%s] " format, __func__, ##args)
 
 #define DW9800W_NAME				"dw9800w"
 #define DW9800W_MAX_FOCUS_POS			1023

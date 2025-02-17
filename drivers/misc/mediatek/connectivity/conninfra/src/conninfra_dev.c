@@ -229,7 +229,7 @@ static const struct thermal_zone_of_device_ops tz_conninfra_thermal_ops = {
 int conninfra_dev_open(struct inode *inode, struct file *file)
 {
 #ifdef MTK_WCN_REMOVE_KERNEL_MODULE
-	pr_info("[%s] built-in mode, allow to open", __func__);
+	pr_debug("[%s] built-in mode, allow to open", __func__);
 #else
 	static DEFINE_RATELIMIT_STATE(_rs, HZ, 1);
 
@@ -244,7 +244,7 @@ int conninfra_dev_open(struct inode *inode, struct file *file)
 		return -EIO;
 	}
 #endif
-	pr_info("open major %d minor %d (pid %d)\n",
+	pr_debug("open major %d minor %d (pid %d)\n",
 			imajor(inode), iminor(inode), current->pid);
 
 	return 0;
@@ -252,7 +252,7 @@ int conninfra_dev_open(struct inode *inode, struct file *file)
 
 int conninfra_dev_close(struct inode *inode, struct file *file)
 {
-	pr_info("close major %d minor %d (pid %d)\n",
+	pr_debug("close major %d minor %d (pid %d)\n",
 			imajor(inode), iminor(inode), current->pid);
 
 	return 0;
@@ -277,7 +277,7 @@ static long conninfra_dev_unlocked_ioctl(struct file *filp, unsigned int cmd, un
 #endif
 	int retval = 0;
 
-	pr_info("[%s] cmd (%d),arg(%ld)\n", __func__, cmd, arg);
+	pr_debug("[%s] cmd (%d),arg(%ld)\n", __func__, cmd, arg);
 
 	/* Special process for module init command */
 	if (cmd == CONNINFRA_IOCTL_DO_MODULE_INIT) {
@@ -285,7 +285,7 @@ static long conninfra_dev_unlocked_ioctl(struct file *filp, unsigned int cmd, un
 		retval = conninfra_dev_do_drv_init();
 		return retval;
 	#else
-		pr_info("[%s] KO mode", __func__);
+		pr_debug("[%s] KO mode", __func__);
 		return 0;
 	#endif
 	}
@@ -324,7 +324,7 @@ static long conninfra_dev_compat_ioctl(struct file *filp, unsigned int cmd, unsi
 {
 	long ret;
 
-	pr_info("[%s] cmd (%d)\n", __func__, cmd);
+	pr_debug("[%s] cmd (%d)\n", __func__, cmd);
 	ret = conninfra_dev_unlocked_ioctl(filp, cmd, arg);
 	return ret;
 }
@@ -335,7 +335,7 @@ static int conninfra_mmap(struct file *pFile, struct vm_area_struct *pVma)
 	unsigned long bufId = pVma->vm_pgoff;
 	struct consys_emi_addr_info* addr_info = emi_mng_get_phy_addr();
 
-	pr_info("conninfra_mmap start:%lu end:%lu size: %lu buffer id=%lu\n",
+	pr_debug("conninfra_mmap start:%lu end:%lu size: %lu buffer id=%lu\n",
 		pVma->vm_start, pVma->vm_end,
 		pVma->vm_end - pVma->vm_start, bufId);
 
@@ -344,7 +344,7 @@ static int conninfra_mmap(struct file *pFile, struct vm_area_struct *pVma)
 	if (bufId == 0) {
 		if (pVma->vm_end - pVma->vm_start > addr_info->emi_size)
 			return -EINVAL;
-		pr_info("conninfra_mmap size: %lu\n", pVma->vm_end - pVma->vm_start);
+		pr_debug("conninfra_mmap size: %lu\n", pVma->vm_end - pVma->vm_start);
 		if (remap_pfn_range(pVma, pVma->vm_start, addr_info->emi_ap_phy_addr >> PAGE_SHIFT,
 			pVma->vm_end - pVma->vm_start, pVma->vm_page_prot))
 			return -EAGAIN;
@@ -355,7 +355,7 @@ static int conninfra_mmap(struct file *pFile, struct vm_area_struct *pVma)
 		if (addr_info->md_emi_size == 0 ||
 		    pVma->vm_end - pVma->vm_start > addr_info->md_emi_size)
 			return -EINVAL;
-		pr_info("MD direct path size=%u map size=%lu\n",
+		pr_debug("MD direct path size=%u map size=%lu\n",
 			addr_info->md_emi_size,
 			pVma->vm_end - pVma->vm_start);
 		if (remap_pfn_range(pVma, pVma->vm_start,
@@ -382,19 +382,19 @@ int conninfra_dev_fb_notifier_callback(struct notifier_block *self, unsigned lon
 		return 0;
 	}
 
-	pr_info("%s+\n", __func__);
+	pr_debug("%s+\n", __func__);
 
 	if (*data == MTK_DISP_BLANK_UNBLANK) {
 		atomic_set(&g_es_lr_flag_for_blank, 1);
-		pr_info("@@@@@@@@@@ Conninfra enter UNBLANK @@@@@@@@@@@@@@\n");
+		pr_debug("@@@@@@@@@@ Conninfra enter UNBLANK @@@@@@@@@@@@@@\n");
 		schedule_work(&gPwrOnOffWork);
 	} else if (*data == MTK_DISP_BLANK_POWERDOWN) {
 		atomic_set(&g_es_lr_flag_for_blank, 0);
-		pr_info("@@@@@@@@@@ Conninfra enter early POWERDOWN @@@@@@@@@@@@@@\n");
+		pr_debug("@@@@@@@@@@ Conninfra enter early POWERDOWN @@@@@@@@@@@@@@\n");
 		schedule_work(&gPwrOnOffWork);
 	}
 
-	pr_info("%s-\n", __func__);
+	pr_debug("%s-\n", __func__);
 
 	return 0;
 }
@@ -414,12 +414,12 @@ int conninfra_dev_fb_notifier_callback(struct notifier_block *self,
 	switch (blank) {
 	case FB_BLANK_UNBLANK:
 		atomic_set(&g_es_lr_flag_for_blank, 1);
-		pr_info("@@@@@@@@@@ Conninfra enter UNBLANK @@@@@@@@@@@@@@\n");
+		pr_debug("@@@@@@@@@@ Conninfra enter UNBLANK @@@@@@@@@@@@@@\n");
 		schedule_work(&gPwrOnOffWork);
 		break;
 	case FB_BLANK_POWERDOWN:
 		atomic_set(&g_es_lr_flag_for_blank, 0);
-		pr_info("@@@@@@@@@@ Conninfra enter early POWERDOWN @@@@@@@@@@@@@@\n");
+		pr_debug("@@@@@@@@@@ Conninfra enter early POWERDOWN @@@@@@@@@@@@@@\n");
 		schedule_work(&gPwrOnOffWork);
 		break;
 	default:
@@ -445,10 +445,10 @@ static int conninfra_thermal_query_cb(void)
 
 	/* if rst is ongoing, return thermal val got from last time */
 	if (conninfra_core_is_rst_locking()) {
-		pr_info("[%s] rst is locking, return last temp ", __func__);
+		pr_debug("[%s] rst is locking, return last temp ", __func__);
 		return last_thermal_value;
 	}
-	pr_info("[%s] query thermal", __func__);
+	pr_debug("[%s] query thermal", __func__);
 	ret = conninfra_core_thermal_query(&g_temp_thermal_value);
 	if (ret == 0)
 		last_thermal_value = g_temp_thermal_value;
@@ -468,7 +468,7 @@ static int conninfra_thermal_get_temp_cb(void *data, int *temp)
 
 	/* if rst is ongoing, return THERMAL_TEMP_INVALID */
 	if (conninfra_core_is_rst_locking()) {
-		pr_info("[%s] rst is locking, return invalid value ", __func__);
+		pr_debug("[%s] rst is locking, return invalid value ", __func__);
 		*temp = THERMAL_TEMP_INVALID;
 		return 0;
 	}
@@ -492,7 +492,7 @@ static void conninfra_register_thermal_callback(void)
 	int ret;
 
 	if (!pdev) {
-		pr_info("get_consys_device return NULL\n");
+		pr_debug("get_consys_device return NULL\n");
 		return;
 	}
 
@@ -502,10 +502,10 @@ static void conninfra_register_thermal_callback(void)
 
 	if (IS_ERR(tz)) {
 		ret = PTR_ERR(tz);
-		pr_info("Failed to register thermal zone device %d\n", ret);
+		pr_debug("Failed to register thermal zone device %d\n", ret);
 		return;
 	}
-	pr_info("Register thermal zone device.\n");
+	pr_debug("Register thermal zone device.\n");
 }
 
 static void conninfra_clock_fail_dump_cb(void)
@@ -529,7 +529,7 @@ static int conninfra_conn_is_bus_hang(void)
 {
 	/* if rst is ongoing, don't dump */
 	if (conninfra_core_is_rst_locking()) {
-		pr_info("[%s] rst is locking, skip dump", __func__);
+		pr_debug("[%s] rst is locking, skip dump", __func__);
 		return CONNINFRA_ERR_RST_ONGOING;
 	}
 	return conninfra_core_is_bus_hang();
@@ -597,7 +597,7 @@ static void conninfra_dev_pmic_event_handler(struct work_struct *work)
 		event = pmic_work->event;
 		conninfra_core_pmic_event_cb(id, event);
 	} else
-		pr_info("[%s] pmic_work is null", __func__);
+		pr_debug("[%s] pmic_work is null", __func__);
 
 }
 
@@ -616,7 +616,7 @@ static void conninfra_register_power_throttling_callback(void)
 	pwr_info.get_temp = conninfra_core_thermal_query;
 	ret = conn_pwr_init(&pwr_info);
 	if (ret < 0)
-		pr_info("conn_pwr_init is failed %d.", ret);
+		pr_debug("conn_pwr_init is failed %d.", ret);
 }
 
 /************************************************************************/
@@ -626,7 +626,7 @@ static int conninfra_dev_do_drv_init(void)
 	int iret = 0;
 
 	if (init_done) {
-		pr_info("%s already init, return.", __func__);
+		pr_debug("%s already init, return.", __func__);
 		return 0;
 	}
 	init_done = 1;
@@ -672,9 +672,9 @@ static int conninfra_dev_do_drv_init(void)
 	iret = fb_register_client(&conninfra_fb_notifier);
 #endif
 	if (iret)
-		pr_info("register fb_notifier fail");
+		pr_debug("register fb_notifier fail");
 	else
-		pr_info("register fb_notifier success");
+		pr_debug("register fb_notifier success");
 
 #if IS_ENABLED(CONFIG_MTK_DEVAPC)
 	conninfra_register_devapc_callback();
@@ -683,7 +683,7 @@ static int conninfra_dev_do_drv_init(void)
 	conninfra_register_thermal_callback();
 	conninfra_register_power_throttling_callback();
 
-	pr_info("ConnInfra Dev: init (%d)\n", iret);
+	pr_debug("ConnInfra Dev: init (%d)\n", iret);
 	g_conninfra_init_status = CONNINFRA_INIT_DONE;
 
 #ifdef MTK_WCN_REMOVE_KERNEL_MODULE
@@ -807,7 +807,7 @@ static void conninfra_dev_deinit(void)
 	cdev_del(&gConninfraCdev);
 	unregister_chrdev_region(dev, CONNINFRA_DEV_NUM);
 
-	pr_info("ConnInfra: ALPS platform init (%d)\n", iret);
+	pr_debug("ConnInfra: ALPS platform init (%d)\n", iret);
 }
 
 module_init(conninfra_dev_init);

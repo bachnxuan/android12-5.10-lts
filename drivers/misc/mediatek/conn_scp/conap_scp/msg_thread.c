@@ -179,7 +179,7 @@ int msg_evt_put_op_to_active(struct msg_thread_ctx *ctx, struct msg_op *op)
 		if (wait_ret == 0)
 			pr_warn("opId(%d) completion timeout\n", op->op.op_id);
 		else if (op->result)
-			pr_info("opId(%d) result:%d\n",
+			pr_debug("opId(%d) result:%d\n",
 					op->op.op_id, op->result);
 
 		/* op completes, check result */
@@ -395,7 +395,7 @@ static int msg_evt_thread(void *pvData)
 			(kthread_should_stop() || msg_evt_wait_event_checker(ctx)));
 
 		if ((p_thread) && !IS_ERR_OR_NULL(p_thread) && kthread_should_stop()) {
-			pr_info("[%s] thread should stop now...\n", __func__);
+			pr_debug("[%s] thread should stop now...\n", __func__);
 			/* TODO: clean up active opQ */
 			break;
 		}

@@ -16,7 +16,7 @@
 
 
 #define LOG_INF(format, args...)                                               \
-	pr_info(DRIVER_NAME " [%s] " format, __func__, ##args)
+	pr_debug(DRIVER_NAME " [%s] " format, __func__, ##args)
 
 #define AK7314_NAME				"ak7314"
 #define AK7314_MAX_FOCUS_POS			1023

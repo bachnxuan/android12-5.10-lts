@@ -116,7 +116,7 @@ static struct mcupm_reserve_mblock mcupm_reserve_mblock[NUMS_MCUPM_MEM_ID] = {
 phys_addr_t mcupm_reserve_mem_get_phys(unsigned int id)
 {
 	if (id >= NUMS_MCUPM_MEM_ID) {
-		pr_info("[MCUPM] no reserve memory for 0x%x", id);
+		pr_debug("[MCUPM] no reserve memory for 0x%x", id);
 		return 0;
 	} else
 		return mcupm_reserve_mblock[id].start_phys;
@@ -126,7 +126,7 @@ EXPORT_SYMBOL_GPL(mcupm_reserve_mem_get_phys);
 phys_addr_t mcupm_reserve_mem_get_virt(unsigned int id)
 {
 	if (id >= NUMS_MCUPM_MEM_ID) {
-		pr_info("[MCUPM] no reserve memory for 0x%x", id);
+		pr_debug("[MCUPM] no reserve memory for 0x%x", id);
 		return 0;
 	} else
 		return (phys_addr_t)mcupm_reserve_mblock[id].start_virt;
@@ -136,7 +136,7 @@ EXPORT_SYMBOL_GPL(mcupm_reserve_mem_get_virt);
 phys_addr_t mcupm_reserve_mem_get_size(unsigned int id)
 {
 	if (id >= NUMS_MCUPM_MEM_ID) {
-		pr_info("[MCUPM] no reserve memory for 0x%x", id);
+		pr_debug("[MCUPM] no reserve memory for 0x%x", id);
 		return 0;
 	} else
 		return mcupm_reserve_mblock[id].size;
@@ -194,7 +194,7 @@ static int mcupm_map_memory_region(void)
 	/* Get reserved memory */
 	rmem_node = of_find_compatible_node(NULL, NULL, MCUPM_MEM_RESERVED_KEY);
 	if (!rmem_node) {
-		pr_info("[MCUPM] no node for reserved memory\n");
+		pr_debug("[MCUPM] no node for reserved memory\n");
 		has_reserved_memory = false;
 		skip_logger = true;
 		for (id = 0; id < NUMS_MCUPM_MEM_ID; id++) {
@@ -208,7 +208,7 @@ static int mcupm_map_memory_region(void)
 
 	rmem = of_reserved_mem_lookup(rmem_node);
 	if (!rmem) {
-		pr_info("[MCUPM] cannot lookup reserved memory\n");
+		pr_debug("[MCUPM] cannot lookup reserved memory\n");
 		return -EINVAL;
 	}
 
@@ -228,14 +228,14 @@ static int mcupm_map_memory_region(void)
 	if (!mcupm_mem_base_virt)
 		return -ENOMEM;
 
-	pr_info("[MCUPM]reserve mem: virt:0x%llx - 0x%llx (0x%llx)\n",
+	pr_debug("[MCUPM]reserve mem: virt:0x%llx - 0x%llx (0x%llx)\n",
 		 (unsigned long long)mcupm_mem_base_virt,
 		 (unsigned long long)mcupm_mem_base_virt +
 		 (unsigned long long)mcupm_mem_size,
 		 (unsigned long long)mcupm_mem_size);
 
 	if (mcupm_assign_memory_block()) {
-		pr_info("[MCUPM] assign phys, virt address and size Failed\n");
+		pr_debug("[MCUPM] assign phys, virt address and size Failed\n");
 		return -ENOMEM;
 	}
 
@@ -420,12 +420,12 @@ int mcupm_thread(void *data)
 			2000);
 
 	if (ret) {
-		pr_info("MCUPM: plt IPI fail ret=%d, ackdata=%d\n",
+		pr_debug("MCUPM: plt IPI fail ret=%d, ackdata=%d\n",
 				ret, mcupm_plt_ackdata);
 	}
 
 	if (mcupm_plt_ackdata < 0) {
-		pr_info("MCUPM: plt IPI init fail, ackdata=%d\n",
+		pr_debug("MCUPM: plt IPI init fail, ackdata=%d\n",
 				mcupm_plt_ackdata);
 	}
 
@@ -475,12 +475,12 @@ static int mcupm_device_probe(struct platform_device *pdev)
 #ifdef CONFIG_OF_RESERVED_MEM
 #if defined(MODULE)
 	if (mcupm_map_memory_region()) {
-		pr_info("[MCUPM] Reserved Memory Failed\n");
+		pr_debug("[MCUPM] Reserved Memory Failed\n");
 		return -ENOMEM;
 	}
 #else
 	if (mcupm_reserve_memory_init()) {
-		pr_info("[MCUPM] Reserved Memory Failed\n");
+		pr_debug("[MCUPM] Reserved Memory Failed\n");
 		return -ENOMEM;
 	}
 #endif
@@ -496,17 +496,17 @@ static int mcupm_device_probe(struct platform_device *pdev)
 	for (i = 0; i < MCUPM_MBOX_TOTAL; i++)
 		spin_lock_init(&mcupm_mbox_lock[i]);
 
-	pr_info("MCUPM is ready to service IPI\n");
+	pr_debug("MCUPM is ready to service IPI\n");
 
 	ret = mcupm_plt_module_init();
 	if (ret) {
-		pr_info("[MCUPM] plt module init fail, ret %d\n", ret);
+		pr_debug("[MCUPM] plt module init fail, ret %d\n", ret);
 		return ret;
 	}
 
 	ret = mcupm_timesync_init();
 	if (ret) {
-		pr_info("MCUPM timesync init fail\n");
+		pr_debug("MCUPM timesync init fail\n");
 		return ret;
 	}
 
@@ -575,7 +575,7 @@ static int __init mcupm_module_init(void)
 {
 	int ret = 0;
 
-	pr_info("[MCUPM] mcupm module init.\n");
+	pr_debug("[MCUPM] mcupm module init.\n");
 
 	ret = platform_driver_register(&mtk_mcupm_driver);
 
@@ -585,7 +585,7 @@ static int __init mcupm_module_init(void)
 static void __exit mcupm_module_exit(void)
 {
     //Todo release resource
-	pr_info("[MCUPM] mcupm module exit.\n");
+	pr_debug("[MCUPM] mcupm module exit.\n");
 }
 
 MODULE_DESCRIPTION("MEDIATEK Module MCUPM driver");

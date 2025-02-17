@@ -18,7 +18,7 @@
 #define DRIVER_NAME "bu24618"
 
 #define LOG_INF(format, args...)                                               \
-	pr_info(DRIVER_NAME " [%s] " format, __func__, ##args)
+	pr_debug(DRIVER_NAME " [%s] " format, __func__, ##args)
 
 #define BU24618_NAME				"bu24618"
 

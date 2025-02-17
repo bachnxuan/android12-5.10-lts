@@ -163,7 +163,7 @@ static bool consys_plt_coredump_is_host_csr_readable(void)
         }
         iounmap(vir_addr);
     } else
-        pr_info("[%s] remap 0x10001c5c fail", __func__);
+        pr_debug("[%s] remap 0x10001c5c fail", __func__);
 
     return ret;
 }

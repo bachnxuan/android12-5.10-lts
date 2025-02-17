@@ -49,7 +49,7 @@ static int mdw_drv_open(struct inode *inode, struct file *filp)
 	int ret = 0;
 
 	if (!mdw_dev) {
-		pr_info("apusys/mdw: apu mdw no dev\n");
+		pr_debug("apusys/mdw: apu mdw no dev\n");
 		return -ENODEV;
 	}
 
@@ -133,7 +133,7 @@ static int mdw_platform_probe(struct platform_device *pdev)
 	int ret = 0;
 
 	if (mdw_dev) {
-		pr_info("%s already probe\n", __func__);
+		pr_debug("%s already probe\n", __func__);
 		return -EBUSY;
 	}
 
@@ -166,7 +166,7 @@ static int mdw_platform_probe(struct platform_device *pdev)
 	if (ret)
 		goto deinit_dbg;
 
-	pr_info("%s done\n", __func__);
+	pr_debug("%s done\n", __func__);
 
 	goto out;
 
@@ -193,7 +193,7 @@ static int mdw_platform_remove(struct platform_device *pdev)
 	mdw_mem_deinit(mdev);
 	kfree(mdev);
 	mdw_dev = NULL;
-	pr_info("%s done\n", __func__);
+	pr_debug("%s done\n", __func__);
 
 	return 0;
 }
@@ -220,10 +220,10 @@ static int mdw_rpmsg_probe(struct rpmsg_device *rpdev)
 	struct mdw_device *mdev = NULL;
 	int ret = 0;
 
-	pr_info("%s+\n", __func__);
+	pr_debug("%s+\n", __func__);
 
 	if (mdw_dev) {
-		pr_info("%s already probe\n", __func__);
+		pr_debug("%s already probe\n", __func__);
 		return -EBUSY;
 	}
 	mdev = kzalloc(sizeof(*mdev), GFP_KERNEL);
@@ -256,7 +256,7 @@ static int mdw_rpmsg_probe(struct rpmsg_device *rpdev)
 	if (ret)
 		goto deinit_dbg;
 
-	pr_info("%s done\n", __func__);
+	pr_debug("%s done\n", __func__);
 
 	goto out;
 
@@ -283,7 +283,7 @@ static void mdw_rpmsg_remove(struct rpmsg_device *rpdev)
 	mdw_mem_deinit(mdev);
 	kfree(mdev);
 	mdw_dev = NULL;
-	pr_info("%s done\n", __func__);
+	pr_debug("%s done\n", __func__);
 }
 
 static const struct of_device_id mdw_rpmsg_of_match[] = {
@@ -308,32 +308,32 @@ int mdw_init(struct apusys_core_info *info)
 	g_info = info;
 
 	if (!mdw_pwr_check()) {
-		pr_info("apusys mdw disable\n");
+		pr_debug("apusys mdw disable\n");
 		return -ENODEV;
 	}
 
-	pr_info("%s register misc...\n", __func__);
+	pr_debug("%s register misc...\n", __func__);
 	ret = misc_register(&mdw_misc_dev);
 	if (ret) {
-		pr_info("failed to register apu mdw misc driver\n");
+		pr_debug("failed to register apu mdw misc driver\n");
 		goto out;
 	}
 
-	pr_info("%s register platorm...\n", __func__);
+	pr_debug("%s register platorm...\n", __func__);
 	ret = platform_driver_register(&mdw_platform_driver);
 	if (ret) {
-		pr_info("failed to register apu mdw driver\n");
+		pr_debug("failed to register apu mdw driver\n");
 		goto unregister_misc_dev;
 	}
 
-	pr_info("%s register rpmsg...\n", __func__);
+	pr_debug("%s register rpmsg...\n", __func__);
 	ret = register_rpmsg_driver(&mdw_rpmsg_driver);
 	if (ret) {
-		pr_info("failed to register apu mdw rpmsg driver\n");
+		pr_debug("failed to register apu mdw rpmsg driver\n");
 		goto unregister_platform_driver;
 	}
 
-	pr_info("%s init done\n", __func__);
+	pr_debug("%s init done\n", __func__);
 	goto out;
 
 unregister_platform_driver:

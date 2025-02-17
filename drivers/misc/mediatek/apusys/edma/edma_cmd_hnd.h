@@ -19,16 +19,16 @@
 #define LOG_DBG(x, args...) \
 	{ \
 		if (g_edma_log_lv >= EDMA_LOG_DEBUG) \
-			pr_info(EDMA_TAG "[debug] %s/%d "\
+			pr_debug(EDMA_TAG "[debug] %s/%d "\
 			x, __func__, __LINE__, ##args); \
 	}
 
 #else
 #define LOG_DBG(format, args...)
 #endif
-#define LOG_INF(format, args...)    pr_info(EDMA_TAG " " format, ##args)
-#define LOG_WRN(format, args...)    pr_info(EDMA_TAG "[warn] " format, ##args)
-#define LOG_ERR(format, args...)    pr_info(EDMA_TAG "[error] " format, ##args)
+#define LOG_INF(format, args...)    pr_debug(EDMA_TAG " " format, ##args)
+#define LOG_WRN(format, args...)    pr_debug(EDMA_TAG "[warn] " format, ##args)
+#define LOG_ERR(format, args...)    pr_debug(EDMA_TAG "[error] " format, ##args)
 
 irqreturn_t edma_isr_handler(int irq, void *edma_sub_info);
 

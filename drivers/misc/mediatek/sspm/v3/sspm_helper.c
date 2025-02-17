@@ -67,7 +67,7 @@ static int __init sspm_module_init(void)
 	if (atomic_inc_return(&sspm_inited) != 1)
 		return 0;
 
-	pr_info("[SSPM] sspm_module Init.\n");
+	pr_debug("[SSPM] sspm_module Init.\n");
 
 	/* static initialise */
 	sspm_ready = 0;
@@ -95,7 +95,7 @@ static int __init sspm_module_init(void)
 		pr_err("[SSPM] Platform Init Failed\n");
 		goto error;
 	}
-	pr_info("SSPM platform service is ready\n");
+	pr_debug("SSPM platform service is ready\n");
 #endif
 
 	if (sspm_timesync_init()) {
@@ -131,7 +131,7 @@ static int __init sspm_device_probe(struct platform_device *pdev)
 		"mediatek,fake_sspm", &fake_sspm);
 
 	if (!ret) {
-		pr_info("[SSPM] It's fake probe\n");
+		pr_debug("[SSPM] It's fake probe\n");
 		return 0;
 	}
 
@@ -171,7 +171,7 @@ static int __init sspm_device_probe(struct platform_device *pdev)
 	}
 #endif
 
-	pr_info("[SSPM] sspm_pdrv probe Done.\n");
+	pr_debug("[SSPM] sspm_pdrv probe Done.\n");
 
 	sspm_module_init();
 
@@ -242,7 +242,7 @@ static int __init sspm_pdrv_init(void)
 
 static void __exit sspm_pdrv_exit(void)
 {
-	pr_info("[SSPM] sspm platform driver Exit.\n");
+	pr_debug("[SSPM] sspm platform driver Exit.\n");
 }
 
 MODULE_SOFTDEP("pre: tinysys-scmi.ko");

@@ -126,7 +126,7 @@ static int dvfsrc_query_sw_req_vcore_opp(struct mtk_dvfsrc *dvfsrc, int vcore_op
 		sw_req_opp = (sw_req > scp_req) ? sw_req : scp_req;
 		sw_req_opp = dvfsrc->opp_desc->num_vcore_opp - (sw_req_opp + 1);
 		if (vcore_opp > sw_req_opp) {
-			pr_info("Error vcore request = %d %d %d\n", sw_req, vcore_opp,
+			pr_debug("Error vcore request = %d %d %d\n", sw_req, vcore_opp,
 				dvfsrc->force_opp_idx);
 		}
 		return sw_req_opp;
@@ -388,21 +388,21 @@ static void dvfsrc_dump(struct mtk_dvfsrc *dvfsrc)
 	mutex_lock(&dvfsrc->dump_lock);
 	p = dvfsrc->dump_buf;
 	config->dump_reg(dvfsrc, p, dump_size);
-	pr_info("%s", dvfsrc->dump_buf);
+	pr_debug("%s", dvfsrc->dump_buf);
 	p = dvfsrc->dump_buf;
 	config->dump_record(dvfsrc, p, dump_size);
-	pr_info("%s", dvfsrc->dump_buf);
+	pr_debug("%s", dvfsrc->dump_buf);
 
 	if (config->dump_spm_info && dvfsrc->spm_regs) {
 		p = dvfsrc->dump_buf;
 		config->dump_spm_info(dvfsrc, p, dump_size);
-		pr_info("%s", dvfsrc->dump_buf);
+		pr_debug("%s", dvfsrc->dump_buf);
 	}
 
 	if (config->dump_spm_timer_latch && dvfsrc->spm_regs && dvfsrc->dvd->spm_stamp_en) {
 		p = dvfsrc->dump_buf;
 		config->dump_spm_timer_latch(dvfsrc, p, dump_size);
-		pr_info("%s", dvfsrc->dump_buf);
+		pr_debug("%s", dvfsrc->dump_buf);
 	}
 
 	mutex_unlock(&dvfsrc->dump_lock);

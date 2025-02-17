@@ -117,7 +117,7 @@ int adsp_mbox_send(struct mtk_mbox_pin_send *pin_send, void *msg,
 	s64 time_ipc_us;
 
 	if (mutex_trylock(&pin_send->mutex_send) == 0) {
-		pr_info("%s, mbox %d mutex_trylock busy",
+		pr_debug("%s, mbox %d mutex_trylock busy",
 			__func__, pin_send->mbox);
 		return MBOX_PIN_BUSY;
 	}
@@ -197,7 +197,7 @@ static int adsp_mbox_pin_cb(unsigned int id, void *prdata, void *buf,
 		}
 
 		if (ret != 0) {
-			pr_info("ipi queue not ready!! core: %u, ipi_id: %u, buf: %p, len: %u, ipi_handler: %p",
+			pr_debug("ipi queue not ready!! core: %u, ipi_id: %u, buf: %p, len: %u, ipi_handler: %p",
 				core_id, id, buf, len, adsp_ipi_descs[id].handler);
 			adsp_ipi_descs[id].handler(id, buf, len);
 		}
@@ -265,7 +265,7 @@ struct mtk_mbox_pin_send *get_adsp_mbox_pin_send(int index)
 	mbox = adsp_mboxdev.info_table + index;
 
 	if (!mbox->enable) {
-		pr_info("the channel %d not enable", index);
+		pr_debug("the channel %d not enable", index);
 		return ERR_PTR(-ENODEV);
 	}
 
@@ -275,7 +275,7 @@ struct mtk_mbox_pin_send *get_adsp_mbox_pin_send(int index)
 			return pin_send;
 	}
 
-	pr_info("the channel %d is not send pin", index);
+	pr_debug("the channel %d is not send pin", index);
 	return ERR_PTR(-ENODEV);
 }
 EXPORT_SYMBOL(get_adsp_mbox_pin_send);
@@ -292,7 +292,7 @@ struct mtk_mbox_pin_recv *get_adsp_mbox_pin_recv(int index)
 	mbox = adsp_mboxdev.info_table + index;
 
 	if (!mbox->enable) {
-		pr_info("the channel %d not enable", index);
+		pr_debug("the channel %d not enable", index);
 		return ERR_PTR(-ENODEV);
 	}
 
@@ -302,7 +302,7 @@ struct mtk_mbox_pin_recv *get_adsp_mbox_pin_recv(int index)
 			return pin_recv;
 	}
 
-	pr_info("the channel %d is not recv pin", index);
+	pr_debug("the channel %d is not recv pin", index);
 	return ERR_PTR(-ENODEV);
 }
 EXPORT_SYMBOL(get_adsp_mbox_pin_recv);

@@ -38,10 +38,10 @@ static ssize_t mvpu_img_show(struct kobject *kobj, struct kobj_attribute *attr,
 	if (ptn_total_size == 0)
 		ptn_total_size = get_ptn_total_size();
 	else
-		pr_info("[MVPU] already get ptn_total_size: 0x%x\n", ptn_total_size);
+		pr_debug("[MVPU] already get ptn_total_size: 0x%x\n", ptn_total_size);
 
 	sprintf(buf, "0x%x", ptn_total_size);
-	pr_info("[MVPU] %s, ptn_size = 0x%x\n", __func__, (uint32_t)ptn_total_size);
+	pr_debug("[MVPU] %s, ptn_size = 0x%x\n", __func__, (uint32_t)ptn_total_size);
 
 	return 0;
 }
@@ -68,7 +68,7 @@ static ssize_t loglevel_show(struct kobject *kobj, struct kobj_attribute *attr,
 	uint64_t level = 0;
 
 	sprintf(buf, "%d", level);
-	pr_info("[MVPU] %s, level= %d\n", __func__, (uint32_t)level);
+	pr_debug("[MVPU] %s, level= %d\n", __func__, (uint32_t)level);
 
 	mvpu_ipi_recv(MVPU_LOG_LEVEL, &level);
 
@@ -84,10 +84,10 @@ static ssize_t loglevel_store(struct kobject *kobj, struct kobj_attribute *attr,
 	ret = kstrtoint(cmd, 10, &level);
 
 	if (!ret) {
-		pr_info("[MVPU] %s, level= %d\n", __func__, (uint32_t)level);
+		pr_debug("[MVPU] %s, level= %d\n", __func__, (uint32_t)level);
 		mvpu_ipi_send(MVPU_LOG_LEVEL, level);
 	} else {
-		pr_info("[MVPU] %s[%d]: get invalid cmd\n", __func__, __LINE__);
+		pr_debug("[MVPU] %s[%d]: get invalid cmd\n", __func__, __LINE__);
 	}
 	return count;
 
@@ -107,12 +107,12 @@ int mvpu_sysfs_init(void)
 
 	int ret = 0;
 
-	pr_info("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	/* create /sys/kernel/mvpu */
 	root_dir = kobject_create_and_add("mvpu", kernel_kobj);
 	if (!root_dir) {
-		pr_info("%s kobject_create_and_add fail for mvpu, ret %d\n",
+		pr_debug("%s kobject_create_and_add fail for mvpu, ret %d\n",
 			__func__, ret);
 		return -EINVAL;
 	}

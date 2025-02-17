@@ -38,14 +38,14 @@ struct external_entry *query_external_subdrv_entry(const char *name)
 {
 	struct external_entry *entry = NULL;
 
-	pr_info("[%s] searching %s", __func__, name);
+	pr_debug("[%s] searching %s", __func__, name);
 
 	if (list_empty(&external_list))
 		return NULL;
 
 	list_for_each_entry(entry, &external_list, list) {
 		if (!strcmp(entry->target->name, name)) {
-			pr_info("[%s] %s found", __func__, name);
+			pr_debug("[%s] %s found", __func__, name);
 			return entry;
 		}
 	}
@@ -57,7 +57,7 @@ EXPORT_SYMBOL(query_external_subdrv_entry);
 
 static int __init external_sensor_drv_init(void)
 {
-	pr_info("%s", __func__);
+	pr_debug("%s", __func__);
 
 	return 0;
 }
@@ -71,7 +71,7 @@ static void __exit external_sensor_drv_exit(void)
 		kfree(entry);
 	}
 
-	pr_info("%s", __func__);
+	pr_debug("%s", __func__);
 }
 
 late_initcall(external_sensor_drv_init);

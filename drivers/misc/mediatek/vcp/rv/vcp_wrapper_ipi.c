@@ -203,12 +203,12 @@ void mt_print_vcp_ipi_id(unsigned int mbox)
 					mtk_mbox_read(&vcp_mboxdev, mbox,
 						    vcp_mbox_pin_recv[i].offset,
 						    &buf, MBOX_SLOT_SIZE * 3);
-					pr_info("[VCP] ipi id/type/action/event/reserve = %u/%u/%u/%u/%u\n",
+					pr_debug("[VCP] ipi id/type/action/event/reserve = %u/%u/%u/%u/%u\n",
 						buf.id, buf.info[0],
 						buf.info[1], buf.info[2],
 						buf.info[3]);
 				} else {
-					pr_info("[VCP] mbox%u, ipi id %u\n",
+					pr_debug("[VCP] mbox%u, ipi id %u\n",
 						mbox,
 						vcp_mbox_pin_recv[i].chan_id);
 				}

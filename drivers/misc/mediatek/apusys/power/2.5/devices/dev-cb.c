@@ -38,7 +38,7 @@ struct power_callback_device *_find_cb_by_user(enum POWER_CALLBACK_USER user)
 				return pwr_dev;
 		}
 	} else {
-		pr_info("%s empty list\n", __func__);
+		pr_debug("%s empty list\n", __func__);
 	}
 
 	return NULL;

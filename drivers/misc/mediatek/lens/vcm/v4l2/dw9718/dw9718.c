@@ -124,7 +124,7 @@ static int dw9718_release(struct dw9718_device *dw9718)
 
 		ret = dw9718_set_position(dw9718, val);
 		if (ret) {
-			pr_info("%s I2C failure: %d",
+			pr_debug("%s I2C failure: %d",
 				__func__, ret);
 			return ret;
 		}
@@ -135,7 +135,7 @@ static int dw9718_release(struct dw9718_device *dw9718)
 	// last step to origin
 	ret = dw9718_set_position(dw9718, DW9718_ORIGIN_FOCUS_POS);
 	if (ret) {
-		pr_info("%s I2C failure: %d",
+		pr_debug("%s I2C failure: %d",
 			__func__, ret);
 		return ret;
 	}
@@ -145,7 +145,7 @@ static int dw9718_release(struct dw9718_device *dw9718)
 	if (ret)
 		return ret;
 
-	pr_info("%s -\n", __func__);
+	pr_debug("%s -\n", __func__);
 
 	return 0;
 }
@@ -154,7 +154,7 @@ static int dw9718_init(struct dw9718_device *dw9718)
 {
 	int ret, val;
 
-	pr_info("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	ret = dw9718_write_array(dw9718, dw9718_init_regs,
 				 ARRAY_SIZE(dw9718_init_regs));
@@ -166,7 +166,7 @@ static int dw9718_init(struct dw9718_device *dw9718)
 	     val += DW9718_MOVE_STEPS) {
 		ret = dw9718_set_position(dw9718, val);
 		if (ret) {
-			pr_info("%s I2C failure: %d",
+			pr_debug("%s I2C failure: %d",
 				__func__, ret);
 			return ret;
 		}
@@ -182,11 +182,11 @@ static int dw9718_power_off(struct dw9718_device *dw9718)
 {
 	int ret;
 
-	pr_info("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	ret = dw9718_release(dw9718);
 	if (ret)
-		pr_info("dw9718 release failed!\n");
+		pr_debug("dw9718 release failed!\n");
 
 	ret = regulator_disable(dw9718->vin);
 	if (ret)
@@ -207,7 +207,7 @@ static int dw9718_power_on(struct dw9718_device *dw9718)
 {
 	int ret;
 
-	pr_info("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	ret = regulator_enable(dw9718->vin);
 	if (ret < 0)
@@ -255,7 +255,7 @@ static int dw9718_set_ctrl(struct v4l2_ctrl *ctrl)
 	if (ctrl->id == V4L2_CID_FOCUS_ABSOLUTE) {
 		ret = dw9718_set_position(dw9718, ctrl->val);
 		if (ret) {
-			pr_info("%s I2C failure: %d",
+			pr_debug("%s I2C failure: %d",
 				__func__, ret);
 			return ret;
 		}
@@ -272,11 +272,11 @@ static int dw9718_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 	int ret;
 	struct dw9718_device *dw9718 = sd_to_dw9718_vcm(sd);
 
-	pr_info("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	ret = dw9718_power_on(dw9718);
 	if (ret < 0) {
-		pr_info("%s power on fail, ret = %d",
+		pr_debug("%s power on fail, ret = %d",
 			__func__, ret);
 		return ret;
 	}
@@ -288,7 +288,7 @@ static int dw9718_close(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
 	struct dw9718_device *dw9718 = sd_to_dw9718_vcm(sd);
 
-	pr_info("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	dw9718_power_off(dw9718);
 
@@ -335,7 +335,7 @@ static int dw9718_probe(struct i2c_client *client)
 	struct dw9718_device *dw9718;
 	int ret;
 
-	pr_info("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	dw9718 = devm_kzalloc(dev, sizeof(*dw9718), GFP_KERNEL);
 	if (!dw9718)
@@ -345,7 +345,7 @@ static int dw9718_probe(struct i2c_client *client)
 	if (IS_ERR(dw9718->vin)) {
 		ret = PTR_ERR(dw9718->vin);
 		if (ret != -EPROBE_DEFER)
-			pr_info("cannot get vin regulator\n");
+			pr_debug("cannot get vin regulator\n");
 		return ret;
 	}
 
@@ -353,7 +353,7 @@ static int dw9718_probe(struct i2c_client *client)
 	if (IS_ERR(dw9718->vdd)) {
 		ret = PTR_ERR(dw9718->vdd);
 		if (ret != -EPROBE_DEFER)
-			pr_info("cannot get vdd regulator\n");
+			pr_debug("cannot get vdd regulator\n");
 		return ret;
 	}
 
@@ -361,7 +361,7 @@ static int dw9718_probe(struct i2c_client *client)
 	if (IS_ERR(dw9718->vcamaf_pinctrl)) {
 		ret = PTR_ERR(dw9718->vcamaf_pinctrl);
 		dw9718->vcamaf_pinctrl = NULL;
-		pr_info("cannot get pinctrl\n");
+		pr_debug("cannot get pinctrl\n");
 	} else {
 		dw9718->vcamaf_on = pinctrl_lookup_state(
 			dw9718->vcamaf_pinctrl, "vcamaf_on");
@@ -369,7 +369,7 @@ static int dw9718_probe(struct i2c_client *client)
 		if (IS_ERR(dw9718->vcamaf_on)) {
 			ret = PTR_ERR(dw9718->vcamaf_on);
 			dw9718->vcamaf_on = NULL;
-			pr_info("cannot get vcamaf_on pinctrl\n");
+			pr_debug("cannot get vcamaf_on pinctrl\n");
 		}
 
 		dw9718->vcamaf_off = pinctrl_lookup_state(
@@ -378,7 +378,7 @@ static int dw9718_probe(struct i2c_client *client)
 		if (IS_ERR(dw9718->vcamaf_off)) {
 			ret = PTR_ERR(dw9718->vcamaf_off);
 			dw9718->vcamaf_off = NULL;
-			pr_info("cannot get vcamaf_off pinctrl\n");
+			pr_debug("cannot get vcamaf_off pinctrl\n");
 		}
 	}
 
@@ -414,7 +414,7 @@ static int dw9718_remove(struct i2c_client *client)
 	struct v4l2_subdev *sd = i2c_get_clientdata(client);
 	struct dw9718_device *dw9718 = sd_to_dw9718_vcm(sd);
 
-	pr_info("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	dw9718_subdev_cleanup(dw9718);
 

@@ -55,7 +55,7 @@ static int __tcpc_class_complete_work(struct device *dev, void *data)
 #endif /* CONFIG_USB_POWER_DELIVERY */
 
 	if (tcpc != NULL) {
-		pr_info("%s = %s\n", __func__, dev_name(dev));
+		pr_debug("%s = %s\n", __func__, dev_name(dev));
 		tcpc_device_irq_enable(tcpc);
 
 #if IS_ENABLED(CONFIG_USB_POWER_DELIVERY)

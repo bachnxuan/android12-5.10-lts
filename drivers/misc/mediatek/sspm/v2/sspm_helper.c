@@ -145,7 +145,7 @@ static int __init sspm_module_init(void)
 	if (atomic_inc_return(&sspm_inited) != 1)
 		return 0;
 
-	pr_info("[SSPM] sspm_module Init.\n");
+	pr_debug("[SSPM] sspm_module Init.\n");
 
 	/* static initialise */
 	sspm_ready = 0;
@@ -173,7 +173,7 @@ static int __init sspm_module_init(void)
 		pr_err("[SSPM] Platform Init Failed\n");
 		goto error;
 	}
-	pr_info("SSPM platform service is ready\n");
+	pr_debug("SSPM platform service is ready\n");
 #endif
 
 #if SSPM_TIMESYNC_SUPPORT
@@ -254,7 +254,7 @@ static int __init sspm_device_probe(struct platform_device *pdev)
 	}
 #endif
 
-	pr_info("SSPM is ready to service IPI\n");
+	pr_debug("SSPM is ready to service IPI\n");
 
 #ifdef SSPM_SHARE_BUFFER_SUPPORT
 	if (sspm_sbuf_init()) {
@@ -263,7 +263,7 @@ static int __init sspm_device_probe(struct platform_device *pdev)
 	}
 #endif
 
-	pr_info("[SSPM] sspm_pdrv probe Done.\n");
+	pr_debug("[SSPM] sspm_pdrv probe Done.\n");
 
 	sspm_module_init();
 
@@ -333,7 +333,7 @@ static int __init sspm_pdrv_init(void)
 
 static void __exit sspm_pdrv_exit(void)
 {
-	pr_info("[SSPM] sspm platform driver Exit.\n");
+	pr_debug("[SSPM] sspm platform driver Exit.\n");
 }
 
 MODULE_DESCRIPTION("MEDIATEK Module SSPM platform driver");

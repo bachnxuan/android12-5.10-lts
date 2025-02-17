@@ -65,18 +65,18 @@ static inline bool pd_dbg_print_out(void)
 		return false;
 	cnt = pd_dbg_buffer[index].cnt;
 
-	pr_info("///PD dbg info %d %d\n", used, cnt);
+	pr_debug("///PD dbg info %d %d\n", used, cnt);
 
 	str = pd_dbg_buffer[index].buf;
 	for (i = 0; i < cnt; i++) {
 		while (atomic_read(&busy))
 			usleep_range(1000, 2000);
 
-		pr_info("%s", str);
+		pr_debug("%s", str);
 		str += strlen(str) + 1;
 	}
 
-	/* pr_info("PD dbg info///\n"); */
+	/* pr_debug("PD dbg info///\n"); */
 	pd_dbg_buffer[index].used = 0;
 	pd_dbg_buffer[index].cnt = 0;
 	msleep(MSG_POLLING_MS);
@@ -148,7 +148,7 @@ static struct task_struct *print_out_tsk;
 
 int pd_dbg_info_init(void)
 {
-	pr_info("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 	mutex_init(&buff_lock);
 	print_out_tsk = kthread_create(
 			print_out_thread_fn, NULL, "pd_dbg_info");

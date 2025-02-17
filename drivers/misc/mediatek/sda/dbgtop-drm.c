@@ -42,7 +42,7 @@ int mtk_dbgtop_mfg_pwr_on(int value)
 	} else
 		return -EINVAL;
 
-	pr_info("%s: MTK_DBGTOP_MFG_REG(0x%x)\n", __func__,
+	pr_debug("%s: MTK_DBGTOP_MFG_REG(0x%x)\n", __func__,
 			readl(drm->base + MTK_DBGTOP_MFG_REG));
 	return 0;
 }
@@ -73,7 +73,7 @@ int mtk_dbgtop_mfg_pwr_en(int value)
 	} else
 		return -EINVAL;
 
-	pr_info("%s: MTK_DBGTOP_MFG_REG(0x%x)\n", __func__,
+	pr_debug("%s: MTK_DBGTOP_MFG_REG(0x%x)\n", __func__,
 		readl(drm->base + MTK_DBGTOP_MFG_REG));
 	return 0;
 }
@@ -168,11 +168,11 @@ static int __init mtk_dbgtop_drm_init(void)
 {
 	int ret;
 
-	pr_info("mtk_dbgtop_drm was loaded\n");
+	pr_debug("mtk_dbgtop_drm was loaded\n");
 
 	ret = platform_driver_register(&mtk_dbgtop_drm);
 	if (ret) {
-		pr_info("mtk_dbgtop_drm: failed to register driver");
+		pr_debug("mtk_dbgtop_drm: failed to register driver");
 		return ret;
 	}
 
@@ -181,7 +181,7 @@ static int __init mtk_dbgtop_drm_init(void)
 
 static void __exit mtk_dbgtop_drm_exit(void)
 {
-	pr_info("mtk_dbgtop_drm was unloaded\n");
+	pr_debug("mtk_dbgtop_drm was unloaded\n");
 
 	platform_driver_unregister(&mtk_dbgtop_drm);
 }

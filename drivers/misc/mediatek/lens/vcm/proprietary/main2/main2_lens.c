@@ -61,7 +61,7 @@ static struct i2c_board_info kd_lens_dev __initdata = {
 #define AF_DEBUG
 #ifdef AF_DEBUG
 #define LOG_INF(format, args...)                                               \
-	pr_info(AF_DRVNAME " [%s] " format, __func__, ##args)
+	pr_debug(AF_DRVNAME " [%s] " format, __func__, ##args)
 #else
 #define LOG_INF(format, args...)
 #endif
@@ -152,7 +152,7 @@ static void camaf_power_init(void)
 			if (IS_ERR(vcamaf_pio)) {
 				ret = PTR_ERR(vcamaf_pio);
 				vcamaf_pio = NULL;
-				pr_info("cannot get pinctrl\n");
+				pr_debug("cannot get pinctrl\n");
 			} else {
 				vcamaf_pio_on = pinctrl_lookup_state(
 					vcamaf_pio, CAMAF_GPIO_ON);

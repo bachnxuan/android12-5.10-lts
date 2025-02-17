@@ -188,7 +188,7 @@ static int aoltest_nl_bind(struct sk_buff *skb, struct genl_info *info)
 	struct nlattr *port_na;
 	unsigned int port;
 
-	pr_info("[%s]\n", __func__);
+	pr_debug("[%s]\n", __func__);
 
 	if (info == NULL)
 		goto out;
@@ -200,13 +200,13 @@ static int aoltest_nl_bind(struct sk_buff *skb, struct genl_info *info)
 	if (port_na) {
 		port = (unsigned int)nla_get_u32(port_na);
 	} else {
-		pr_info("[%s] No port_na found\n", __func__);
+		pr_debug("[%s] No port_na found\n", __func__);
 		mutex_unlock(&g_ctx->nl_lock);
 		return -1;
 	}
 
 	if (g_already_bind) {
-		pr_info("[%s] Already bind before, only change port=[%d]", __func__, port);
+		pr_debug("[%s] Already bind before, only change port=[%d]", __func__, port);
 		g_ctx->bind_pid = port;
 		mutex_unlock(&g_ctx->nl_lock);
 		goto out;
@@ -231,7 +231,7 @@ static int aoltest_nl_start_test(struct sk_buff *skb, struct genl_info *info)
 	struct nlattr *test_attr[_TESTINFO_ATTR_MAX + 1];
 	struct test_info params = {0};
 
-	pr_info("[%s]", __func__);
+	pr_debug("[%s]", __func__);
 	if (mutex_lock_killable(&g_ctx->nl_lock))
 		return -1;
 
@@ -241,7 +241,7 @@ static int aoltest_nl_start_test(struct sk_buff *skb, struct genl_info *info)
 		ret = nla_parse_nested_deprecated(test_attr, _TESTINFO_ATTR_MAX,
 						attr_info, test_info_policy, NULL);
 		if (ret < 0) {
-			pr_info("[%s] Fail to parse nested attributes, ret=[%d]\n", __func__, ret);
+			pr_debug("[%s] Fail to parse nested attributes, ret=[%d]\n", __func__, ret);
 			mutex_unlock(&g_ctx->nl_lock);
 			return -1;
 		}
@@ -276,20 +276,20 @@ static int aoltest_nl_start_test(struct sk_buff *skb, struct genl_info *info)
 			params.gps_cb_intvl =
 					nla_get_u32(test_attr[TESTINFO_ATTR_GPS_CB_INTVL]);
 	} else {
-		pr_info("[%s] No test info found\n", __func__);
+		pr_debug("[%s] No test info found\n", __func__);
 		mutex_unlock(&g_ctx->nl_lock);
 		return -1;
 	}
 
 	mutex_unlock(&g_ctx->nl_lock);
 
-	pr_info("[%s] start test param: (%d, %d, %d)(%d, %d, %d)(%d, %d, %d)\n", __func__,
+	pr_debug("[%s] start test param: (%d, %d, %d)(%d, %d, %d)(%d, %d, %d)\n", __func__,
 			params.wifi_enabled, params.wifi_scan_intvl, params.wifi_cb_intvl,
 			params.bt_enabled, params.bt_scan_intvl, params.bt_cb_intvl,
 			params.gps_enabled, params.gps_scan_intvl, params.gps_cb_intvl);
 
 	if (g_ctx && g_ctx->cb.aoltest_handler) {
-		pr_info("[%s] call aoltest_handler: start test\n", __func__);
+		pr_debug("[%s] call aoltest_handler: start test\n", __func__);
 		g_ctx->cb.aoltest_handler(AOLTEST_CMD_START_TEST, (void *)&params);
 	}
 
@@ -331,7 +331,7 @@ static int aoltest_netlink_msg_send(char *tag, unsigned int msg_id, char *buf, u
 		// Create message header
 		msg_head = genlmsg_put(skb, 0, seq, &g_ctx->gnl_family, 0, AOLTEST_NL_CMD_SEND);
 		if (msg_head == NULL) {
-			pr_info("[%s] genlmsg_put fail\n", __func__);
+			pr_debug("[%s] genlmsg_put fail\n", __func__);
 			nlmsg_free(skb);
 			return -EMSGSIZE;
 		}
@@ -339,7 +339,7 @@ static int aoltest_netlink_msg_send(char *tag, unsigned int msg_id, char *buf, u
 		// Add message attribute and content
 		ret = nla_put_string(skb, AOLTEST_ATTR_HEADER, tag);
 		if (ret != 0) {
-			pr_info("[%s] nla_put_string header fail, ret=[%d]\n", __func__, ret);
+			pr_debug("[%s] nla_put_string header fail, ret=[%d]\n", __func__, ret);
 			genlmsg_cancel(skb, msg_head);
 			nlmsg_free(skb);
 			return ret;
@@ -348,7 +348,7 @@ static int aoltest_netlink_msg_send(char *tag, unsigned int msg_id, char *buf, u
 		if (length) {
 			ret = nla_put(skb, AOLTEST_ATTR_MSG, length, buf);
 			if (ret != 0) {
-				pr_info("[%s] nla_put fail, ret=[%d]\n", __func__, ret);
+				pr_debug("[%s] nla_put fail, ret=[%d]\n", __func__, ret);
 				genlmsg_cancel(skb, msg_head);
 				nlmsg_free(skb);
 				return ret;
@@ -356,7 +356,7 @@ static int aoltest_netlink_msg_send(char *tag, unsigned int msg_id, char *buf, u
 
 			ret = nla_put_u32(skb, AOLTEST_ATTR_MSG_ID, msg_id);
 			if (ret != 0) {
-				pr_info("[%s] nal_put_u32 fail, ret=[%d]\n", __func__, ret);
+				pr_debug("[%s] nal_put_u32 fail, ret=[%d]\n", __func__, ret);
 				genlmsg_cancel(skb, msg_head);
 				nlmsg_free(skb);
 				return ret;
@@ -364,7 +364,7 @@ static int aoltest_netlink_msg_send(char *tag, unsigned int msg_id, char *buf, u
 
 			ret = nla_put_u32(skb, AOLTEST_ATTR_MSG_SIZE, length);
 			if (ret != 0) {
-				pr_info("[%s] nal_put_u32 fail, ret=[%d]\n", __func__, ret);
+				pr_debug("[%s] nal_put_u32 fail, ret=[%d]\n", __func__, ret);
 				genlmsg_cancel(skb, msg_head);
 				nlmsg_free(skb);
 				return ret;
@@ -377,9 +377,9 @@ static int aoltest_netlink_msg_send(char *tag, unsigned int msg_id, char *buf, u
 		// Send message
 		ret = genlmsg_unicast(&init_net, skb, pid);
 		if (ret == 0)
-			pr_info("[%s] Send msg succeed\n", __func__);
+			pr_debug("[%s] Send msg succeed\n", __func__);
 	} else {
-		pr_info("[%s] Allocate message error\n", __func__);
+		pr_debug("[%s] Allocate message error\n", __func__);
 		ret = -ENOMEM;
 	}
 
@@ -395,7 +395,7 @@ static int aoltest_netlink_send_to_native_internal(char *tag,
 	ret = aoltest_netlink_msg_send(tag, msg_id, buf, length, g_ctx->bind_pid, g_ctx->seqnum);
 
 	if (ret != 0) {
-		pr_info("[%s] genlmsg_unicast fail, ret=[%d], pid=[%d], seq=[%d], tag=[%s]\n",
+		pr_debug("[%s] genlmsg_unicast fail, ret=[%d], pid=[%d], seq=[%d], tag=[%s]\n",
 				__func__, ret, g_ctx->bind_pid, g_ctx->seqnum, tag);
 
 		if (ret == -EAGAIN) {
@@ -406,12 +406,12 @@ static int aoltest_netlink_send_to_native_internal(char *tag,
 				ret = aoltest_netlink_msg_send(tag, msg_id, buf, length,
 								g_ctx->bind_pid, g_ctx->seqnum);
 				retry++;
-				pr_info("[%s] genlmsg_unicast retry(%d)...: ret=[%d] pid=[%d] seq=[%d] tag=[%s]\n",
+				pr_debug("[%s] genlmsg_unicast retry(%d)...: ret=[%d] pid=[%d] seq=[%d] tag=[%s]\n",
 					__func__, retry, ret, g_ctx->bind_pid, g_ctx->seqnum, tag);
 			}
 
 			if (ret) {
-				pr_info("[%s] genlmsg_unicast fail, ret=[%d] after retry %d times: pid=[%d], seq=[%d], tag=[%s]\n",
+				pr_debug("[%s] genlmsg_unicast fail, ret=[%d] after retry %d times: pid=[%d], seq=[%d], tag=[%s]\n",
 					__func__, ret, retry, g_ctx->bind_pid, g_ctx->seqnum, tag);
 			}
 		}
@@ -430,12 +430,12 @@ int aoltest_netlink_send_to_native(char *tag, unsigned int msg_id, char *buf, un
 	unsigned int remain_len = length;
 
 	if (g_ctx->status != LINK_STATUS_INIT_DONE) {
-		pr_info("[%s] Netlink should be init\n", __func__);
+		pr_debug("[%s] Netlink should be init\n", __func__);
 		return -2;
 	}
 
 	if (g_ctx->bind_pid == 0) {
-		pr_info("[%s] No bind service\n", __func__);
+		pr_debug("[%s] No bind service\n", __func__);
 		return -3;
 	}
 
@@ -444,7 +444,7 @@ int aoltest_netlink_send_to_native(char *tag, unsigned int msg_id, char *buf, un
 		ret = aoltest_netlink_send_to_native_internal(tag, msg_id, &buf[idx], send_len);
 
 		if (ret) {
-			pr_info("[%s] From %d with len=[%d] fail, ret=[%d]\n"
+			pr_debug("[%s] From %d with len=[%d] fail, ret=[%d]\n"
 							, __func__, idx, send_len, ret);
 			break;
 		}
@@ -464,14 +464,14 @@ int aoltest_netlink_init(struct netlink_event_cb *cb)
 	ret = genl_register_family(&g_ctx->gnl_family);
 
 	if (ret != 0) {
-		pr_info("[%s] GE_NELINK family registration fail, ret=[%d]\n", __func__, ret);
+		pr_debug("[%s] GE_NELINK family registration fail, ret=[%d]\n", __func__, ret);
 		return -2;
 	}
 
 	g_ctx->status = LINK_STATUS_INIT_DONE;
 	g_ctx->bind_pid = 0;
 	memcpy(&(g_ctx->cb), cb, sizeof(struct netlink_event_cb));
-	pr_info("[%s] aoltest netlink init succeed\n", __func__);
+	pr_debug("[%s] aoltest netlink init succeed\n", __func__);
 
 	return ret;
 }

@@ -167,7 +167,7 @@ static int get_speed_str(u64 speed, char buf[], int size)
 	} else
 		ret = snprintf(buf, size, "[%llubps]", speed);
 	if (ret < 0 || ret >= size) {
-		pr_info("%s-%d:snprintf fail,ret=%d\n",
+		pr_debug("%s-%d:snprintf fail,ret=%d\n",
 			__func__, __LINE__, ret);
 		return -1;
 	}
@@ -330,7 +330,7 @@ static void show_speed_inf(void)
 		if (ret > 0)
 			used += ret;
 	}
-	pr_info("[SPD]> UL:%s DL:%s\n", s_ul_speed_inf, s_dl_speed_inf);
+	pr_debug("[SPD]> UL:%s DL:%s\n", s_ul_speed_inf, s_dl_speed_inf);
 }
 
 static int speed_calculate_in_thread(void *arg)
@@ -376,7 +376,7 @@ again:
 				s_spd_mon.m_speed_cal_en);
 
 		if (kthread_should_stop()) {
-			pr_info("[%s] error: kthread_should_stop.\n",
+			pr_debug("[%s] error: kthread_should_stop.\n",
 				__func__);
 			return 0;
 		}
@@ -435,7 +435,7 @@ void mtk_ccci_register_dl_speed_1s_callback(total_spd_fun func)
 		s_spd_dl_cb_num_1s++;
 
 	} else
-		pr_info("[ccci][spd]1s dl callback tbl full\n");
+		pr_debug("[ccci][spd]1s dl callback tbl full\n");
 }
 
 void mtk_ccci_register_speed_callback(spd_fun func_1s, spd_fun func_500ms)
@@ -444,13 +444,13 @@ void mtk_ccci_register_speed_callback(spd_fun func_1s, spd_fun func_500ms)
 		s_spd_func_1s[s_spd_cb_num_1s] = func_1s;
 		s_spd_cb_num_1s++;
 	} else
-		pr_info("[ccci][spd]1s callback tbl full\n");
+		pr_debug("[ccci][spd]1s callback tbl full\n");
 
 	if ((s_spd_cb_num_500ms < MAX_CALL_BACK_FUNC_NUM) && func_500ms) {
 		s_spd_func_500ms[s_spd_cb_num_500ms] = func_500ms;
 		s_spd_cb_num_500ms++;
 	} else
-		pr_info("[ccci][spd]500ms callback ptr full\n");
+		pr_debug("[ccci][spd]500ms callback ptr full\n");
 }
 
 int mtk_ccci_net_speed_init(void)
@@ -460,7 +460,7 @@ int mtk_ccci_net_speed_init(void)
 	s_spd_mon.m_kworker_thread = kthread_run(
 			speed_calculate_in_thread, NULL, "ccci_spd");
 	if (IS_ERR(s_spd_mon.m_kworker_thread)) {
-		pr_info("[%s] error: kthread_run() fail.\n",
+		pr_debug("[%s] error: kthread_run() fail.\n",
 				__func__);
 		return -1;
 	}

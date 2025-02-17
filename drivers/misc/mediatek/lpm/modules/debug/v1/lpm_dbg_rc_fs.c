@@ -151,7 +151,7 @@ int lpm_rc_cond_ctrl(int rc_id, unsigned int act,
 		LPM_DBG_SMC(MT_SPM_DBG_SMC_UID_RC_COND_CTRL,
 				    act, cond_ctrl_id, !!value);
 	else
-		pr_info("[%s:%d] - unknown cond id = %u\n",
+		pr_debug("[%s:%d] - unknown cond id = %u\n",
 			__func__, __LINE__, cond_id);
 
 	return res;
@@ -188,7 +188,7 @@ int lpm_rc_ratio_timer_func(unsigned long long dur, void *priv)
 			RC_COVERT_RATIO(dur, rc_state));
 	}
 
-	pr_info("%s", log_buf);
+	pr_debug("%s", log_buf);
 
 	return 0;
 }
@@ -551,7 +551,7 @@ int spm_cond_init(void)
 			of_node_put(np);
 
 			if (ret != 0 || rc_id == -1 || rc_name == NULL) {
-				pr_info("[%s:%d] - abnormal rc\n",
+				pr_debug("[%s:%d] - abnormal rc\n",
 					__func__, __LINE__);
 				idx++;
 				continue;
@@ -729,7 +729,7 @@ int lpm_rc_fs_init(void)
 
 	ret = spm_cond_init();
 	if (ret)
-		pr_info("[%s:%d] - spm_cond_init failed\n",
+		pr_debug("[%s:%d] - spm_cond_init failed\n",
 			__func__, __LINE__);
 
 	rc_ratio_timer.timeout = lpm_rc_ratio_timer_func;

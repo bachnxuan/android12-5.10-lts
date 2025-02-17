@@ -235,7 +235,7 @@ void handle_trusty_ipi(int ipinr)
 	//trusty_irq_handler(ipinr, this_cpu_ptr(trusty_ipi_data[ipinr]));
 	//irq_exit();
 
-	pr_info("%s not supported.\n", __func__);
+	pr_debug("%s not supported.\n", __func__);
 }
 
 static int trusty_irq_cpu_up(unsigned int cpu, struct hlist_node *node)

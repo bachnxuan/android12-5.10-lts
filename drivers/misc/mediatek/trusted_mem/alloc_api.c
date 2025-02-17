@@ -99,12 +99,12 @@ int trusted_mem_api_alloc(enum TRUSTED_MEM_REQ_TYPE req_mem_type, u32 alignment,
 		mem_type == TRUSTED_MEM_WFD_REGION ||
 		mem_type == TRUSTED_MEM_WFD_PAGE) &&
 		!is_svp_enabled()) {
-		pr_info("[TMEM][%d] %s: TMEM_OPERATION_NOT_REGISTERED\n", mem_type, __func__);
+		pr_debug("[TMEM][%d] %s: TMEM_OPERATION_NOT_REGISTERED\n", mem_type, __func__);
 		return TMEM_OPERATION_NOT_REGISTERED;
 	}
 
 	if (is_page_based_memory(mem_type)) {
-		pr_info("[TMEM][%d] %s: page-base: size = 0x%x\n", mem_type, __func__, *size);
+		pr_debug("[TMEM][%d] %s: page-base: size = 0x%x\n", mem_type, __func__, *size);
 		return tmem_core_alloc_page(mem_type, *size, buf_info);
 	} else {
 		/* IOMMU need to map 1MB alignment space */
@@ -113,11 +113,11 @@ int trusted_mem_api_alloc(enum TRUSTED_MEM_REQ_TYPE req_mem_type, u32 alignment,
 
 		/* return error when page-based memory is not enabled */
 		if (mem_type != get_region_mem_type(mem_type)) {
-			pr_info("[TMEM][%d] %s: page-based disable\n", mem_type, __func__);
+			pr_debug("[TMEM][%d] %s: page-based disable\n", mem_type, __func__);
 			return TMEM_PARAMETER_ERROR;
 		}
 
-		pr_info("[TMEM][%d] %s: region-base: size = 0x%x\n", mem_type, __func__, *size);
+		pr_debug("[TMEM][%d] %s: region-base: size = 0x%x\n", mem_type, __func__, *size);
 		return tmem_core_alloc_chunk(mem_type, alignment, *size,
 				     refcount, sec_handle, owner, id, 0);
 	}

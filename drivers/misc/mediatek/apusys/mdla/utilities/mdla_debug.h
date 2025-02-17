@@ -165,7 +165,7 @@ void mdla_dbg_show_klog_info(struct seq_file *s, char *prefix);
 #include <mt-plat/aee.h>
 #define mdla_aee_warn(key, format, args...) \
 	do { \
-		pr_info(format, ##args); \
+		pr_debug(format, ##args); \
 		aee_kernel_warning("MDLA", \
 			"\nCRDISPATCH_KEY:" key "\n" format, ##args); \
 	} while (0)
@@ -174,7 +174,7 @@ void mdla_dbg_show_klog_info(struct seq_file *s, char *prefix);
 #endif
 
 
-#define redirect_output(...) pr_info(__VA_ARGS__)
+#define redirect_output(...) pr_debug(__VA_ARGS__)
 
 /* log level : error */
 #define mdla_err(...) redirect_output(__VA_ARGS__)

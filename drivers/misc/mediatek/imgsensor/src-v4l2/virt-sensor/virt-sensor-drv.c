@@ -234,7 +234,7 @@ struct subdrv_entry *vs_query_subdrv_entry(const char *name)
 {
 	struct external_entry *entry = NULL;
 
-	pr_info("[%s] searching %s", __func__, name);
+	pr_debug("[%s] searching %s", __func__, name);
 
 	entry = query_external_subdrv_entry(name);
 

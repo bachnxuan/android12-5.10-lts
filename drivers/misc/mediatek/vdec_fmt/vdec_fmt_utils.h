@@ -11,12 +11,12 @@ extern int fmt_dbg_level;
 #define fmt_debug(level, format, args...)                       \
 	do {                                                        \
 		if ((fmt_dbg_level & level) == level)              \
-			pr_info("[VDEC-FMT] level=%d %s(),%d: " format "\n",\
+			pr_debug("[VDEC-FMT] level=%d %s(),%d: " format "\n",\
 				level, __func__, __LINE__, ##args);      \
 	} while (0)
 
 #define fmt_err(format, args...)                                        \
-	pr_info("[VDEC-FMT][ERROR] %s:%d: " format "\n", __func__, __LINE__, \
+	pr_debug("[VDEC-FMT][ERROR] %s:%d: " format "\n", __func__, __LINE__, \
 		   ##args)
 
 #define FMT_TIMER_GET_DURATION_IN_MS(start, end, duration)	\

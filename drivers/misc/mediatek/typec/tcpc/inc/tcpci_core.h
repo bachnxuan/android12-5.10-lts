@@ -557,7 +557,7 @@ static inline bool pd_check_rev30(struct pd_port *pd_port)
 #if IS_ENABLED(CONFIG_PD_DBG_INFO)
 #define __RT_DBG_INFO	pd_dbg_info
 #else
-#define __RT_DBG_INFO	pr_info
+#define __RT_DBG_INFO	pr_debug
 #endif /* CONFIG_PD_DBG_INFO */
 
 #if CONFIG_TCPC_LOG_WITH_PORT_NAME

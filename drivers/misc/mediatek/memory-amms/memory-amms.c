@@ -83,7 +83,7 @@ static int free_reserved_memory(phys_addr_t start_phys,
 		free_reserved_page(phys_to_page(pos));
 
 	if (pages)
-		pr_info("Freeing modem memory: %ldK from phys %llx\n",
+		pr_debug("Freeing modem memory: %ldK from phys %llx\n",
 			pages << (PAGE_SHIFT - 10),
 			(unsigned long long)start_phys);
 
@@ -106,16 +106,16 @@ static irqreturn_t amms_legacy_handler(int irq, void *data)
 		if (pfn_valid(__phys_to_pfn(addr))
 			&& pfn_valid(__phys_to_pfn(
 			addr + length - 1))) {
-			pr_info("%s:addr=%pa length=%pa\n", __func__,
+			pr_debug("%s:addr=%pa length=%pa\n", __func__,
 			&addr, &length);
 			free_reserved_memory(addr, addr+length);
 			amms_static_free = true;
 		} else {
-			pr_info("AMMS: error addr and length is not set properly\n");
-			pr_info("can not free_reserved_memory\n");
+			pr_debug("AMMS: error addr and length is not set properly\n");
+			pr_debug("can not free_reserved_memory\n");
 		}
 	} else {
-		pr_info("amms: static memory already free\n");
+		pr_debug("amms: static memory already free\n");
 	}
 
 	return IRQ_HANDLED;
@@ -131,16 +131,16 @@ static irqreturn_t amms_handler(int irq, void *data)
 	arm_smccc_smc(MTK_SIP_KERNEL_AMMS_GET_PENDING,
 			0, 0, 0, 0, 0, 0, 0, &res);
 	pending = res.a0;
-	pr_info("%s:pending = 0x%llx\n", __func__, pending);
-	pr_info("%s:pending = %lld\n", __func__, (long long)pending);
+	pr_debug("%s:pending = 0x%llx\n", __func__, pending);
+	pr_debug("%s:pending = %lld\n", __func__, (long long)pending);
 
 	if (((long long)pending) != AMMS_PENDING_DRDI_FREE_BIT) {
-		pr_info("%s:Not support pending\n", __func__);
+		pr_debug("%s:Not support pending\n", __func__);
 		return amms_legacy_handler(irq, data);
 	}
 
 	if (pending & AMMS_PENDING_DRDI_FREE_BIT) {
-		pr_info("%s:Support pending\n", __func__);
+		pr_debug("%s:Support pending\n", __func__);
 		/*below part is for staic memory free */
 		if (!amms_static_free) {
 			arm_smccc_smc(MTK_SIP_KERNEL_AMMS_GET_FREE_ADDR,
@@ -153,7 +153,7 @@ static irqreturn_t amms_handler(int irq, void *data)
 			if (pfn_valid(__phys_to_pfn(addr))
 				&& pfn_valid(__phys_to_pfn(
 				addr + length - 1))) {
-				pr_info("%s:addr=%pa length=%pa\n",
+				pr_debug("%s:addr=%pa length=%pa\n",
 				__func__, &addr, &length);
 				free_reserved_memory(addr, addr+length);
 				amms_static_free = true;
@@ -161,19 +161,19 @@ static irqreturn_t amms_handler(int irq, void *data)
 					AMMS_PENDING_DRDI_FREE_BIT, 0,
 					0, 0, 0, 0, 0, &res);
 			} else {
-				pr_info("AMMS: error addr and length is not set properly\n");
-				pr_info("can not free_reserved_memory\n");
+				pr_debug("AMMS: error addr and length is not set properly\n");
+				pr_debug("can not free_reserved_memory\n");
 			}
 		} else {
 			arm_smccc_smc(MTK_SIP_KERNEL_AMMS_ACK_PENDING,
 				AMMS_PENDING_DRDI_FREE_BIT,
 				0, 0, 0, 0, 0, 0, &res);
-			pr_info("amms: static memory already free, should not happened\n");
+			pr_debug("amms: static memory already free, should not happened\n");
 		}
 	}
 
 	if (pending & (~(AMMS_PENDING_DRDI_FREE_BIT)))
-		pr_info("amms:unknown pending interrupt\n");
+		pr_debug("amms:unknown pending interrupt\n");
 
 	return IRQ_HANDLED;
 }
@@ -189,14 +189,14 @@ static int amms_probe(struct platform_device *pdev)
 	amms_irq_num = platform_get_irq(pdev, 0);
 
 	if (amms_irq_num < 0) {
-		pr_info("Fail to get amms irq number from device tree\n");
+		pr_debug("Fail to get amms irq number from device tree\n");
 		WARN_ON(amms_irq_num == -ENXIO);
 		return -EINVAL;
 	}
 
 	node = of_find_compatible_node(NULL, NULL, "mediatek,amms");
 	if (!node) {
-		pr_info("%s, amms not exist\n", __func__);
+		pr_debug("%s, amms not exist\n", __func__);
 		return -EINVAL;
 	}
 
@@ -205,7 +205,7 @@ static int amms_probe(struct platform_device *pdev)
 	if (devm_request_threaded_irq(
 	&pdev->dev, amms_irq_num, NULL, amms_handler,
 	IRQF_ONESHOT|IRQF_TRIGGER_NONE, "amms_irq", NULL) != 0) {
-		pr_info("Fail to request amms_irq interrupt!\n");
+		pr_debug("Fail to request amms_irq interrupt!\n");
 		return -EBUSY;
 	}
 

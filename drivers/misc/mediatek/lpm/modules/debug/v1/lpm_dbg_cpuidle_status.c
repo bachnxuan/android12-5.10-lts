@@ -375,7 +375,7 @@ void mtk_cpuidle_state_enable(bool en)
 		task = kthread_create(mtk_per_cpuidle_state_param,
 				&state_info, "mtk_cpuidle_state_enable");
 		if (IS_ERR(task)) {
-			pr_info("[name:mtk_lpm][P] mtk_cpuidle_state_enable failed\n");
+			pr_debug("[name:mtk_lpm][P] mtk_cpuidle_state_enable failed\n");
 			return;
 		}
 		kthread_bind(task, cpu);
@@ -402,7 +402,7 @@ int mtk_s2idle_state_enable(bool en)
 		task = kthread_create(mtk_per_cpuidle_s2dile_param,
 				&state_info, "mtk_s2idle_state_enable");
 		if (IS_ERR(task)) {
-			pr_info("[name:mtk_lpm][P] create s2idle change thread failed\n");
+			pr_debug("[name:mtk_lpm][P] create s2idle change thread failed\n");
 			cpuidle_resume_and_unlock();
 			return -1;
 		}
@@ -433,7 +433,7 @@ long mtk_cpuidle_state_enabled(void)
 		task = kthread_create(mtk_per_cpuidle_state_param,
 			(void *)&state_info, "mtk_cpuidle_state_enabled");
 		if (IS_ERR(task)) {
-			pr_info("[name:mtk_lpm][P] mtk_cpuidle_state_enabled failed\n");
+			pr_debug("[name:mtk_lpm][P] mtk_cpuidle_state_enabled failed\n");
 			ret = (long)PTR_ERR(task);
 			return ret;
 		}

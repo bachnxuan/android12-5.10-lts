@@ -29,7 +29,7 @@ void get_datas(struct apu_gov_data *gov_data, struct apu_gov_data **pgov_data,
 	struct device *pdev = NULL;
 
 	if (IS_ERR_OR_NULL(gov_data)) {
-		pr_info("%s null gov_data\n", __func__);
+		pr_debug("%s null gov_data\n", __func__);
 		return;
 	}
 
@@ -106,7 +106,7 @@ void apu_dump_list(struct apu_gov_data *gov_data)
 				n_pos += scnprintf(buffer + n_pos, (sizeof(buffer) - n_pos),
 						   "->%s[%d]",
 						   apu_dev_name(ptr->dev), ptr->value);
-		pr_info("%s", buffer);
+		pr_debug("%s", buffer);
 	}
 }
 
@@ -123,7 +123,7 @@ void apu_dump_pe_gov(struct apu_dev *ad, struct list_head *head)
 				n_pos += scnprintf(buffer + n_pos, (sizeof(buffer) - n_pos),
 						   "->%s[%d]",
 						   apu_dev_name(ptr->dev), ptr->value);
-		pr_info("%s", buffer);
+		pr_debug("%s", buffer);
 	}
 }
 

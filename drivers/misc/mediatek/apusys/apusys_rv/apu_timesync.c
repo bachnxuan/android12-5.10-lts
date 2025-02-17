@@ -22,7 +22,7 @@ static void apu_timesync_work_func(struct work_struct *work)
 	timesync_stamp = sched_clock();
 	ret = apu_ipi_send(apu, APU_IPI_TIMESYNC, &timesync_stamp, sizeof(u64),
 			   0);
-	pr_info("%s %d\n", __func__, __LINE__);
+	pr_debug("%s %d\n", __func__, __LINE__);
 }
 
 static void apu_timesync_handler(void *data, u32 len, void *priv)
@@ -56,7 +56,7 @@ int apu_timesync_init(struct mtk_apu *apu)
 		return ret;
 	}
 
-	pr_info("%s %d\n", __func__, __LINE__);
+	pr_debug("%s %d\n", __func__, __LINE__);
 	return 0;
 }
 
@@ -67,5 +67,5 @@ void apu_timesync_remove(struct mtk_apu *apu)
 	if (apu_ts_workq)
 		destroy_workqueue(apu_ts_workq);
 
-	pr_info("%s %d\n", __func__, __LINE__);
+	pr_debug("%s %d\n", __func__, __LINE__);
 }

@@ -32,7 +32,7 @@
 #define rembrandtimx582_table_write_cmos_sensor(...) subdrv_i2c_wr_regs_u8(__VA_ARGS__)
 #define rembrandtimx582_burst_write_cmos_sensor(...) subdrv_i2c_wr_regs_u8_burst(__VA_ARGS__)
 #define LOG_TAG "[rembrandtimx582]"
-#define IMX582_LOG_INF(format, args...) pr_info(LOG_TAG "[%s] " format, __func__, ##args)
+#define IMX582_LOG_INF(format, args...) pr_debug(LOG_TAG "[%s] " format, __func__, ##args)
 #define IMX582_LOG_DBG(format, args...) pr_debug(LOG_TAG "[%s] " format, __func__, ##args)
 
 #define GROUP_HOLD_ADDR 0x0104

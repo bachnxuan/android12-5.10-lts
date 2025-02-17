@@ -563,7 +563,7 @@ void musb_g_tx(struct musb *musb, u8 epnum)
 			if (ep_in == &(musb_ep->end_point)) {
 				adbCmdLog(request->buf, request->actual,
 					musb_ep->is_in, "musb_g_tx");
-				/* pr_info("adb: musb_g_tx length = 0x%x,
+				/* pr_debug("adb: musb_g_tx length = 0x%x,
 				 * actual = 0x%x, packet_sz = 0x%x\n",
 				 * request->length,
 				 * request->actual, musb_ep->packet_sz);

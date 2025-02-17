@@ -138,7 +138,7 @@ static void camaf_power_init(void)
 			if (IS_ERR(vcamaf_pio)) {
 				ret = PTR_ERR(vcamaf_pio);
 				vcamaf_pio = NULL;
-				pr_info("cannot get pinctrl\n");
+				pr_debug("cannot get pinctrl\n");
 			} else {
 				vcamaf_pio_on = pinctrl_lookup_state(
 					vcamaf_pio, CAMAF_GPIO_ON);

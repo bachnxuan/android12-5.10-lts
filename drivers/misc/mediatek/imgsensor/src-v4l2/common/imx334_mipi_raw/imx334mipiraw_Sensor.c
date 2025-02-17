@@ -53,7 +53,7 @@
 #define HDR_raw12 0
 #undef IMX334_24_FPS
 
-#define LOG_INF(format, args...) pr_info(PFX "[%s] " format, __func__, ##args)
+#define LOG_INF(format, args...) pr_debug(PFX "[%s] " format, __func__, ##args)
 
 static kal_uint32 preSHR0;
 static kal_uint32 preRHS1;
@@ -4844,7 +4844,7 @@ static int feature_control(struct subdrv_ctx *ctx, MSDK_SENSOR_FEATURE_ENUM feat
 			pr_debug("warning! no ae_ctrl input");
 
 		if (feature_data == NULL) {
-			pr_info("error! input scenario is null!");
+			pr_debug("error! input scenario is null!");
 			return ERROR_INVALID_SCENARIO_ID;
 		}
 		LOG_INF("call seamless_switch");

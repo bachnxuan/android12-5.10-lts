@@ -44,7 +44,7 @@ int register_low_battery_notify(low_battery_callback lb_cb,
 		return -EINVAL;
 	}
 	lbcb_tb[prio_val].lbcb = lb_cb;
-	pr_info("[%s] prio_val=%d\n", __func__, prio_val);
+	pr_debug("[%s] prio_val=%d\n", __func__, prio_val);
 	return 0;
 }
 EXPORT_SYMBOL(register_low_battery_notify);
@@ -56,7 +56,7 @@ void exec_low_battery_callback(unsigned int thd)
 	if (!low_bat_thl_data)
 		return;
 	if (low_bat_thl_data->low_bat_thl_stop == 1) {
-		pr_info("[%s] low_bat_thl_stop=%d\n",
+		pr_debug("[%s] low_bat_thl_stop=%d\n",
 			__func__, low_bat_thl_data->low_bat_thl_stop);
 		return;
 	}
@@ -75,7 +75,7 @@ void exec_low_battery_callback(unsigned int thd)
 		if (lbcb_tb[i].lbcb)
 			lbcb_tb[i].lbcb(low_bat_thl_data->low_bat_thl_level);
 	}
-	pr_info("[%s] low_battery_level=%d\n", __func__,
+	pr_debug("[%s] low_battery_level=%d\n", __func__,
 		low_bat_thl_data->low_bat_thl_level);
 }
 

@@ -51,7 +51,7 @@
 #define yuechus5kgd2aux_table_write_cmos_sensor(...) subdrv_i2c_wr_regs_u16(__VA_ARGS__)
 #define yuechus5kgd2aux_burst_write_cmos_sensor(...) subdrv_i2c_wr_regs_u16_burst_for_addr_same(__VA_ARGS__)
 #define LOG_TAG "[yuechus5kgd2aux]"
-#define S5KGD2AUX_LOG_INF(format, args...) pr_info(LOG_TAG "[%s] " format, __func__, ##args)
+#define S5KGD2AUX_LOG_INF(format, args...) pr_debug(LOG_TAG "[%s] " format, __func__, ##args)
 #define S5KGD2AUX_LOG_DBG(format, args...) pr_debug(LOG_TAG "[%s] " format, __func__, ##args)
 
 #undef VENDOR_EDIT

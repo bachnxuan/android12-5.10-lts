@@ -57,7 +57,7 @@ static void _opp_limiter(int vpu_max, int vpu_min, int dla_max, int dla_min,
 	dla_min = over_range_check(dla_min);
 
 #if LOCAL_DBG
-	pr_info("%s type:%d, %d/%d/%d/%d\n", __func__, type,
+	pr_debug("%s type:%d, %d/%d/%d/%d\n", __func__, type,
 			vpu_max, vpu_min, dla_max, dla_min);
 #endif
 	for (i = 0 ; i < CLUSTER_NUM ; i++) {
@@ -79,7 +79,7 @@ static void _opp_limiter(int vpu_max, int vpu_min, int dla_max, int dla_min,
 
 		apu_writel(reg_data, spare_reg_base + reg_offset);
 #if LOCAL_DBG
-		pr_info("%s cluster%d write:0x%08x, readback:0x%08x\n",
+		pr_debug("%s cluster%d write:0x%08x, readback:0x%08x\n",
 				__func__, i, reg_data,
 				apu_readl(spare_reg_base + reg_offset));
 #endif
@@ -117,7 +117,7 @@ static int aputop_dbg_set_parameter(int param, int argc, int *args)
 
 	for (i = 0 ; i < argc ; i++) {
 		if (args[i] < -1 || args[i] >= INT_MAX) {
-			pr_info("%s invalid args[%d]\n", __func__, i);
+			pr_debug("%s invalid args[%d]\n", __func__, i);
 			return -EINVAL;
 		}
 	}
@@ -133,7 +133,7 @@ static int aputop_dbg_set_parameter(int param, int argc, int *args)
 			rpmsg_data.data2 = args[2]; // POWER_ON/POWER_OFF
 			aputop_send_rpmsg(&rpmsg_data, 100);
 		} else {
-			pr_info("%s invalid param num:%d\n", __func__, argc);
+			pr_debug("%s invalid param num:%d\n", __func__, argc);
 			ret = -EINVAL;
 		}
 		break;
@@ -145,7 +145,7 @@ static int aputop_dbg_set_parameter(int param, int argc, int *args)
 			rpmsg_data.data2 = args[2]; // opp
 			aputop_send_rpmsg(&rpmsg_data, 100);
 		} else {
-			pr_info("%s invalid param num:%d\n", __func__, argc);
+			pr_debug("%s invalid param num:%d\n", __func__, argc);
 			ret = -EINVAL;
 		}
 		break;
@@ -153,7 +153,7 @@ static int aputop_dbg_set_parameter(int param, int argc, int *args)
 		if (argc == 1) {
 			limit_opp_to_all_devices(args[0]);
 		} else {
-			pr_info("%s invalid param num:%d\n", __func__, argc);
+			pr_debug("%s invalid param num:%d\n", __func__, argc);
 			ret = -EINVAL;
 		}
 		break;
@@ -163,7 +163,7 @@ static int aputop_dbg_set_parameter(int param, int argc, int *args)
 			rpmsg_data.data0 = args[0]; // pseudo data
 			aputop_send_rpmsg(&rpmsg_data, 100);
 		} else {
-			pr_info("%s invalid param num:%d\n", __func__, argc);
+			pr_debug("%s invalid param num:%d\n", __func__, argc);
 			ret = -EINVAL;
 		}
 		break;
@@ -173,7 +173,7 @@ static int aputop_dbg_set_parameter(int param, int argc, int *args)
 			rpmsg_data.data0 = args[0]; // pseudo data
 			aputop_send_rpmsg(&rpmsg_data, 100);
 		} else {
-			pr_info("%s invalid param num:%d\n", __func__, argc);
+			pr_debug("%s invalid param num:%d\n", __func__, argc);
 			ret = -EINVAL;
 		}
 		break;
@@ -186,12 +186,12 @@ static int aputop_dbg_set_parameter(int param, int argc, int *args)
 			rpmsg_data.data1 = args[1]; // allow bitmask
 			aputop_send_rpmsg(&rpmsg_data, 100);
 		} else {
-			pr_info("%s invalid param num:%d\n", __func__, argc);
+			pr_debug("%s invalid param num:%d\n", __func__, argc);
 			ret = -EINVAL;
 		}
 		break;
 	default:
-		pr_info("%s unsupport the pwr param:%d\n", __func__, param);
+		pr_debug("%s unsupport the pwr param:%d\n", __func__, param);
 		ret = -EINVAL;
 		break;
 	}
@@ -251,7 +251,7 @@ static int aputop_show_opp_tbl(struct seq_file *s, void *unused)
 	struct tiny_dvfs_opp_tbl tbl;
 	int size, i, j;
 
-	pr_info("%s ++\n", __func__);
+	pr_debug("%s ++\n", __func__);
 	memcpy(&tbl, &opp_tbl, sizeof(struct tiny_dvfs_opp_tbl));
 	size = tbl.tbl_size;
 
@@ -283,7 +283,7 @@ static int aputop_show_curr_status(struct seq_file *s, void *unused)
 	struct rpc_status_dump cluster_dump[CLUSTER_NUM + 1];
 	int i;
 
-	pr_info("%s ++\n", __func__);
+	pr_debug("%s ++\n", __func__);
 	memcpy(&info, &curr_info, sizeof(struct apu_pwr_curr_info));
 
 	seq_puts(s, "\n");
@@ -329,21 +329,21 @@ static int apu_top_dbg_show(struct seq_file *s, void *unused)
 	int ret = 0;
 	enum aputop_rpmsg_cmd cmd = get_curr_rpmsg_cmd();
 
-	pr_info("%s for aputop_rpmsg_cmd : %d\n", __func__, cmd);
+	pr_debug("%s for aputop_rpmsg_cmd : %d\n", __func__, cmd);
 
 	if (cmd == APUTOP_DUMP_OPP_TBL)
 		ret = aputop_show_opp_tbl(s, unused);
 	else if (cmd == APUTOP_CURR_STATUS)
 		ret = aputop_show_curr_status(s, unused);
 	else
-		pr_info("%s not support this cmd\n", __func__, cmd);
+		pr_debug("%s not support this cmd\n", __func__, cmd);
 
 	return ret;
 }
 
 int mt6895_apu_top_dbg_open(struct inode *inode, struct file *file)
 {
-	pr_info("%s ++\n", __func__);
+	pr_debug("%s ++\n", __func__);
 
 	return single_open(file, apu_top_dbg_show, inode->i_private);
 }
@@ -357,7 +357,7 @@ ssize_t mt6895_apu_top_dbg_write(
 	int ret, i, param;
 	unsigned int args[MAX_ARG];
 
-	pr_info("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	tmp = kzalloc(count + 1, GFP_KERNEL);
 	if (!tmp)
@@ -365,7 +365,7 @@ ssize_t mt6895_apu_top_dbg_write(
 
 	ret = copy_from_user(tmp, buffer, count);
 	if (ret) {
-		pr_info("[%s] copy_from_user failed, ret=%d\n", __func__, ret);
+		pr_debug("[%s] copy_from_user failed, ret=%d\n", __func__, ret);
 		goto out;
 	}
 
@@ -387,7 +387,7 @@ ssize_t mt6895_apu_top_dbg_write(
 		param = APUPWR_DBG_PROFILING;
 	else {
 		ret = -EINVAL;
-		pr_info("no power param[%s]!\n", token);
+		pr_debug("no power param[%s]!\n", token);
 		goto out;
 	}
 
@@ -395,7 +395,7 @@ ssize_t mt6895_apu_top_dbg_write(
 	for (i = 0; i < MAX_ARG && (token = strsep(&cursor, " ")); i++) {
 		ret = kstrtoint(token, 10, &args[i]);
 		if (ret) {
-			pr_info("fail to parse args[%d](%s)", i, token);
+			pr_debug("fail to parse args[%d](%s)", i, token);
 			goto out;
 		}
 	}
@@ -423,7 +423,7 @@ int mt6895_apu_top_rpmsg_cb(int cmd, void *data, int len, void *priv, u32 src)
 			memcpy(&opp_tbl,
 				(struct tiny_dvfs_opp_tbl *)data, len);
 		} else {
-			pr_info("%s invalid size : %d/%d\n",
+			pr_debug("%s invalid size : %d/%d\n",
 					__func__, len, sizeof(opp_tbl));
 			ret = -EINVAL;
 		}
@@ -433,13 +433,13 @@ int mt6895_apu_top_rpmsg_cb(int cmd, void *data, int len, void *priv, u32 src)
 			memcpy(&curr_info,
 				(struct apu_pwr_curr_info *)data, len);
 		} else {
-			pr_info("%s invalid size : %d/%d\n",
+			pr_debug("%s invalid size : %d/%d\n",
 					__func__, len, sizeof(curr_info));
 			ret = -EINVAL;
 		}
 		break;
 	default:
-		pr_info("%s invalid cmd : %d\n", __func__, cmd);
+		pr_debug("%s invalid cmd : %d\n", __func__, cmd);
 		ret = -EINVAL;
 	}
 
@@ -454,7 +454,7 @@ int mt6895_pwr_flow_remote_sync(uint32_t cfg)
 
 	apu_writel(reg_data, spare_reg_base + PWR_FLOW_SYNC_REG);
 
-	pr_info("%s write 0x%08x, readback:0x%08x\n",
+	pr_debug("%s write 0x%08x, readback:0x%08x\n",
 			__func__, reg_data,
 			apu_readl(spare_reg_base + PWR_FLOW_SYNC_REG));
 
@@ -474,7 +474,7 @@ int mt6895_drv_cfg_remote_sync(struct aputop_func_param *aputop)
 		(cfg.dvfs_debounce << 8) |
 		(cfg.disable_hw_meter << 16);
 
-	pr_info("%s 0x%08x\n", __func__, reg_data);
+	pr_debug("%s 0x%08x\n", __func__, reg_data);
 	apu_writel(reg_data, spare_reg_base + DRV_CFG_SYNC_REG);
 
 	return 0;
@@ -488,7 +488,7 @@ int mt6895_chip_data_remote_sync(struct plat_cfg_data *plat_cfg)
 		| ((plat_cfg->hw_id & 0xf) << 4)
 		| ((plat_cfg->seg_efuse & 0xf) << 8);
 
-	pr_info("%s 0x%08x\n", __func__, reg_data);
+	pr_debug("%s 0x%08x\n", __func__, reg_data);
 	apu_writel(reg_data, spare_reg_base + PLAT_CFG_SYNC_REG);
 
 	return 0;
@@ -507,7 +507,7 @@ int mt6895_init_remote_data_sync(void __iomem *reg_base)
 				sizeof(struct device_opp_limit));
 		reg_offset = opp_limit_tbl[i].opp_lmt_reg;
 #if LOCAL_DBG
-		pr_info("%s spare_reg_base:0x%08x, offset:0x%08x\n",
+		pr_debug("%s spare_reg_base:0x%08x, offset:0x%08x\n",
 				__func__, spare_reg_base, reg_offset);
 #endif
 		apu_writel(0xffffffff, spare_reg_base + reg_offset);

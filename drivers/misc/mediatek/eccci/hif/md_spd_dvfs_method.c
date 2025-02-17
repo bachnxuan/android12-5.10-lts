@@ -171,13 +171,13 @@ static void spd_qos_tbl_init(void)
 	if (node) {
 		ret = of_property_read_u32(node, "net_spd_ver", &ver);
 		if (ret < 0)
-			pr_info("ccci: spd: [%s] not found: net_spd_ver, ret=%d\n",
+			pr_debug("ccci: spd: [%s] not found: net_spd_ver, ret=%d\n",
 				__func__, ret);
 	}
 
-	pr_info("ccci: spd: qos tbl ver:%u(%u)\n", ver, (unsigned int)ARRAY_SIZE(table_entry));
+	pr_debug("ccci: spd: qos tbl ver:%u(%u)\n", ver, (unsigned int)ARRAY_SIZE(table_entry));
 	if (ver >= (unsigned int)ARRAY_SIZE(table_entry)) {
-		pr_info("ccci: spd: change qos version %u to default: 0\n", ver);
+		pr_debug("ccci: spd: change qos version %u to default: 0\n", ver);
 		ver = 0;
 	}
 
@@ -215,14 +215,14 @@ static inline int get_speed_hint(u64 speed, int curr_idx,
 		return -1; /* No change and no action */
 
 	if (new_idx < curr_idx) {
-		pr_info("ccci : spd: curr_idx: %x; new_idx :%x]\n", curr_idx, new_idx);
+		pr_debug("ccci : spd: curr_idx: %x; new_idx :%x]\n", curr_idx, new_idx);
 		return new_idx;
 	}
 
 	middle_speed = (ref[new_idx].speed + ref[new_idx - 1].speed);
 	middle_speed = middle_speed >> 1;
 
-	pr_info("ccci : spd: speed: %lld; middle_speed :%lld\n", speed, middle_speed);
+	pr_debug("ccci : spd: speed: %lld; middle_speed :%lld\n", speed, middle_speed);
 
 	if (speed >= middle_speed)
 		return -1;
@@ -298,7 +298,7 @@ static inline void apply_qos_rps(void)
 		case_type = 2;
 	}
 
-	pr_info("ccci: spd: rps val:0x%x[dl:0x%x -- ul:0x%x]<%d>\n",
+	pr_debug("ccci: spd: rps val:0x%x[dl:0x%x -- ul:0x%x]<%d>\n",
 			s_rps, dl_rps, ul_rps, case_type);
 	set_ccmni_rps(s_rps);
 }
@@ -333,7 +333,7 @@ static inline void apply_qos_isr(void)
 	}
 
 	ret = irq_set_affinity_hint(s_irq_id, &tmask);
-	pr_info("[%s] isr val:0x%X; type: %d; irq_set_affinity_hint(): %d\n",
+	pr_debug("[%s] isr val:0x%X; type: %d; irq_set_affinity_hint(): %d\n",
 		__func__, (u8)isr_affinity, case_type, ret);
 }
 
@@ -354,7 +354,7 @@ static inline void update_tx_done_affinity(void)
 			s_tx_done_affinity[i] = 0xFF;
 	}
 
-	pr_info("ccci: spd: s_tx_done_affinity[0x%x 0x%x 0x%x 0x%x]\n",
+	pr_debug("ccci: spd: s_tx_done_affinity[0x%x 0x%x 0x%x 0x%x]\n",
 			s_tx_done_affinity[0], s_tx_done_affinity[1],
 			s_tx_done_affinity[2], s_tx_done_affinity[3]);
 }
@@ -377,7 +377,7 @@ static inline void apply_task_affinity(u32 push_cpus, int cpu_nr,
 
 
 	ret = set_cpus_allowed_ptr(task, &tmask);
-	pr_info("ccci: spd: task cpus: (0x%X); ret: %d\n",
+	pr_debug("ccci: spd: task cpus: (0x%X); ret: %d\n",
 		push_cpus, ret);
 }
 
@@ -419,7 +419,7 @@ static inline void spd_qos_method(u64 dl_speed[], u32 dl_num, u64 ul_speed[], u3
 		ul_change = 1;
 	}
 	if (ul_change || dl_change) {
-		pr_info("ccci : spd: new idx[dl:%x--ul:%x]\n", s_curr_dl_idx, s_curr_ul_idx);
+		pr_debug("ccci : spd: new idx[dl:%x--ul:%x]\n", s_curr_dl_idx, s_curr_ul_idx);
 		apply_qos_cpu_freq();
 		apply_qos_dram_freq();
 		apply_qos_isr();

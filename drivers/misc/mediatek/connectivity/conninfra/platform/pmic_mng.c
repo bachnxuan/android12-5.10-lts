@@ -141,9 +141,9 @@ static int consys_mt6363_probe(struct platform_device *pdev)
 	g_regmap_mt6363 = dev_get_regmap(pdev->dev.parent, NULL);
 
 	if (!g_regmap_mt6363)
-		pr_info("%s failed to get g_regmap_mt6363\n", __func__);
+		pr_debug("%s failed to get g_regmap_mt6363\n", __func__);
 	else
-		pr_info("%s get regmap_mt6363 success!!\n", __func__);
+		pr_debug("%s get regmap_mt6363 success!!\n", __func__);
 
 	return 0;
 }
@@ -153,9 +153,9 @@ static int consys_mt6373_probe(struct platform_device *pdev)
 	g_regmap_mt6373 = dev_get_regmap(pdev->dev.parent, NULL);
 
 	if (!g_regmap_mt6373)
-		pr_info("%s failed to get g_regmap_mt6373\n", __func__);
+		pr_debug("%s failed to get g_regmap_mt6373\n", __func__);
 	else
-		pr_info("%s get regmap_mt6373 success!!\n", __func__);
+		pr_debug("%s get regmap_mt6373 success!!\n", __func__);
 
 	return 0;
 }
@@ -165,9 +165,9 @@ static int consys_mt6368_probe(struct platform_device *pdev)
 	g_regmap_mt6368 = dev_get_regmap(pdev->dev.parent, NULL);
 
 	if (!g_regmap_mt6368)
-		pr_info("%s failed to get g_regmap_mt6368\n", __func__);
+		pr_debug("%s failed to get g_regmap_mt6368\n", __func__);
 	else
-		pr_info("%s get regmap_mt6368 success!!\n", __func__);
+		pr_debug("%s get regmap_mt6368 success!!\n", __func__);
 
 	return 0;
 }
@@ -180,26 +180,26 @@ static void pmic_mng_get_regmap(struct platform_device *pdev)
 
 	pmic_node = of_parse_phandle(pdev->dev.of_node, "pmic", 0);
 	if (!pmic_node) {
-		pr_info("get pmic_node fail\n");
+		pr_debug("get pmic_node fail\n");
 		return;
 	}
 
 	pmic_pdev = of_find_device_by_node(pmic_node);
 	if (!pmic_pdev) {
-		pr_info("get pmic_pdev fail\n");
+		pr_debug("get pmic_pdev fail\n");
 		return;
 	}
 
 	chip = dev_get_drvdata(&(pmic_pdev->dev));
 	if (!chip) {
-		pr_info("get chip fail\n");
+		pr_debug("get chip fail\n");
 		return;
 	}
 
 	g_regmap = chip->regmap;
 	if (IS_ERR_VALUE(g_regmap)) {
 		g_regmap = NULL;
-		pr_info("get regmap fail\n");
+		pr_debug("get regmap fail\n");
 	}
 }
 #endif
@@ -312,19 +312,19 @@ int pmic_mng_register_device(void)
 	if (ret)
 		pr_err("Conninfra pmic mt6363 driver registered failed(%d)\n", ret);
 	else
-		pr_info("%s mt6363 ok.\n", __func__);
+		pr_debug("%s mt6363 ok.\n", __func__);
 
 	ret = platform_driver_register(&consys_mt6373_dev_drv);
 	if (ret)
 		pr_err("Conninfra pmic mt6373 driver registered failed(%d)\n", ret);
 	else
-		pr_info("%s mt6373 ok.\n", __func__);
+		pr_debug("%s mt6373 ok.\n", __func__);
 
 	ret = platform_driver_register(&consys_mt6368_dev_drv);
 	if (ret)
 		pr_err("Conninfra pmic mt6368 driver registered failed(%d)\n", ret);
 	else
-		pr_info("%s mt6368 ok.\n", __func__);
+		pr_debug("%s mt6368 ok.\n", __func__);
 
 #endif
 	return 0;

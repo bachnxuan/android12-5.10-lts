@@ -55,7 +55,7 @@ static const enum DVFS_USER _apupw_dbg_id2user(int dbg_id)
 	};
 
 	if (dbg_id < 0 || dbg_id >= ARRAY_SIZE(ids)) {
-		pr_info("[%s] not support device id: %d\n", dbg_id);
+		pr_debug("[%s] not support device id: %d\n", dbg_id);
 		return -EINVAL;
 	}
 	return ids[dbg_id];
@@ -125,7 +125,7 @@ static bool _apupw_valid_input(u8 param, int argc)
 	}
 	return true;
 INVALID:
-	pr_info("para:%d expected:%d, received:%d\n", param, expect, argc);
+	pr_debug("para:%d expected:%d, received:%d\n", param, expect, argc);
 	return false;
 }
 
@@ -149,7 +149,7 @@ static int _apupw_set_freq_range(struct apu_dev *ad, ulong min, ulong max)
 
 	/* Change qos max freq to fix freq and input min/mas are Khz already */
 	ret = dev_pm_qos_update_request(&ad->df->user_max_freq_req, max);
-	pr_info("[%s] [%s] max/min %luMhz/%luMhz, ret = %d\n",
+	pr_debug("[%s] [%s] max/min %luMhz/%luMhz, ret = %d\n",
 		apu_dev_name(ad->dev), __func__, TOKHZ(max), TOKHZ(min), ret);
 
 	return ret;
@@ -177,7 +177,7 @@ static int _apupw_default_freq_range(struct apu_dev *ad)
 	/* Change qos max freq to fix freq */
 	ret = dev_pm_qos_update_request(&ad->df->user_max_freq_req,
 					TOKHZ(ad->df->scaling_max_freq));
-	pr_info("[%s] [%s] restore default max/min %luMhz/%luMhz, ret = %d\n",
+	pr_debug("[%s] [%s] restore default max/min %luMhz/%luMhz, ret = %d\n",
 		apu_dev_name(ad->dev), __func__,
 		TOMHZ(ad->df->scaling_max_freq),
 		TOMHZ(ad->df->scaling_min_freq), ret);
@@ -237,7 +237,7 @@ void apupw_dbg_power_info(struct work_struct *work)
 
 	n_pos += snprintf((buffer + n_pos), (LOG_LEN - n_pos), "]");
 
-	pr_info("%s", buffer);
+	pr_debug("%s", buffer);
 out:
 	if (apupw_dbg.poll_interval)
 		queue_delayed_work(pm_wq, &pw_info_work,
@@ -415,11 +415,11 @@ static int apupw_dbg_power_stress(int type, int device, int opp)
 	struct apu_dev *ad = NULL;
 	struct apu_gov_data *gov_data = NULL;
 
-	pr_info("%s begin with type %d +++\n", __func__, type);
-	pr_info("%s type %d, device %d, opp %d\n", __func__, type, device, opp);
+	pr_debug("%s begin with type %d +++\n", __func__, type);
+	pr_debug("%s type %d, device %d, opp %d\n", __func__, type, device, opp);
 
 	if (type < 0 || type >= 10) {
-		pr_info("%s err with type = %d\n", __func__, type);
+		pr_debug("%s err with type = %d\n", __func__, type);
 		return -1;
 	}
 
@@ -439,7 +439,7 @@ static int apupw_dbg_power_stress(int type, int device, int opp)
 		} else {
 			id = _apupw_dbg_id2user(device);
 			if (id < 0) {
-				pr_info("%s err with device = %d\n", __func__, device);
+				pr_debug("%s err with device = %d\n", __func__, device);
 				return -1;
 			}
 			apu_device_set_opp(id, opp);
@@ -456,7 +456,7 @@ static int apupw_dbg_power_stress(int type, int device, int opp)
 		} else {
 			id = _apupw_dbg_id2user(device);
 			if (id < 0) {
-				pr_info("%s err with device = %d\n", __func__, device);
+				pr_debug("%s err with device = %d\n", __func__, device);
 				return -1;
 			}
 			apu_device_power_on(id);
@@ -488,7 +488,7 @@ static int apupw_dbg_power_stress(int type, int device, int opp)
 		} else {
 			id = _apupw_dbg_id2user(device);
 			if (id < 0) {
-				pr_info("%s err with device = %d\n", __func__, device);
+				pr_debug("%s err with device = %d\n", __func__, device);
 				return -1;
 			}
 			ad = apu_find_device(id);
@@ -509,10 +509,10 @@ static int apupw_dbg_power_stress(int type, int device, int opp)
 		break;
 
 	default:
-		pr_info("%s invalid type %d !\n", __func__, type);
+		pr_debug("%s invalid type %d !\n", __func__, type);
 	}
 
-	pr_info("%s end with type %d ---\n", __func__, type);
+	pr_debug("%s end with type %d ---\n", __func__, type);
 	return 0;
 }
 
@@ -522,7 +522,7 @@ static int apupw_dbg_dvfs(u8 param, int argc, int *args)
 	struct apu_dev *ad = NULL;
 	int ret = 0;
 
-	pr_info("[%s] @@test%d lock opp=%d\n", __func__, argc, (int)(args[0]));
+	pr_debug("[%s] @@test%d lock opp=%d\n", __func__, argc, (int)(args[0]));
 	for (user = MDLA; user < APUSYS_POWER_USER_NUM; user++) {
 		ad = _apupw_valid_df(user);
 		if (!ad)
@@ -536,7 +536,7 @@ static int apupw_dbg_dvfs(u8 param, int argc, int *args)
 
 	/* only ret < 0 is fail, since dev_pm_qos_update_request will return 1 when pass */
 	if (ret < 0)
-		pr_info("[%s] @@test%d lock opp=%d fail, ret %d\n",
+		pr_debug("[%s] @@test%d lock opp=%d fail, ret %d\n",
 			__func__, argc, (int)(args[0]), ret);
 	return ret;
 }
@@ -705,7 +705,7 @@ static int apupw_dbg_set_parameter(u8 param, int argc, int *args)
 		apupw_dbg.option = POWER_PARAM_OPP_TABLE;
 		break;
 	default:
-		pr_info("unsupport the power parameter:%d\n", param);
+		pr_debug("unsupport the power parameter:%d\n", param);
 		ret = -EINVAL;
 		break;
 	}
@@ -728,7 +728,7 @@ static ssize_t apupw_dbg_write(struct file *flip, const char __user *buffer,
 
 	ret = copy_from_user(tmp, buffer, count);
 	if (ret) {
-		pr_info("[%s] copy_from_user failed, ret=%d\n", __func__, ret);
+		pr_debug("[%s] copy_from_user failed, ret=%d\n", __func__, ret);
 		goto out;
 	}
 
@@ -754,7 +754,7 @@ static ssize_t apupw_dbg_write(struct file *flip, const char __user *buffer,
 		param = POWER_PARAM_LOG_LEVEL;
 	else {
 		ret = -EINVAL;
-		pr_info("no power param[%s]!\n", token);
+		pr_debug("no power param[%s]!\n", token);
 		goto out;
 	}
 
@@ -762,7 +762,7 @@ static ssize_t apupw_dbg_write(struct file *flip, const char __user *buffer,
 	for (i = 0; i < MAX_ARG && (token = strsep(&cursor, " ")); i++) {
 		ret = kstrtoint(token, 10, &args[i]);
 		if (ret) {
-			pr_info("fail to parse args[%d](%s)", i, token);
+			pr_debug("fail to parse args[%d](%s)", i, token);
 			goto out;
 		}
 	}
@@ -869,7 +869,7 @@ int apupw_dbg_init(struct apusys_core_info *info)
 	/* creating apupw directory */
 	apupw_dbg.dir = debugfs_create_dir("apupwr", info->dbg_root);
 	if (IS_ERR_OR_NULL(apupw_dbg.dir)) {
-		pr_info("failed to create \"apupwr\" debug dir.\n");
+		pr_debug("failed to create \"apupwr\" debug dir.\n");
 		goto out;
 	}
 
@@ -877,14 +877,14 @@ int apupw_dbg_init(struct apusys_core_info *info)
 	apupw_dbg.file = debugfs_create_file("power", (0644),
 		apupw_dbg.dir, NULL, &apupw_dbg_fops);
 	if (IS_ERR_OR_NULL(apupw_dbg.file)) {
-		pr_info("failed to create \"power\" debug file.\n");
+		pr_debug("failed to create \"power\" debug file.\n");
 		goto out;
 	}
 
 	/* symbolic link to /d/apupwr/power */
 	apupw_dbg.sym_link = debugfs_create_symlink("power", info->dbg_root, "./apupwr/power");
 	if (IS_ERR_OR_NULL(apupw_dbg.sym_link)) {
-		pr_info("failed to create \"power\" symbolic file.\n");
+		pr_debug("failed to create \"power\" symbolic file.\n");
 		goto out;
 	}
 out:

@@ -81,7 +81,7 @@ static ssize_t lpm_cpuidle_profile_write(char *FromUserBuf,
 		break;
 
 	default:
-		pr_info("unknown command\n");
+		pr_debug("unknown command\n");
 		break;
 	}
 

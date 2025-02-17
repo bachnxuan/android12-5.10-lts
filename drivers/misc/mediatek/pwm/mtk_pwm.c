@@ -1899,7 +1899,7 @@ static irqreturn_t mt_pwm_irq(int irq, void *intr_pwm_nu)
 		sts = mt_get_intr_status(i);
 		if (sts) {
 			mt_set_intr_ack(i);
-			pr_info(T "PWM int!!ch=%x\n", i/2);
+			pr_debug(T "PWM int!!ch=%x\n", i/2);
 			break;
 		}
 	}
@@ -1933,7 +1933,7 @@ static int mt_pwm_probe(struct platform_device *pdev)
 		pr_err(T "PWM get irqnr failed\n");
 		return -ENODEV;
 	}
-	pr_info(T "pwm base: 0x%p pwm irq: %d\n",
+	pr_debug(T "pwm base: 0x%p pwm irq: %d\n",
 			pwm_base, pwm_irqnr);
 
 	pwm_irqnr = platform_get_irq(pdev, 0);
@@ -1955,7 +1955,7 @@ static int mt_pwm_probe(struct platform_device *pdev)
 
 	mutex_init(&pwm_power_lock);
 
-	pr_info(T "pwm probe Done!!\n");
+	pr_debug(T "pwm probe Done!!\n");
 
 	return RSUCCESS;
 }

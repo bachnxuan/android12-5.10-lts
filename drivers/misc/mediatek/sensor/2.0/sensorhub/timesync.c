@@ -111,7 +111,7 @@ static int timesync_comm_with_nolock(void)
 	time->hour = android_time.tm_hour;
 	time->day = android_time.tm_mday;
 	time->month = android_time.tm_mon + 1;
-	pr_info("boot %lld sched %lld android %02d-%02d %02d:%02d:%02d.%06d\n",
+	pr_debug("boot %lld sched %lld android %02d-%02d %02d:%02d:%02d.%06d\n",
 		now_time, schedclock, time->month, time->day, time->hour,
 		time->minute, time->second, time->usecond);
 	ret = sensor_comm_ctrl_send(ctrl, sizeof(*ctrl) + ctrl->length);
@@ -216,14 +216,14 @@ void timesync_stop(void)
 
 void timesync_resume(void)
 {
-	pr_info("host resume boottime %lld\n", ktime_get_boottime_ns());
+	pr_debug("host resume boottime %lld\n", ktime_get_boottime_ns());
 	WRITE_ONCE(timesync_suspend_flag, false);
 	timesync_comm_with();
 }
 
 void timesync_suspend(void)
 {
-	pr_info("host suspend boottime %lld\n", ktime_get_boottime_ns());
+	pr_debug("host suspend boottime %lld\n", ktime_get_boottime_ns());
 	WRITE_ONCE(timesync_suspend_flag, true);
 }
 

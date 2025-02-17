@@ -140,12 +140,12 @@
 
 /* #define ISP_DEBUG */
 #ifdef ISP_DEBUG
-#define LOG_DBG(format, args...) pr_info(MyTag "[%s] " format, __func__, ##args)
+#define LOG_DBG(format, args...) pr_debug(MyTag "[%s] " format, __func__, ##args)
 #else
 #define LOG_DBG(format, args...)
 #endif
 
-#define LOG_INF(format, args...) pr_info(MyTag "[%s] " format, __func__, ##args)
+#define LOG_INF(format, args...) pr_debug(MyTag "[%s] " format, __func__, ##args)
 
 #define LOG_NOTICE(format, args...)                                            \
 	pr_notice(MyTag "[%s] " format, __func__, ##args)
@@ -732,7 +732,7 @@ struct SV_LOG_STR {
 };
 
 /* If log buffer size(See avaLen in the macro, "IRQ_LOG_KEEPER") is not
- * enough, dbg msg will be printed out via pr_info/pr_notice. This behavior
+ * enough, dbg msg will be printed out via pr_debug/pr_notice. This behavior
  * costs too much for ISR and CPU. If ISR_NO_PRINT is defined as "true", we'll
  * hide the dbg msg, when log buffer is not enough.
  */
@@ -1228,7 +1228,7 @@ static int32_t ISP_GetWaitQCamIndex(enum ISP_IRQ_TYPE_ENUM type)
 	int32_t index = type - ISP_IRQ_TYPE_INT_CAM_A_ST;
 
 	if (index >= CAM_AMOUNT)
-		pr_info("waitq cam index out of range:%d", index);
+		pr_debug("waitq cam index out of range:%d", index);
 
 	return index;
 }
@@ -1241,7 +1241,7 @@ static int32_t ISP_GetWaitQCamsvIndex(enum ISP_IRQ_TYPE_ENUM type)
 	int32_t index = type - ISP_IRQ_TYPE_INT_CAMSV_START_ST;
 
 	if (index >= CAMSV_AMOUNT)
-		pr_info("waitq camsv index out of range:%d", index);
+		pr_debug("waitq camsv index out of range:%d", index);
 
 	return index;
 }
@@ -1279,7 +1279,7 @@ static int32_t ISP_GetWaitQCamIrqIndex(enum ISP_ST_ENUM st_type,
 	}
 
 	if (index == ISP_WAITQ_HEAD_IRQ_AMOUNT)
-		pr_info("waitq cam irq index out of range:%d_%d", st_type,
+		pr_debug("waitq cam irq index out of range:%d_%d", st_type,
 			status);
 
 	return index;
@@ -1301,7 +1301,7 @@ static int32_t ISP_GetWaitQCamsvIrqIndex(enum ISP_ST_ENUM st_type,
 	}
 
 	if (index == ISP_WAITQ_HEAD_IRQ_SV_AMOUNT)
-		pr_info("waitq camsv irq index out of range:%d_%d", st_type,
+		pr_debug("waitq camsv irq index out of range:%d_%d", st_type,
 			status);
 
 	return index;

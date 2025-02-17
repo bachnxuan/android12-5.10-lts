@@ -52,14 +52,14 @@ int conn_scp_init(void)
 		goto err_out;
 	}
 
-	pr_info("Registering conn_scp chardev\n");
+	pr_debug("Registering conn_scp chardev\n");
 	ret = alloc_chrdev_region(&g_conn_scp_dev->devno, 0, 1, CONN_SCP_DEVNAME);
 	if (ret) {
-		pr_info("alloc_chrdev_region fail: %d\n", ret);
+		pr_debug("alloc_chrdev_region fail: %d\n", ret);
 		err = -ENOMEM;
 		goto err_out;
 	} else {
-		pr_info("major: %d, minor: %d\n",
+		pr_debug("major: %d, minor: %d\n",
 				MAJOR(g_conn_scp_dev->devno), MINOR(g_conn_scp_dev->devno));
 	}
 	cdev_init(&g_conn_scp_dev->chdev, &g_conn_scp_dev_fops);
@@ -67,12 +67,12 @@ int conn_scp_init(void)
 	g_conn_scp_dev->chdev.owner = THIS_MODULE;
 	err = cdev_add(&g_conn_scp_dev->chdev, g_conn_scp_dev->devno, 1);
 	if (err) {
-		pr_info("cdev_add fail: %d\n", err);
+		pr_debug("cdev_add fail: %d\n", err);
 		goto err_out;
 	}
 	g_conn_scp_dev->cls = class_create(THIS_MODULE, "conn_scp");
 	if (IS_ERR(g_conn_scp_dev->cls)) {
-		pr_info("Unable to create class, err = %d\n", (int)PTR_ERR(g_conn_scp_dev->cls));
+		pr_debug("Unable to create class, err = %d\n", (int)PTR_ERR(g_conn_scp_dev->cls));
 		goto err_out;
 	}
 
@@ -84,7 +84,7 @@ int conn_scp_init(void)
 								PTR_ERR(g_conn_scp_dev->dev));
 		goto err_out;
 	}
-	pr_info("CONN SCP device init Done\n");
+	pr_debug("CONN SCP device init Done\n");
 
 	/*****************************************/
 	conap_scp_init();
@@ -111,7 +111,7 @@ err_out:
 void conn_scp_exit(void)
 {
 
-	pr_info("Unregistering conn_scp test chardev\n");
+	pr_debug("Unregistering conn_scp test chardev\n");
 	conap_scp_deinit();
 
 #ifdef AOLTEST_SUPPORT
@@ -124,7 +124,7 @@ void conn_scp_exit(void)
 	class_destroy(g_conn_scp_dev->cls);
 	kfree(g_conn_scp_dev);
 	g_conn_scp_dev = NULL;
-	pr_info("Done\n");
+	pr_debug("Done\n");
 
 
 }

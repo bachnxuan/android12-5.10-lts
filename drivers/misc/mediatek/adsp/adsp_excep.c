@@ -190,14 +190,14 @@ static void adsp_exception_dump(struct adsp_exception_control *ctrl)
 
 	if (suppress_test_ee && coredump
 	    && strstr(coredump->assert_log, ADSP_TEST_EE_PATTERN)) {
-		pr_info("%s, suppress Test EE dump", __func__);
+		pr_debug("%s, suppress Test EE dump", __func__);
 		return;
 	}
 
 	if (dump_flag) {
 		ret = dump_buffer(ctrl, coredump_id);
 		if (ret < 0)
-			pr_info("%s, excep dump fail ret(%d)", __func__, ret);
+			pr_debug("%s, excep dump fail ret(%d)", __func__, ret);
 	}
 
 	n += snprintf(detail + n, ADSP_AED_STR_LEN - n, "%s %s\n",
@@ -214,7 +214,7 @@ static void adsp_exception_dump(struct adsp_exception_control *ctrl)
 		n += snprintf(detail + n, ADSP_AED_STR_LEN - n, "%s",
 			      coredump->assert_log);
 	}
-	pr_info("%s", detail);
+	pr_debug("%s", detail);
 
 	/* adsp aed api, only detail information available*/
 	aed_common_exception_api("adsp", (const int *)coredump, coredump_size,
@@ -235,7 +235,7 @@ void get_adsp_misc_buffer(unsigned long *vaddr, unsigned long *size)
 	unsigned int part_len = ADSP_KE_DUMP_LEN / ADSP_CORE_TOTAL;
 
 	if (!adspsys || !buf) {
-		pr_info("adsp image not load or not enough space, skip dump");
+		pr_debug("adsp image not load or not enough space, skip dump");
 		goto ERROR;
 	}
 	memset(buf, 0, ADSP_KE_DUMP_LEN);
@@ -324,12 +324,12 @@ void adsp_aed_worker(struct work_struct *ws)
 			break;
 
 		/* reset fail & retry */
-		pr_info("%s, reset retry.... (%d)", __func__, retry);
+		pr_debug("%s, reset retry.... (%d)", __func__, retry);
 		msleep(20);
 	}
 #if IS_ENABLED(CONFIG_MTK_AEE_FEATURE)
 	if (ret) {
-		pr_info("%s, adsp dead, wait dump dead body", __func__);
+		pr_debug("%s, adsp dead, wait dump dead body", __func__);
 		if (is_infrabus_timeout())
 			BUG(); /* reboot for bus dump */
 		else
@@ -361,7 +361,7 @@ bool adsp_aed_dispatch(enum adsp_excep_id type, void *data)
 static void adsp_wdt_counter_reset(struct timer_list *t)
 {
 	excep_ctrl.wdt_counter = 0;
-	pr_info("[ADSP] %s\n", __func__);
+	pr_debug("[ADSP] %s\n", __func__);
 }
 
 /*
@@ -404,7 +404,7 @@ void adsp_wdt_handler(int irq, void *data, int cid)
 	struct adsp_priv *pdata = (struct adsp_priv *)data;
 
 	if (!adsp_aed_dispatch(EXCEP_RUNTIME, data))
-		pr_info("%s, already resetting, ignore core%d wdt",
+		pr_debug("%s, already resetting, ignore core%d wdt",
 			__func__, pdata->id);
 
 }
@@ -417,7 +417,7 @@ void get_adsp_aee_buffer(unsigned long *vaddr, unsigned long *size)
 	u32 n = 0;
 
 	if (!adspsys || !buf) {
-		pr_info("adsp image not load or not enough space, skip dump");
+		pr_debug("adsp image not load or not enough space, skip dump");
 		goto EXIT;
 	}
 	memset(buf, 0, len);

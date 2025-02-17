@@ -195,7 +195,7 @@ static int cfm_epaelna_feminfo_part_populate(struct device_node *np,
 	value = 0;
 	err = of_property_read_u32(np, CFM_DT_PROP_VID, &value);
 	if (err < 0 || value > 0xFF) {
-		pr_info("[WARN] %s.%s: %d missing or not a 8-bit value, err %d",
+		pr_debug("[WARN] %s.%s: %d missing or not a 8-bit value, err %d",
 			np->name, CFM_DT_PROP_VID, value, err);
 		value = 0;
 	}
@@ -205,7 +205,7 @@ static int cfm_epaelna_feminfo_part_populate(struct device_node *np,
 	value = 0;
 	err = of_property_read_u32(np, CFM_DT_PROP_PID, &value);
 	if (err < 0 || value > 0xFF) {
-		pr_info("[WARN] %s.%s: %d missing or not a 8-bit value, err %d",
+		pr_debug("[WARN] %s.%s: %d missing or not a 8-bit value, err %d",
 			np->name, CFM_DT_PROP_PID, value, err);
 		value = 0;
 	}
@@ -282,7 +282,7 @@ static int cfm_epaelna_pincfg_mapping_populate(
 
 	/* Check if we still have enough storage for new pins */
 	if (pctl_data->pin_cnt + result.count > CONNFEM_EPAELNA_PIN_COUNT) {
-		pr_info("[WARN] Too many ANTSEL PINs! Not enough space for %d",
+		pr_debug("[WARN] Too many ANTSEL PINs! Not enough space for %d",
 			pctl_data->pin_cnt);
 		cfm_epaelna_pininfo_dump(&result);
 		return -ENOMEM;
@@ -323,19 +323,19 @@ static int cfm_epaelna_pincfg_mapping_populate(
 	return 0;
 
 mapping_populate_read_err:
-	pr_info("[WARN] %s,pin:%d idx:%d,real idx:%d,Read err %d",
+	pr_debug("[WARN] %s,pin:%d idx:%d,real idx:%d,Read err %d",
 		CFM_DT_PROP_MAPPING,
 		p, i, (start + i), err);
 	return err;
 
 mapping_populate_polarity_err:
-	pr_info("[WARN] %s,pin:%d idx:%d,real idx:%d,Polarity %d is not 0 or 1",
+	pr_debug("[WARN] %s,pin:%d idx:%d,real idx:%d,Polarity %d is not 0 or 1",
 		CFM_DT_PROP_MAPPING,
 		p, i, (start + i), value);
 	return err;
 
 mapping_populate_outofbound_err:
-	pr_info("[WARN] %s,pin:%d idx:%d,real idx:%d,Value %d exceeds 8-bit",
+	pr_debug("[WARN] %s,pin:%d idx:%d,real idx:%d,Value %d exceeds 8-bit",
 		CFM_DT_PROP_MAPPING,
 		p, i, (start + i), value);
 	return err;
@@ -372,7 +372,7 @@ static int cfm_epaelna_pincfg_laa_pinmux_populate(
 	/* Check if we still have enough storage for new pins */
 	if (pctl_data->laa_cnt + result.count >
 	    CONNFEM_EPAELNA_LAA_PIN_COUNT) {
-		pr_info("[WARN] Too many LAA PINs! Not enough space for %d",
+		pr_debug("[WARN] Too many LAA PINs! Not enough space for %d",
 			pctl_data->laa_cnt);
 		cfm_epaelna_laainfo_dump(&result);
 		return -ENOMEM;
@@ -419,20 +419,20 @@ static int cfm_epaelna_pincfg_laa_pinmux_populate(
 	return 0;
 
 laa_pinmux_populate_read_err:
-	pr_info("[WARN] %s,pin:%d idx:%d,real idx:%d,Read err %d",
+	pr_debug("[WARN] %s,pin:%d idx:%d,real idx:%d,Read err %d",
 		CFM_DT_PROP_LAA_PINMUX,
 		p, i, (start + i), err);
 	return err;
 
 laa_pinmux_populate_pin_outofbound_err:
-	pr_info("[WARN] %s,pin:%d idx:%d,real idx:%d,Value 0x%x,GPIO exceed %d",
+	pr_debug("[WARN] %s,pin:%d idx:%d,real idx:%d,Value 0x%x,GPIO exceed %d",
 		CFM_DT_PROP_LAA_PINMUX,
 		p, i, (start + i),
 		value[i], 0xFFFF);
 	return err;
 
 laa_pinmux_populate_pin_mismatch_err:
-	pr_info("[WARN] %s,pin:%d idx:%d,GPIO mismatch WF:%d/MD:%d",
+	pr_debug("[WARN] %s,pin:%d idx:%d,GPIO mismatch WF:%d/MD:%d",
 		CFM_DT_PROP_LAA_PINMUX,
 		p, start,
 		CFM_DT_GET_PIN_NO(value[CFM_DT_LAA_PINMUX_WF_INDEX]),
@@ -471,20 +471,20 @@ int cfm_epaelna_flags_populate(
 			continue;
 
 		if (!subsys_cb[s]->flags_get) {
-			pr_info("[WARN] Undefined %s.flags_get",
+			pr_debug("[WARN] Undefined %s.flags_get",
 				cfm_subsys_name[s]);
 			continue;
 		}
 
 		if (!subsys_cb[s]->flags_tbl_get) {
-			pr_info("[WARN] Undefined %s.flags_tbl_get",
+			pr_debug("[WARN] Undefined %s.flags_tbl_get",
 				cfm_subsys_name[s]);
 			continue;
 		}
 
 		tbl = subsys_cb[s]->flags_tbl_get();
 		if (!tbl) {
-			pr_info("[WARN] %s flags mapping table is NULL",
+			pr_debug("[WARN] %s flags mapping table is NULL",
 				cfm_subsys_name[s]);
 			continue;
 		}
@@ -511,13 +511,13 @@ int cfm_epaelna_flags_populate(
 			/* If subsys doesn't want to return its flags struct,
 			 * doesn't harm us, so continue normally...
 			 */
-			pr_info("[WARN] %s flags structure is NULL, continue..",
+			pr_debug("[WARN] %s flags structure is NULL, continue..",
 				cfm_subsys_name[s]);
 		}
 	}
 
 	if (err < 0) {
-		pr_info("Error while populating %s '%s'",
+		pr_debug("Error while populating %s '%s'",
 			cfm_subsys_name[s], dt_flags->node_name);
 
 		for (s = 0; s < CONNFEM_SUBSYS_NUM; s++)
@@ -583,7 +583,7 @@ static int cfm_epaelna_flags_subsys_populate(
 		/* Discard flag with name exceeding length limit */
 		len = strlen(prop->name) + 1;
 		if (len > CONNFEM_FLAG_NAME_SIZE) {
-			pr_info("[WARN] Drop '%s' prop, len %u > %u",
+			pr_debug("[WARN] Drop '%s' prop, len %u > %u",
 				prop->name,
 				len - 1,
 				CONNFEM_FLAG_NAME_SIZE - 1);
@@ -604,7 +604,7 @@ static int cfm_epaelna_flags_subsys_populate(
 
 			i++;
 		} else {
-			pr_info("[ERR] Drop '%s' prop, too many flags %d > %d",
+			pr_debug("[ERR] Drop '%s' prop, too many flags %d > %d",
 				prop->name, i + 1, result->cnt);
 		}
 	}
@@ -648,7 +648,7 @@ static struct connfem_epaelna_flag_tbl_entry*
 			return iter;
 		iter++;
 	}
-	pr_info("Unsupported flag '%s'", name);
+	pr_debug("Unsupported flag '%s'", name);
 	return NULL;
 }
 
@@ -657,11 +657,11 @@ void cfm_epaelna_config_dump(struct cfm_epaelna_config *cfg)
 	int i;
 
 	if (!cfg) {
-		pr_info("ePAeLNA Config, (null)");
+		pr_debug("ePAeLNA Config, (null)");
 		return;
 	}
 
-	pr_info("ePAeLNA Config, available:%d", cfg->available);
+	pr_debug("ePAeLNA Config, available:%d", cfg->available);
 
 	cfm_epaelna_feminfo_dump(&cfg->fem_info);
 	cfm_epaelna_pininfo_dump(&cfg->pin_cfg.pin_info);
@@ -676,14 +676,14 @@ void cfm_epaelna_feminfo_dump(struct connfem_epaelna_fem_info *fem_info)
 	int i;
 
 	if (!fem_info) {
-		pr_info("FemInfo, (null)");
+		pr_debug("FemInfo, (null)");
 		return;
 	}
 
-	pr_info("FemInfo, id:0x%08x", fem_info->id);
+	pr_debug("FemInfo, id:0x%08x", fem_info->id);
 
 	for (i = 0; i < CONNFEM_PORT_NUM; i++) {
-		pr_info("FemInfo, [%d]vid:0x%02x,pid:0x%02x,name:'%s'",
+		pr_debug("FemInfo, [%d]vid:0x%02x,pid:0x%02x,name:'%s'",
 			i,
 			fem_info->part[i].vid,
 			fem_info->part[i].pid,
@@ -703,16 +703,16 @@ void cfm_epaelna_pininfo_dump(struct connfem_epaelna_pin_info *pin_info)
 	int pol_pos = 0;
 
 	if (!pin_info) {
-		pr_info("PinInfo, (null)");
+		pr_debug("PinInfo, (null)");
 		return;
 	}
 
-	pr_info("PinInfo, count:%d, max:%d",
+	pr_debug("PinInfo, count:%d, max:%d",
 		pin_info->count, CONNFEM_EPAELNA_PIN_COUNT);
 
 	for (i = 0; i < pin_info->count; i++) {
 		if (ant_pos >= sizeof(ant_log) - 1) {
-			pr_info("[WARN] ant_pos:%d >= ant_log size:%zu",
+			pr_debug("[WARN] ant_pos:%d >= ant_log size:%zu",
 				ant_pos,
 				sizeof(ant_log) - 1);
 				break;
@@ -721,7 +721,7 @@ void cfm_epaelna_pininfo_dump(struct connfem_epaelna_pin_info *pin_info)
 			"%4d,",
 			pin_info->pin[i].antsel);
 		if (c < 0 || c >= sizeof(ant_log) - ant_pos) {
-			pr_info("[WARN] c:%d,ant_log size:%zu",
+			pr_debug("[WARN] c:%d,ant_log size:%zu",
 				c,
 				sizeof(ant_log));
 				break;
@@ -730,7 +730,7 @@ void cfm_epaelna_pininfo_dump(struct connfem_epaelna_pin_info *pin_info)
 		}
 
 		if (fem_pos >= sizeof(fem_log) - 1) {
-			pr_info("[WARN] fem_pos:%d > fem_log size:%zu",
+			pr_debug("[WARN] fem_pos:%d > fem_log size:%zu",
 				fem_pos,
 				sizeof(fem_log) - 1);
 				break;
@@ -739,7 +739,7 @@ void cfm_epaelna_pininfo_dump(struct connfem_epaelna_pin_info *pin_info)
 			"0x%02x,",
 			pin_info->pin[i].fem);
 		if (c < 0 || c >= sizeof(fem_log) - fem_pos) {
-			pr_info("[WARN] c:%d,fem_log size:%zu",
+			pr_debug("[WARN] c:%d,fem_log size:%zu",
 				c,
 				sizeof(fem_log));
 				break;
@@ -748,7 +748,7 @@ void cfm_epaelna_pininfo_dump(struct connfem_epaelna_pin_info *pin_info)
 		}
 
 		if (pol_pos >= sizeof(pol_log) - 1) {
-			pr_info("[WARN] pol_pos:%d > pol_log size:%zu",
+			pr_debug("[WARN] pol_pos:%d > pol_log size:%zu",
 				pol_pos,
 				sizeof(pol_log) - 1);
 				break;
@@ -757,7 +757,7 @@ void cfm_epaelna_pininfo_dump(struct connfem_epaelna_pin_info *pin_info)
 			"%4d,",
 			pin_info->pin[i].polarity);
 		if (c < 0 || c >= sizeof(pol_log) - pol_pos) {
-			pr_info("[WARN] c:%d,pol_log size:%zu",
+			pr_debug("[WARN] c:%d,pol_log size:%zu",
 				c,
 				sizeof(pol_log));
 				break;
@@ -767,9 +767,9 @@ void cfm_epaelna_pininfo_dump(struct connfem_epaelna_pin_info *pin_info)
 	}
 
 	if (pin_info->count > 0) {
-		pr_info("ant:%s", ant_log);
-		pr_info("fem:%s", fem_log);
-		pr_info("pol:%s", pol_log);
+		pr_debug("ant:%s", ant_log);
+		pr_debug("fem:%s", fem_log);
+		pr_debug("pol:%s", pol_log);
 	}
 }
 
@@ -778,15 +778,15 @@ void cfm_epaelna_laainfo_dump(struct connfem_epaelna_laa_pin_info *laa)
 	int i;
 
 	if (!laa) {
-		pr_info("LaaInfo, (null)");
+		pr_debug("LaaInfo, (null)");
 		return;
 	}
 
-	pr_info("LaaInfo, count:%d, max:%d, id:0x%x",
+	pr_debug("LaaInfo, count:%d, max:%d, id:0x%x",
 		laa->count, CONNFEM_EPAELNA_LAA_PIN_COUNT, laa->chip_id);
 
 	for (i = 0; i < laa->count; i++) {
-		pr_info("LaaInfo, [%d]gpio:%d,wf:%d,md:%d",
+		pr_debug("LaaInfo, [%d]gpio:%d,wf:%d,md:%d",
 			i,
 			laa->pin[i].gpio,
 			laa->pin[i].wf_mode,
@@ -804,7 +804,7 @@ void cfm_epaelna_flags_dump(enum connfem_subsys subsys,
 		return;
 
 	if (!flags) {
-		pr_info("Flags, %s (null)", cfm_subsys_name[subsys]);
+		pr_debug("Flags, %s (null)", cfm_subsys_name[subsys]);
 		return;
 	}
 
@@ -824,23 +824,23 @@ void cfm_epaelna_flags_obj_dump(enum connfem_subsys subsys,
 	struct connfem_epaelna_flags_bt *bt_flags = NULL;
 
 	if (!flags_obj) {
-		pr_info("FlagsObj, %s (null)", cfm_subsys_name[subsys]);
+		pr_debug("FlagsObj, %s (null)", cfm_subsys_name[subsys]);
 		return;
 	}
 
 	switch (subsys) {
 	case CONNFEM_SUBSYS_WIFI:
 		wf_flags = (struct connfem_epaelna_flags_wifi *)flags_obj;
-		pr_info("WfFlags.open_loop: %d", wf_flags->open_loop);
-		pr_info("WfFlags.laa: %d", wf_flags->laa);
+		pr_debug("WfFlags.open_loop: %d", wf_flags->open_loop);
+		pr_debug("WfFlags.laa: %d", wf_flags->laa);
 		break;
 
 	case CONNFEM_SUBSYS_BT:
 		bt_flags = (struct connfem_epaelna_flags_bt *)flags_obj;
-		pr_info("BtFlags.bypass: %d", bt_flags->bypass);
-		pr_info("BtFlags.epa_elna: %d", bt_flags->epa_elna);
-		pr_info("BtFlags.elna: %d", bt_flags->elna);
-		pr_info("BtFlags.epa: %d", bt_flags->epa);
+		pr_debug("BtFlags.bypass: %d", bt_flags->bypass);
+		pr_debug("BtFlags.epa_elna: %d", bt_flags->epa_elna);
+		pr_debug("BtFlags.elna: %d", bt_flags->elna);
+		pr_debug("BtFlags.epa: %d", bt_flags->epa);
 		break;
 
 	default:
@@ -854,15 +854,15 @@ void cfm_epaelna_flags_names_dump(enum connfem_subsys subsys,
 	int i;
 
 	if (!names) {
-		pr_info("[%s]FlagNames, (null)", cfm_subsys_name[subsys]);
+		pr_debug("[%s]FlagNames, (null)", cfm_subsys_name[subsys]);
 		return;
 	}
 
-	pr_info("[%s]FlagNames, count:%d, entry_sz:%d",
+	pr_debug("[%s]FlagNames, count:%d, entry_sz:%d",
 		cfm_subsys_name[subsys], names->cnt, names->entry_sz);
 
 	for (i = 0; i < names->cnt; i++) {
-		pr_info("[%s]FlagNames, [%d]'%s'",
+		pr_debug("[%s]FlagNames, [%d]'%s'",
 			cfm_subsys_name[subsys],
 			i,
 			(char *)cfm_container_entry(names, i));
@@ -876,14 +876,14 @@ void cfm_epaelna_flags_name_entries_dump(enum connfem_subsys subsys,
 	int i;
 
 	if (!name_entries) {
-		pr_info("[%s]FlagNameEntries, (null)", cfm_subsys_name[subsys]);
+		pr_debug("[%s]FlagNameEntries, (null)", cfm_subsys_name[subsys]);
 		return;
 	}
 
-	pr_info("[%s]FlagNameEntries, count:%d", cfm_subsys_name[subsys], cnt);
+	pr_debug("[%s]FlagNameEntries, count:%d", cfm_subsys_name[subsys], cnt);
 
 	for (i = 0; i < cnt; i++) {
-		pr_info("[%s]FlagNameEntries, [%d]'%s'",
+		pr_debug("[%s]FlagNameEntries, [%d]'%s'",
 			cfm_subsys_name[subsys],
 			i,
 			(char *)name_entries[i]);

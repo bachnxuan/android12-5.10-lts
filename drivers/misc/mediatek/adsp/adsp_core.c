@@ -265,14 +265,14 @@ int adsp_threaded_irq_registration(u32 core_id, u32 irq_id,
 				   IRQF_TRIGGER_HIGH,
 				   pdata->name, &pdata->irq[irq_id]);
 	if (ret < 0) {
-		pr_info("%s(), request_irq(%d) err:%d\n",
+		pr_debug("%s(), request_irq(%d) err:%d\n",
 			__func__, pdata->irq[irq_id].seq, ret);
 		goto EXIT;
 	}
 
 	ret = enable_irq_wake(pdata->irq[irq_id].seq);
 	if (ret < 0) {
-		pr_info("%s(), enable_irq_wake(%d) err:%d\n",
+		pr_debug("%s(), enable_irq_wake(%d) err:%d\n",
 			__func__, pdata->irq[irq_id].seq, ret);
 		goto EXIT;
 	}
@@ -318,12 +318,12 @@ static int adsp_user_event_notify(struct notifier_block *nb,
 		ret = kobject_uevent(&dev->kobj, KOBJ_ONLINE);
 		break;
 	default:
-		pr_info("%s, ignore event %lu", __func__, event);
+		pr_debug("%s, ignore event %lu", __func__, event);
 		break;
 	}
 
 	if (ret)
-		pr_info("%s, uevnet(%lu) fail, ret %d", __func__, event, ret);
+		pr_debug("%s, uevnet(%lu) fail, ret %d", __func__, event, ret);
 
 	return NOTIFY_OK;
 }
@@ -345,14 +345,14 @@ static int adsp_pm_suspend_prepare(void)
 		if (pdata->state == ADSP_RUNNING) {
 			ret = flush_suspend_work(pdata->id);
 
-			pr_info("%s, flush_suspend_work ret %d, cid %d",
+			pr_debug("%s, flush_suspend_work ret %d, cid %d",
 				__func__, ret, cid);
 		}
 	}
 
 	if (is_adsp_system_running()) {
 		adsp_timesync_suspend(APTIME_FREEZE);
-		pr_info("%s, time sync freeze", __func__);
+		pr_debug("%s, time sync freeze", __func__);
 
 		adsp_smc_send(MTK_ADSP_KERNEL_OP_ENTER_LP, 0, 0);
 	}
@@ -364,7 +364,7 @@ static int adsp_pm_post_suspend(void)
 {
 	if (is_adsp_system_running()) {
 		adsp_timesync_resume();
-		pr_info("%s, time sync unfreeze", __func__);
+		pr_debug("%s, time sync unfreeze", __func__);
 
 		adsp_smc_send(MTK_ADSP_KERNEL_OP_LEAVE_LP, 0, 0);
 	}
@@ -453,7 +453,7 @@ int adsp_reset(void)
 	struct adsp_priv *pdata;
 
 	if (!is_adsp_axibus_idle()) {
-		pr_info("%s, adsp_axibus busy try again", __func__);
+		pr_debug("%s, adsp_axibus busy try again", __func__);
 		return -EAGAIN;
 	}
 
@@ -489,7 +489,7 @@ int adsp_reset(void)
 			pdata->ops->after_bootup(pdata);
 	}
 
-	pr_info("[ADSP] reset adsp done\n");
+	pr_debug("[ADSP] reset adsp done\n");
 #endif
 	return 0;
 }
@@ -617,11 +617,11 @@ int adsp_system_bootup(void)
 	}
 
 	adsp_deregister_feature(SYSTEM_FEATURE_ID);
-	pr_info("%s done\n", __func__);
+	pr_debug("%s done\n", __func__);
 	return 0;
 
 ERROR:
-	pr_info("%s fail ret(%d)\n", __func__, ret);
+	pr_debug("%s fail ret(%d)\n", __func__, ret);
 	return ret;
 }
 EXPORT_SYMBOL(adsp_system_bootup);
@@ -629,14 +629,14 @@ EXPORT_SYMBOL(adsp_system_bootup);
 void register_adspsys(struct adspsys_priv *mt_adspsys)
 {
 	adspsys = mt_adspsys;
-	pr_info("%s(), %p done\n", __func__, mt_adspsys);
+	pr_debug("%s(), %p done\n", __func__, mt_adspsys);
 }
 EXPORT_SYMBOL(register_adspsys);
 
 void register_adsp_core(struct adsp_priv *pdata)
 {
 	adsp_cores[pdata->id] = pdata;
-	pr_info("%s(), id %d, %p done\n", __func__, pdata->id, pdata);
+	pr_debug("%s(), id %d, %p done\n", __func__, pdata->id, pdata);
 }
 EXPORT_SYMBOL(register_adsp_core);
 

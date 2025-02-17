@@ -94,7 +94,7 @@ int mvpu_plat_init(struct platform_device *pdev)
 	// get dma mask
 	of_property_read_u64(dev->of_node, "mask", &mask);
 
-	pr_info("%s mask 0x%llx\n", __func__, mask);
+	pr_debug("%s mask 0x%llx\n", __func__, mask);
 
 	ret = dma_set_mask_and_coherent(dev, mask);
 	if (ret) {
@@ -102,7 +102,7 @@ int mvpu_plat_init(struct platform_device *pdev)
 		return ret;
 	}
 
-	pr_info("%s dma_set_mask_and_coherent 0x%llx\n", __func__, mask);
+	pr_debug("%s dma_set_mask_and_coherent 0x%llx\n", __func__, mask);
 
 	ret = dma_set_mask(dev, mask);
 	if (ret) {
@@ -110,7 +110,7 @@ int mvpu_plat_init(struct platform_device *pdev)
 		return ret;
 	}
 
-	pr_info("%s dma_set_mask 0x%llx\n", __func__, mask);
+	pr_debug("%s dma_set_mask 0x%llx\n", __func__, mask);
 
 	return ret;
 
@@ -126,7 +126,7 @@ int mvpu_config_init(struct mtk_apu *apu)
 	uint32_t *addr0;
 	uint32_t *addr1;
 
-	pr_info("%s core number = %d, sw_preemption_level = 0x%x\n", __func__,
+	pr_debug("%s core number = %d, sw_preemption_level = 0x%x\n", __func__,
 			nr_core_ids, sw_preemption_level);
 
 	info = (struct mvpu_preempt_data *) get_apu_config_user_ptr(
@@ -143,11 +143,11 @@ int mvpu_config_init(struct mtk_apu *apu)
 				info->itcm_buffer_core_0[level] = (uint32_t) mvpu_da_itcm;
 
 				if (addr0 == NULL || mvpu_da_itcm == 0) {
-					pr_info("%s: dma_alloc_coherent fail\n", __func__);
+					pr_debug("%s: dma_alloc_coherent fail\n", __func__);
 					return -ENOMEM;
 				}
 
-				pr_info("core 0 itcm kernel va = 0x%llx, core 0 itcm iova = 0x%llx\n",
+				pr_debug("core 0 itcm kernel va = 0x%llx, core 0 itcm iova = 0x%llx\n",
 					addr0, mvpu_da_itcm);
 
 				memset(addr0, 0, PREEMPT_ITCM_BUFFER);
@@ -158,7 +158,7 @@ int mvpu_config_init(struct mtk_apu *apu)
 				info->l1_buffer_core_0[level] = mvpu_da_l1;
 
 				if (addr1 == NULL || mvpu_da_l1 == 0) {
-					pr_info("dma_alloc_coherent fail\n");
+					pr_debug("dma_alloc_coherent fail\n");
 
 					dma_free_coherent(apu->dev, PREEMPT_ITCM_BUFFER,
 							addr0, mvpu_da_itcm);
@@ -166,7 +166,7 @@ int mvpu_config_init(struct mtk_apu *apu)
 					return -ENOMEM;
 				}
 
-				pr_info("core 0 L1 kernel va = 0x%llx, core 0 L1 iova = 0x%llx\n",
+				pr_debug("core 0 L1 kernel va = 0x%llx, core 0 L1 iova = 0x%llx\n",
 					addr1, mvpu_da_l1);
 
 				memset(addr1, 0, PREEMPT_L1_BUFFER);
@@ -180,11 +180,11 @@ int mvpu_config_init(struct mtk_apu *apu)
 				info->itcm_buffer_core_1[level] = (uint32_t) mvpu_da_itcm;
 
 				if (addr0 == NULL || mvpu_da_itcm == 0) {
-					pr_info("dma_alloc_coherent fail\n");
+					pr_debug("dma_alloc_coherent fail\n");
 					return -ENOMEM;
 				}
 
-				pr_info("addr0 = 0x%llx, mvpu_da_itcm = 0x%llx\n",
+				pr_debug("addr0 = 0x%llx, mvpu_da_itcm = 0x%llx\n",
 					addr0, mvpu_da_itcm);
 
 				memset(addr0, 0, PREEMPT_ITCM_BUFFER);
@@ -196,19 +196,19 @@ int mvpu_config_init(struct mtk_apu *apu)
 				info->l1_buffer_core_1[level] = mvpu_da_l1;
 
 				if (addr1 == NULL || mvpu_da_l1 == 0) {
-					pr_info("dma_alloc_coherent fail\n");
+					pr_debug("dma_alloc_coherent fail\n");
 					dma_free_coherent(apu->dev, PREEMPT_ITCM_BUFFER,
 						addr0, mvpu_da_itcm);
 					return -ENOMEM;
 				}
 
-				pr_info("addr0 = 0x%llx, mvpu_da_itcm = 0x%llx\n",
+				pr_debug("addr0 = 0x%llx, mvpu_da_itcm = 0x%llx\n",
 					addr1, mvpu_da_l1);
 
 				memset(addr1, 0, PREEMPT_L1_BUFFER);
 
 			} else {
-				pr_info("nr_core_ids error\n");
+				pr_debug("nr_core_ids error\n");
 			}
 
 	}

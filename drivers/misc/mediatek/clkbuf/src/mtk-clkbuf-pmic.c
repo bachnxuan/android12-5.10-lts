@@ -394,11 +394,11 @@ static inline int pmic_clkbuf_update(u32 id, u32 idx, u32 val)
 	regmap_read(pmic_regmap, reg[index].sta_ofs, &out);
 
 	if (_is_pmic_clk_buf_debug_enable()) {
-		pr_info("[%s]: shift: %u\n", __func__, reg[index].bit);
-		pr_info("[%s]: shift val: 0x%x\n", __func__, val);
-		pr_info("[%s]: mask: 0x%x, shift mask: 0x%x\n",
+		pr_debug("[%s]: shift: %u\n", __func__, reg[index].bit);
+		pr_debug("[%s]: shift val: 0x%x\n", __func__, val);
+		pr_debug("[%s]: mask: 0x%x, shift mask: 0x%x\n",
 				__func__, PMIC_CLKBUF_MASK[id], msk);
-		pr_info("%s: update value: 0x%x\n", __func__, out);
+		pr_debug("%s: update value: 0x%x\n", __func__, out);
 	}
 
 	return 0;
@@ -467,7 +467,7 @@ static int _pmic_clk_buf_get_drv_curr(u32 id, u32 *drvcurr)
 		return CLK_BUF_NOT_SUPPORT;
 
 	if (_is_pmic_clk_buf_debug_enable())
-		pr_info("%s: AUXOUT drv curr idx: %d, value: %d\n",
+		pr_debug("%s: AUXOUT drv curr idx: %d, value: %d\n",
 				__func__, id, cfg);
 
 	ret = pmic_clkbuf_write(AUXOUT_SEL, 0, cfg);
@@ -534,7 +534,7 @@ static int clk_buf_get_xo_en(u32 id, u32 *stat)
 		return CLK_BUF_NOT_READY;
 	}
 
-	pr_info("[%s]: EN_STAT = (XO_%s)%u\n",
+	pr_debug("[%s]: EN_STAT = (XO_%s)%u\n",
 			__func__, xo_name[id], *stat);
 
 	return ret;
@@ -551,7 +551,7 @@ static int clk_buf_get_xo_sw_en(u32 id, u32 *stat)
 	if (ret)
 		return CLK_BUF_NOT_READY;
 
-	pr_info("[%s]: SW_EN_STAT = %d\n", __func__, *stat);
+	pr_debug("[%s]: SW_EN_STAT = %d\n", __func__, *stat);
 
 	return 0;
 }
@@ -567,7 +567,7 @@ static int clk_buf_set_xo_sw_en(u32 id, bool on)
 	if (ret)
 		return CLK_BUF_NOT_READY;
 
-	pr_info("[%s]: SET SW_EN = %d\n", __func__, on);
+	pr_debug("[%s]: SET SW_EN = %d\n", __func__, on);
 
 	return 0;
 }
@@ -583,7 +583,7 @@ static int clk_buf_get_xo_mode(u32 id, u32 *mode)
 	if (ret)
 		return CLK_BUF_NOT_READY;
 
-	pr_info("[%s]: XO_%s_MODE = %u\n", __func__, xo_name[id], *mode);
+	pr_debug("[%s]: XO_%s_MODE = %u\n", __func__, xo_name[id], *mode);
 
 	return 0;
 }
@@ -595,13 +595,13 @@ static int clk_buf_set_xo_mode(u32 id, u32 mode)
 	if (!xo_exist[id])
 		return CLK_BUF_NOT_SUPPORT;
 
-	pr_info("[%s]: xo: %u, mode: %u\n", __func__, id, mode);
+	pr_debug("[%s]: xo: %u, mode: %u\n", __func__, id, mode);
 
 	ret = pmic_clkbuf_update(XO1_MODE, id, mode);
 	if (ret)
 		return CLK_BUF_NOT_READY;
 
-	pr_info("[%s]: SET XO_MODE = %u\n", __func__, mode);
+	pr_debug("[%s]: SET XO_MODE = %u\n", __func__, mode);
 
 	return 0;
 }
@@ -614,7 +614,7 @@ static int clk_buf_get_bblpm_en(u32 *stat)
 	u32 ret = 0;
 
 	if (_is_pmic_clk_buf_debug_enable())
-		pr_info("[%s]: auxout bblpm idx: %u %u\n", __func__,
+		pr_debug("[%s]: auxout bblpm idx: %u %u\n", __func__,
 				cfg_val[AUXOUT_BBLPM_EN][0],
 				cfg_val[AUXOUT_BBLPM_O][0]);
 
@@ -721,7 +721,7 @@ static int _pmic_clk_buf_dts_init(struct device_node *node)
 	ret =  of_property_count_elems_of_size(node,
 				"pmic-xo-exist", sizeof(u32));
 	if (ret < 0) {
-		pr_info("[%s]: no find property %s\n",
+		pr_debug("[%s]: no find property %s\n",
 				__func__, "pmic-xo-exist");
 		xo_num = 0;
 	} else
@@ -734,7 +734,7 @@ static int _pmic_clk_buf_dts_init(struct device_node *node)
 		ret = of_property_read_u32_index(node,
 				"pmic-xo-exist", i, &xo_exist[i]);
 		if (ret) {
-			pr_info("[%s]: read number of pmic clkbuf xo failed\n",
+			pr_debug("[%s]: read number of pmic clkbuf xo failed\n",
 					__func__);
 			goto no_property;
 		}
@@ -745,7 +745,7 @@ static int _pmic_clk_buf_dts_init(struct device_node *node)
 		ret = of_property_read_string_index(node,
 				"pmic-xo-name", i, &xo_name[i]);
 		if (ret) {
-			pr_info("[%s]: read pmic clkbuf xo name failed\n",
+			pr_debug("[%s]: read pmic clkbuf xo name failed\n",
 					__func__);
 			goto no_property;
 		}
@@ -754,7 +754,7 @@ static int _pmic_clk_buf_dts_init(struct device_node *node)
 	ret =  of_property_count_elems_of_size(node,
 				"pmic-xo-set-clr", sizeof(u32));
 	if (ret < 0) {
-		pr_info("[%s]: no find property %s\n",
+		pr_debug("[%s]: no find property %s\n",
 				__func__, "pmic-xo-set-clr");
 		xo_setclr_num = 0;
 	} else
@@ -764,7 +764,7 @@ static int _pmic_clk_buf_dts_init(struct device_node *node)
 		ret = of_property_read_u32_index(node,
 					"pmic-xo-set-clr", i, &val);
 		if (ret) {
-			pr_info("[%s]: read pmic clkbuf xo_set_clr failed\n",
+			pr_debug("[%s]: read pmic clkbuf xo_set_clr failed\n",
 					__func__);
 			goto no_property;
 		}
@@ -779,7 +779,7 @@ static int _pmic_clk_buf_dts_init(struct device_node *node)
 		ret =  of_property_count_elems_of_size(node,
 				pmic_cfg_prop[i], sizeof(u32));
 		if (ret < 0) {
-			pr_info("[%s]: no find property %s\n",
+			pr_debug("[%s]: no find property %s\n",
 					__func__, pmic_cfg_prop[i]);
 			cfg_num[i] = 0;
 		} else
@@ -796,7 +796,7 @@ static int _pmic_clk_buf_dts_init(struct device_node *node)
 				pr_debug("[%s]: find property %s\n",
 						__func__, pmic_cfg_prop[i]);
 			if (ret) {
-				pr_info("[%s]: read property failed %s[%d]\n",
+				pr_debug("[%s]: read property failed %s[%d]\n",
 						__func__, pmic_cfg_prop[i],
 						j, cfg_num[i]);
 				goto no_property;
@@ -805,7 +805,7 @@ static int _pmic_clk_buf_dts_init(struct device_node *node)
 			cfg_val[i][j] = val;
 		}
 	}
-	pr_info("[%s]: pmic dts init done\n", __func__);
+	pr_debug("[%s]: pmic dts init done\n", __func__);
 
 	return 0;
 
@@ -888,7 +888,7 @@ static int mtk_clkbuf_pmic_probe(struct platform_device *pdev)
 	reg = of_device_get_match_data(&pdev->dev);
 	ret = get_pmic_clkbuf(node);
 	if (ret) {
-		pr_info("[%s]: pmic op not found\n", __func__);
+		pr_debug("[%s]: pmic op not found\n", __func__);
 		goto no_pmic_op;
 	}
 

@@ -208,20 +208,20 @@ int consys_hw_pwr_off(unsigned int curr_status, unsigned int off_radio)
 	int ret = 0;
 
 	if (next_status == 0) {
-		pr_info("Last power off: %d, Power off CONNSYS PART 1\n", off_radio);
+		pr_debug("Last power off: %d, Power off CONNSYS PART 1\n", off_radio);
 		consys_hw_raise_voltage(off_radio, false, true);
 		if (consys_hw_ops->consys_plt_conninfra_on_power_ctrl)
 			consys_hw_ops->consys_plt_conninfra_on_power_ctrl(0);
-		pr_info("Power off CONNSYS PART 2\n");
+		pr_debug("Power off CONNSYS PART 2\n");
 		if (consys_hw_ops->consys_plt_set_if_pinmux)
 			consys_hw_ops->consys_plt_set_if_pinmux(0);
 		if (consys_hw_ops->consys_plt_clock_buffer_ctrl)
 			consys_hw_ops->consys_plt_clock_buffer_ctrl(0);
 		ret = pmic_mng_common_power_ctrl(0);
 		if (ret)
-			pr_info("Power off a-die power, ret=%d\n", ret);
+			pr_debug("Power off a-die power, ret=%d\n", ret);
 	} else {
-		pr_info("[%s] Part 0: only subsys (%d) off (curr_status=0x%x, next_status = 0x%x)\n",
+		pr_debug("[%s] Part 0: only subsys (%d) off (curr_status=0x%x, next_status = 0x%x)\n",
 			__func__, off_radio, curr_status, next_status);
 		ret = _consys_hw_conninfra_wakeup();
 		if (consys_hw_ops->consys_plt_subsys_status_update)
@@ -248,7 +248,7 @@ int _consys_hw_pwr_on_rollback(enum conninfra_pwr_on_rollback_type type)
 			ret = consys_hw_is_bus_hang();
 			consys_hw_clock_fail_dump();
 			if (ret)
-				pr_info("Conninfra bus error, code=%d", ret);
+				pr_debug("Conninfra bus error, code=%d", ret);
 		case CONNINFRA_PWR_ON_CONNINFRA_HW_POWER_FAIL:
 			if (consys_hw_ops->consys_plt_conninfra_on_power_ctrl) {
 				ret = consys_hw_ops->consys_plt_conninfra_on_power_ctrl(0);
@@ -298,9 +298,9 @@ unsigned int consys_hw_detect_adie_chipid(void)
 
 		if (chipid > 0) {
 			g_adie_chipid = chipid;
-			pr_info("A-die chipid detection done, found chipid=[%x]\n", chipid);
+			pr_debug("A-die chipid detection done, found chipid=[%x]\n", chipid);
 		} else
-			pr_info("Fail to detect a-die chipid, found chipid=[%x]\n", chipid);
+			pr_debug("Fail to detect a-die chipid, found chipid=[%x]\n", chipid);
 	}
 
 	osal_unlock_sleepable_lock(&g_adie_chipid_lock);
@@ -555,7 +555,7 @@ static void _consys_hw_conninfra_print_wakeup_record(void)
 	unsigned long *nsec = g_conninfra_wakeup_rec_nsec;
 	int *cnt = g_conninfra_wakeup_rec_cnt;
 
-	pr_info("conn_wakeup:%llu.%06lu:%d; %llu.%06lu:%d; %llu.%06lu:%d; %llu.%06lu:%d; %llu.%06lu:%d; %llu.%06lu:%d",
+	pr_debug("conn_wakeup:%llu.%06lu:%d; %llu.%06lu:%d; %llu.%06lu:%d; %llu.%06lu:%d; %llu.%06lu:%d; %llu.%06lu:%d",
 		sec[0], nsec[0], cnt[0], sec[1], nsec[1], cnt[1], sec[2], nsec[2], cnt[2],
 		sec[3], nsec[3], cnt[3], sec[4], nsec[4], cnt[4], sec[5], nsec[5], cnt[5]);
 }
@@ -671,7 +671,7 @@ int consys_hw_tcxo_parser(struct platform_device *pdev)
 	if (!ret) {
 		if (strcmp(tcxo_support, "true") == 0) {
 			conn_hw_env.tcxo_support = true;
-			pr_info("[%s] Support TCXO", __func__);
+			pr_debug("[%s] Support TCXO", __func__);
 		}
 	} else {
 		pr_warn("Get tcxo property fail: %d", ret);
@@ -693,7 +693,7 @@ int consys_hw_tcxo_parser(struct platform_device *pdev)
 
 				if (ret == 0) {
 					pin_num = (pinmux >> 8) & 0xff;
-					pr_info("Conninfra gpio pin number[%d]\n", pin_num);
+					pr_debug("Conninfra gpio pin number[%d]\n", pin_num);
 				} else {
 					pr_err("Fail to get conninfra gpio pin number");
 				}
@@ -701,7 +701,7 @@ int consys_hw_tcxo_parser(struct platform_device *pdev)
 		}
 	}
 
-	pr_info("[%s] tcxo=%d pintctrl=%p", __func__,
+	pr_debug("[%s] tcxo=%d pintctrl=%p", __func__,
 		conn_hw_env.tcxo_support, g_conninfra_pinctrl_ptr);
 	return 0;
 }
@@ -796,7 +796,7 @@ int mtk_conninfra_remove(struct platform_device *pdev)
 	if (consys_hw_ops->consys_plt_clk_detach)
 		consys_hw_ops->consys_plt_clk_detach();
 	else
-		pr_info("consys_plt_clk_detach is null");
+		pr_debug("consys_plt_clk_detach is null");
 
 	if (g_pdev)
 		g_pdev = NULL;
@@ -891,7 +891,7 @@ int consys_hw_init(struct conninfra_dev_cb *dev_cb)
 			osal_sleep_ms(50);
 			retry++;
 			if (__ratelimit(&_rs))
-				pr_info("g_hw_init_done = 0, retry = %d", retry);
+				pr_debug("g_hw_init_done = 0, retry = %d", retry);
 		}
 	}
 
@@ -905,7 +905,7 @@ int consys_hw_init(struct conninfra_dev_cb *dev_cb)
 	if (ret < 0)
 		pr_notice("%s register_pm_notifier fail %d\n", __func__, ret);
 
-	pr_info("[consys_hw_init] result [%d]\n", iRet);
+	pr_debug("[consys_hw_init] result [%d]\n", iRet);
 
 	return iRet;
 }

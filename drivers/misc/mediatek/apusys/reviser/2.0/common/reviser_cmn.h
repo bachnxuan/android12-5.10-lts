@@ -30,16 +30,16 @@ int rvr_debug_on(int mask)
 
 
 #define LOG_ERR(x, args...) \
-	pr_info(REVISER_PREFIX "[error] %s " x, __func__, ##args)
+	pr_debug(REVISER_PREFIX "[error] %s " x, __func__, ##args)
 #define LOG_WARN(x, args...) \
-	pr_info(REVISER_PREFIX "[warn] %s " x, __func__, ##args)
+	pr_debug(REVISER_PREFIX "[warn] %s " x, __func__, ##args)
 #define LOG_INFO(x, args...) \
-	pr_info(REVISER_PREFIX "%s " x, __func__, ##args)
+	pr_debug(REVISER_PREFIX "%s " x, __func__, ##args)
 //#define LOG_DEBUG(x, args...) \
-//	pr_info(REVISER_PREFIX "[debug] %s/%d " x, __func__, __LINE__, ##args)
+//	pr_debug(REVISER_PREFIX "[debug] %s/%d " x, __func__, __LINE__, ##args)
 #define LOG_DEBUG(x, args...)
 #define rvr_debug(mask, x, ...) do { if (rvr_debug_on(mask)) \
-		pr_info(REVISER_PREFIX " %s/%d " x, __func__, \
+		pr_debug(REVISER_PREFIX " %s/%d " x, __func__, \
 		__LINE__, ##__VA_ARGS__); \
 	} while (0)
 

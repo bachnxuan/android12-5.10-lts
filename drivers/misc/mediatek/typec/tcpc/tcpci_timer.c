@@ -1368,7 +1368,7 @@ int tcpci_timer_init(struct tcpc_device *tcpc)
 {
 	int i;
 
-	pr_info("PD Timer number = %d\n", PD_TIMER_NR);
+	pr_debug("PD Timer number = %d\n", PD_TIMER_NR);
 
 	init_waitqueue_head(&tcpc->timer_wait_que);
 	tcpc->timer_tick = 0;
@@ -1385,7 +1385,7 @@ int tcpci_timer_init(struct tcpc_device *tcpc)
 	INIT_DELAYED_WORK(&tcpc->wake_up_work, wake_up_work_func);
 	alarm_init(&tcpc->wake_up_timer, ALARM_REALTIME, tcpc_timer_wakeup);
 
-	pr_info("%s : init OK\n", __func__);
+	pr_debug("%s : init OK\n", __func__);
 	return 0;
 }
 
@@ -1398,6 +1398,6 @@ int tcpci_timer_deinit(struct tcpc_device *tcpc)
 	cancel_delayed_work_sync(&tcpc->wake_up_work);
 	wakeup_source_unregister(tcpc->wakeup_wake_lock);
 
-	pr_info("%s : de init OK\n", __func__);
+	pr_debug("%s : de init OK\n", __func__);
 	return 0;
 }

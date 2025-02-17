@@ -53,7 +53,7 @@
 
 #undef IMX334_24_FPS
 
-#define LOG_INF(format, args...) pr_info(PFX "[%s] " format, __func__, ##args)
+#define LOG_INF(format, args...) pr_debug(PFX "[%s] " format, __func__, ##args)
 
 
 static struct imgsensor_info_struct imgsensor_info = {

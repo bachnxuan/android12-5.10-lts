@@ -123,7 +123,7 @@ static int mt_irq_dump_status_buf(unsigned int irq, char *buf)
 	return num;
 
 OUT:
-	pr_info("[mt gic dump] buffer is full\n");
+	pr_debug("[mt gic dump] buffer is full\n");
 
 	return num;
 
@@ -138,7 +138,7 @@ void mt_irq_dump_status(unsigned int irq)
 
 	/* support GIC PPI/SPI only */
 	if (mt_irq_dump_status_buf(irq, buf) > 0)
-		pr_info("%s", buf);
+		pr_debug("%s", buf);
 
 	kfree(buf);
 

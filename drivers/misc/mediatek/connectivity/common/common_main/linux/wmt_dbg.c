@@ -768,13 +768,13 @@ static int wmt_dbg_clk_reg_read(INT32 par1, INT32 par2, INT32 par3)
 	int value = 0;
 	struct regmap *map = (struct regmap *)wmt_lib_consys_clock_get_regmap();
 
-	pr_info("%s clock ic register read, reg address:0x%x\n", __func__, par2);
+	pr_debug("%s clock ic register read, reg address:0x%x\n", __func__, par2);
 	if (map == NULL) {
 		pr_notice("%s clock ic regmap is NULL.\n", __func__);
 		return 0;
 	}
 	regmap_read(map, par2, &value);
-	pr_info("%s clock ic register read, reg address:0x%x, value:0x%x\n", __func__, par2, value);
+	pr_debug("%s clock ic register read, reg address:0x%x, value:0x%x\n", __func__, par2, value);
 #endif
 
 	return 0;
@@ -786,7 +786,7 @@ static int wmt_dbg_clk_reg_write(INT32 par1, INT32 par2, INT32 par3)
 	int value = 0;
 	struct regmap *map = (struct regmap *)wmt_lib_consys_clock_get_regmap();
 
-	pr_info("%s clock ic register write, reg address:0x%x, value:0x%x\n", __func__, par2, par3);
+	pr_debug("%s clock ic register write, reg address:0x%x, value:0x%x\n", __func__, par2, par3);
 	if (map == NULL) {
 		pr_notice("%s clock ic regmap is NULL.\n", __func__);
 		return 0;
@@ -794,7 +794,7 @@ static int wmt_dbg_clk_reg_write(INT32 par1, INT32 par2, INT32 par3)
 
 	regmap_write(map, par2, par3);
 	regmap_read(map, par2, &value);
-	pr_info("%s clock ic register write done, value after write:0x%x\n", __func__, value);
+	pr_debug("%s clock ic register write done, value after write:0x%x\n", __func__, value);
 #endif
 
 	return 0;

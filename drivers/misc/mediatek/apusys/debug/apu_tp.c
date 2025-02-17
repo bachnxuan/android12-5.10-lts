@@ -90,7 +90,7 @@ int apu_tp_init_mod(struct apu_tp_tbl *tbl, struct module *mod)
 
 	apu_tp_foreach(tbl, t) {
 		if (!t->tp) {
-			pr_info("%s: %s was not found\n", __func__, t->name);
+			pr_debug("%s: %s was not found\n", __func__, t->name);
 			apu_tp_exit(tbl);  /* free registered entries */
 			return -EINVAL;
 		}

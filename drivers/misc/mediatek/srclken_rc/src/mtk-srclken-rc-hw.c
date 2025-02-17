@@ -98,7 +98,7 @@ EXPORT_SYMBOL(set_srclken_ops);
 bool srclken_get_bringup_sta(void)
 {
 	if (is_rc_bringup)
-		pr_info("%s: skipped for bring up\n", __func__);
+		pr_debug("%s: skipped for bring up\n", __func__);
 
 	return is_rc_bringup;
 }
@@ -119,7 +119,7 @@ void srclken_get_bringup_node(struct platform_device *pdev)
 		ret = of_property_read_string(node,
 			"mediatek,bring-up", &str);
 		if (ret || (!strcmp(str, "enable"))) {
-			pr_info("[%s]: bring up enable\n",
+			pr_debug("[%s]: bring up enable\n",
 				__func__);
 			__srclken_set_bringup_sta(true);
 		} else {
@@ -140,7 +140,7 @@ static void __srclken_gpio_pull(bool enable)
 	else
 		srclken_write(GPIO_DOUT_CLR, 0x1 << GPIO_PULL_SHFT);
 
-	pr_info("gpio: dir(0x%x) out(0x%x)\n", srclken_read(GPIO_DIR),
+	pr_debug("gpio: dir(0x%x) out(0x%x)\n", srclken_read(GPIO_DIR),
 		srclken_read(GPIO_DOUT));
 }
 #endif
@@ -290,9 +290,9 @@ static ssize_t __subsys_ctl_store(const char *buf, enum sys_id id)
 		__srclken_gpio_pull(true);
 #endif
 	} else {
-		pr_info("bad argument!! please follow correct format\n");
-		pr_info("echo $mode > proc/srclken_rc/$subsys\n");
-		pr_info("mode = {HW, SW_OFF, SW_FPM, SW_BBLPM}\n");
+		pr_debug("bad argument!! please follow correct format\n");
+		pr_debug("echo $mode > proc/srclken_rc/$subsys\n");
+		pr_debug("mode = {HW, SW_OFF, SW_FPM, SW_BBLPM}\n");
 
 		return -EPERM;
 	}
@@ -987,7 +987,7 @@ static ssize_t debug_ctl_store(struct kobject *kobj,
 
 	return count;
 ERROR_CMD:
-	pr_info("bad argument!! please follow correct format\n");
+	pr_debug("bad argument!! please follow correct format\n");
 	return -EPERM;
 }
 
@@ -1025,7 +1025,7 @@ static ssize_t scp_sw_ctl_store(struct kobject *kobj,
 
 	return count;
 ERROR_CMD:
-	pr_info("bad argument!! please follow correct format\n");
+	pr_debug("bad argument!! please follow correct format\n");
 	return -EPERM;
 }
 
@@ -1133,7 +1133,7 @@ int _srclken_dts_map_internal(struct device_node *node, int idx)
 	if (ret)
 		goto no_property;
 
-	pr_info("%s-[%d]0x%x\n", buf, idx, hw->val[idx]);
+	pr_debug("%s-[%d]0x%x\n", buf, idx, hw->val[idx]);
 
 	kfree(buf);
 
@@ -1210,7 +1210,7 @@ int srclken_dts_map(struct platform_device *pdev)
 			goto no_base;
 		}
 
-		pr_info("base[%d]0x%pR\n", i, hw->base[i]);
+		pr_debug("base[%d]0x%pR\n", i, hw->base[i]);
 
 		for (j = start[i]; j < end[i]; j++) {
 			ret = _srclken_dts_map_internal(node, j);
@@ -1260,7 +1260,7 @@ int srclken_cfg_init(void)
 		goto RC_CFG_DONE;
 
 	for (i = 0; i < DTS_NUM; i++)
-		pr_info("[%d]0x%x\n", i, hw->val[i]);
+		pr_debug("[%d]0x%x\n", i, hw->val[i]);
 
 	ret = __get_cfg_reg(CENTRAL_1_CFG, &cfg);
 	if (ret < 0)

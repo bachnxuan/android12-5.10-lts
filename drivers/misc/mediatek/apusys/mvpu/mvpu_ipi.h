@@ -11,7 +11,7 @@
 #include <mt-plat/aee.h>
 #define mvpu_aee_warn(key, format, args...) \
 	do { \
-		pr_info(format, ##args); \
+		pr_debug(format, ##args); \
 		aee_kernel_warning("MVPU", \
 			"\nCRDISPATCH_KEY:" key "\n" format, ##args); \
 	} while (0)

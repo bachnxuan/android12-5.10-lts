@@ -129,7 +129,7 @@ static int create_cpufreq_debug_fs(void)
 	/* create /proc/cpudvfs */
 	dir = proc_mkdir("cpudvfs", NULL);
 	if (!dir) {
-		pr_info("fail to create /proc/cpudvfs @ %s()\n",
+		pr_debug("fail to create /proc/cpudvfs @ %s()\n",
 								__func__);
 		return -ENOMEM;
 	}
@@ -138,7 +138,7 @@ static int create_cpufreq_debug_fs(void)
 		if (!proc_create_data
 			(entries[i].name, 0664,
 			dir, entries[i].fops, NULL))
-			pr_info("%s(), create /proc/cpudvfs/%s failed\n",
+			pr_debug("%s(), create /proc/cpudvfs/%s failed\n",
 						__func__, entries[0].name);
 	}
 	return 0;
@@ -152,13 +152,13 @@ static int mtk_cpudvfs_init(void)
 
 	dvfs_node = of_find_node_by_name(NULL, "cpuhvfs");
 	if (dvfs_node == NULL) {
-		pr_info("failed to find node @ %s\n", __func__);
+		pr_debug("failed to find node @ %s\n", __func__);
 		return -ENODEV;
 	}
 
 	pdev = of_find_device_by_node(dvfs_node);
 	if (pdev == NULL) {
-		pr_info("failed to find pdev @ %s\n", __func__);
+		pr_debug("failed to find pdev @ %s\n", __func__);
 		return -EINVAL;
 	}
 
@@ -166,7 +166,7 @@ static int mtk_cpudvfs_init(void)
 #ifdef EEM_DBG_LITE
 	ret = mtk_eem_init(pdev);
 	if (ret)
-		pr_info("eem dbg init fail: %d\n", ret);
+		pr_debug("eem dbg init fail: %d\n", ret);
 #endif
 	mtk_devinfo_init(pdev);
 	return 0;

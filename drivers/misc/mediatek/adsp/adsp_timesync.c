@@ -98,7 +98,7 @@ int adsp_timesync_init(void)
 	timesync_ctrl.timer.function = adsp_timesync_refresh;
 	timesync_ctrl.period_ms = TIMESYNC_WRAP_TIME_MS;
 
-	pr_info("%s(), done", __func__);
+	pr_debug("%s(), done", __func__);
 
 	return 0;
 }

@@ -333,7 +333,7 @@ INT32 wmt_ctrl_rx(P_WMT_CTRL_DATA pWmtCtrlData /*UINT8 *pBuff, UINT32 buffLen, U
 				/* Reason number 44 means that stp data path still has data,
 				 * possibly a driver problem
 				 */
-				pr_info("stpRxState=[%d]", stpRxState);
+				pr_debug("stpRxState=[%d]", stpRxState);
 				if (stpRxState != 0)
 					wmt_lib_trigger_assert(WMTDRV_TYPE_WMT, 44);
 				return -1;

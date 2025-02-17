@@ -74,19 +74,19 @@ static int apusys_mvpu_handler_lite(int type, void *hnd, struct apusys_device *d
 #endif
 
 #ifdef MVPU_SEC_DEBUG
-	pr_info("%s cmd type %d\n", __func__, type);
+	pr_debug("%s cmd type %d\n", __func__, type);
 #endif
 
 	if (!dev)
 		return -1;
 
 	if (!hnd) {
-		pr_info("%s get hnd fail\n", __func__);
+		pr_debug("%s get hnd fail\n", __func__);
 		return -1;
 	}
 
 	if (dev->dev_type != APUSYS_DEVICE_MVPU) {
-		pr_info("%s get wrong dev_type: %d\n", __func__, dev->dev_type);
+		pr_debug("%s get wrong dev_type: %d\n", __func__, dev->dev_type);
 		return -1;
 	}
 
@@ -95,13 +95,13 @@ static int apusys_mvpu_handler_lite(int type, void *hnd, struct apusys_device *d
 		cmd_hnd = hnd;
 
 		if (cmd_hnd->session == NULL) {
-			pr_info("[MVPU][Sec] APUSYS_CMD_VALIDATE error: cmd_hnd->session is NULL\n");
+			pr_debug("[MVPU][Sec] APUSYS_CMD_VALIDATE error: cmd_hnd->session is NULL\n");
 			ret = -1;
 			break;
 		}
 
 		if (cmd_hnd->num_cmdbufs < MVPU_MIN_CMDBUF_NUM) {
-			pr_info("%s get wrong num_cmdbufs: %d\n", __func__, cmd_hnd->num_cmdbufs);
+			pr_debug("%s get wrong num_cmdbufs: %d\n", __func__, cmd_hnd->num_cmdbufs);
 			ret = -1;
 			break;
 		}
@@ -109,7 +109,7 @@ static int apusys_mvpu_handler_lite(int type, void *hnd, struct apusys_device *d
 		cmdbuf = cmd_hnd->cmdbufs;
 
 		if (cmdbuf[MVPU_CMD_INFO_IDX].size < sizeof(mvpu_request_t)) {
-			pr_info("%s get wrong cmdbuf size: 0x%x, should be 0x%x\n",
+			pr_debug("%s get wrong cmdbuf size: 0x%x, should be 0x%x\n",
 				__func__, cmdbuf[MVPU_CMD_INFO_IDX].size,
 				sizeof(mvpu_request_t));
 			ret = -1;
@@ -129,16 +129,16 @@ static int apusys_mvpu_handler_lite(int type, void *hnd, struct apusys_device *d
 		rp_num = mvpu_req->rp_num;
 
 #ifdef MVPU_SEC_DEBUG
-		pr_info("[MVPU][Sec] DRV get batch: 0x%08x\n", batch_name_hash);
-		pr_info("[MVPU][Sec] buf_num %d\n", buf_num);
-		pr_info("[MVPU][Sec] rp_num %d\n", rp_num);
+		pr_debug("[MVPU][Sec] DRV get batch: 0x%08x\n", batch_name_hash);
+		pr_debug("[MVPU][Sec] buf_num %d\n", buf_num);
+		pr_debug("[MVPU][Sec] rp_num %d\n", rp_num);
 #endif
 
 		//FIXME: processor wrong infos
 		if (buf_num == 0 || rp_num == 0) {
-			pr_info("[MVPU][Sec] WARNING: wrong buf infos: buf_num %d, rp_num %d\n",
+			pr_debug("[MVPU][Sec] WARNING: wrong buf infos: buf_num %d, rp_num %d\n",
 						buf_num, rp_num);
-			pr_info("[MVPU][Sec] WARNING: BYPASS secure flow\n");
+			pr_debug("[MVPU][Sec] WARNING: BYPASS secure flow\n");
 			ret = 0;
 			goto END;
 		}
@@ -150,12 +150,12 @@ static int apusys_mvpu_handler_lite(int type, void *hnd, struct apusys_device *d
 		}
 
 		if (copy_from_user(sec_chk_addr, (void __user *)mvpu_req->sec_chk_addr, buf_num*sizeof(uint32_t))) {
-			pr_info("[MVPU][Sec] copy sec_chk_addr fail 0x%llx\n", mvpu_req->sec_chk_addr);
+			pr_debug("[MVPU][Sec] copy sec_chk_addr fail 0x%llx\n", mvpu_req->sec_chk_addr);
 			ret = -EFAULT;
 			goto END;
 		} else {
 #ifdef MVPU_SEC_DEBUG
-			pr_info("[MVPU][Sec] copy sec_chk_addr success 0x%llx, sec_chk_addr 0x%lx\n",
+			pr_debug("[MVPU][Sec] copy sec_chk_addr success 0x%llx, sec_chk_addr 0x%lx\n",
 				mvpu_req->sec_chk_addr, sec_chk_addr[0]);
 #endif
 		}
@@ -167,12 +167,12 @@ static int apusys_mvpu_handler_lite(int type, void *hnd, struct apusys_device *d
 		}
 
 		if (copy_from_user(sec_buf_size, (void __user *)mvpu_req->sec_buf_size, buf_num*sizeof(uint32_t))) {
-			pr_info("[MVPU][Sec] copy sec_buf_size fail 0x%llx\n", mvpu_req->sec_buf_size);
+			pr_debug("[MVPU][Sec] copy sec_buf_size fail 0x%llx\n", mvpu_req->sec_buf_size);
 			ret = -EFAULT;
 			goto END;
 		} else {
 #ifdef MVPU_SEC_DEBUG
-			pr_info("[MVPU][Sec] copy sec_buf_size success 0x%llx, sec_buf_size 0x%lx\n",
+			pr_debug("[MVPU][Sec] copy sec_buf_size success 0x%llx, sec_buf_size 0x%lx\n",
 					mvpu_req->sec_buf_size,
 					sec_buf_size[0]);
 #endif
@@ -185,13 +185,13 @@ static int apusys_mvpu_handler_lite(int type, void *hnd, struct apusys_device *d
 		}
 
 		if (copy_from_user(mem_is_kernel, (void __user *)mvpu_req->mem_is_kernel, buf_num*sizeof(uint32_t))) {
-			pr_info("[MVPU][Sec] copy mem_is_kernel fail 0x%llx\n", mvpu_req->mem_is_kernel);
+			pr_debug("[MVPU][Sec] copy mem_is_kernel fail 0x%llx\n", mvpu_req->mem_is_kernel);
 			ret = -EFAULT;
 			goto END;
 		} else {
 #ifdef MVPU_SEC_DEBUG
 			for (i = 0; i < buf_num; i++)
-				pr_info("[MVPU][Sec] copy mem_is_kernel success 0x%llx, mem_is_kernel[%d]: %d\n",
+				pr_debug("[MVPU][Sec] copy mem_is_kernel success 0x%llx, mem_is_kernel[%d]: %d\n",
 						mvpu_req->mem_is_kernel,
 						i, mem_is_kernel[i]);
 #endif
@@ -200,7 +200,7 @@ static int apusys_mvpu_handler_lite(int type, void *hnd, struct apusys_device *d
 		//integrity check
 		for (i = 0; i < buf_num; i++) {
 #ifdef MVPU_SEC_DEBUG
-			pr_info("[MVPU][Sec] DRV check cnt %3d, addr 0x%08x, buf_attr: %d, buf_size: 0x%08x\n",
+			pr_debug("[MVPU][Sec] DRV check cnt %3d, addr 0x%08x, buf_attr: %d, buf_size: 0x%08x\n",
 					i, sec_chk_addr[i],
 					mem_is_kernel[i],
 					sec_buf_size[i]);
@@ -210,12 +210,12 @@ static int apusys_mvpu_handler_lite(int type, void *hnd, struct apusys_device *d
 
 			// check buffer integrity
 			if (apusys_mem_get_by_iova(cmd_hnd->session, (uint64_t)sec_chk_addr[i]) != 0) {
-				pr_info("[MVPU][Sec] buf[%d]: 0x%08x integrity checked FAIL\n",
+				pr_debug("[MVPU][Sec] buf[%d]: 0x%08x integrity checked FAIL\n",
 							i, sec_chk_addr[i]);
 				ret = -1;
 				goto END;
 			} else {
-				pr_info("[MVPU][Sec] buf[%d]: 0x%08x integrity checked PASS\n",
+				pr_debug("[MVPU][Sec] buf[%d]: 0x%08x integrity checked PASS\n",
 							i, sec_chk_addr[i]);
 			}
 		}
@@ -310,7 +310,7 @@ static int apusys_mvpu_handler_lite(int type, void *hnd, struct apusys_device *d
 							sec_buf_size, mem_is_kernel);
 
 				if (ret != 0) {
-					pr_info("[MVPU][SEC] hash error: ret = 0x%08x\n",
+					pr_debug("[MVPU][SEC] hash error: ret = 0x%08x\n",
 								ret);
 					goto VALIDATE_END;
 				}
@@ -328,7 +328,7 @@ static int apusys_mvpu_handler_lite(int type, void *hnd, struct apusys_device *d
 						session_id, hash_id, batch_name_hash,
 						buf_num, sec_chk_addr, sec_buf_size, mem_is_kernel);
 			if (ret != 0) {
-				pr_info("[MVPU][SEC] hash error: ret = 0x%08x\n",
+				pr_debug("[MVPU][SEC] hash error: ret = 0x%08x\n",
 							ret);
 				goto VALIDATE_END;
 			}
@@ -356,7 +356,7 @@ VALIDATE_END:
 		break;
 	case APUSYS_CMD_SESSION_DELETE:
 		if (hnd == NULL) {
-			pr_info("[MVPU][Sec] APUSYS_CMD_SESSION_DELETE error: hnd is NULL\n");
+			pr_debug("[MVPU][Sec] APUSYS_CMD_SESSION_DELETE error: hnd is NULL\n");
 			ret = -1;
 		} else {
 			mutex_lock(&mvpu_pool_lock);
@@ -367,7 +367,7 @@ VALIDATE_END:
 		break;
 #endif //MVPU_SECURITY
 	default:
-		pr_info("%s get wrong cmd type: %d\n", __func__, type);
+		pr_debug("%s get wrong cmd type: %d\n", __func__, type);
 		ret = -1;
 		break;
 	}
@@ -527,10 +527,10 @@ static int mvpu_drv_init(void)
 
 	ret = platform_driver_register(&mvpu_driver);
 	if (ret != 0) {
-		pr_info("mvpu, register platform driver fail\n");
+		pr_debug("mvpu, register platform driver fail\n");
 		return ret;
 	}
-	pr_info("mvpu, register platform driver pass\n");
+	pr_debug("mvpu, register platform driver pass\n");
 	return 0;
 }
 
@@ -549,14 +549,14 @@ int mvpu_init(void)
 		return -ENODEV;
 	}
 
-	pr_info("%s() done\n", __func__);
+	pr_debug("%s() done\n", __func__);
 
 	return 0;
 }
 
 void mvpu_exit(void)
 {
-	pr_info("%s()!!\n", __func__);
+	pr_debug("%s()!!\n", __func__);
 	//mvpu_sysfs_exit();
 	mvpu_drv_exit();
 }

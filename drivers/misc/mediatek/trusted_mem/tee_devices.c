@@ -170,7 +170,7 @@ int tee_smem_devs_init(void)
 	struct trusted_mem_device *t_device;
 	int idx = 0;
 
-	pr_info("%s:%d DEVICE COUNT:(%d), MIN CHUNK SIZE: (0x%x)\n", __func__, __LINE__,
+	pr_debug("%s:%d DEVICE COUNT:(%d), MIN CHUNK SIZE: (0x%x)\n", __func__, __LINE__,
 		(int)TEE_SECURE_MEM_DEVICE_COUNT, tee_smem_general_configs.minimal_chunk_size);
 
 	for (idx = 0; idx < TEE_SECURE_MEM_DEVICE_COUNT; idx++) {
@@ -180,13 +180,13 @@ int tee_smem_devs_init(void)
 			tee_smem_devs[idx].ssmr_feature_id,
 			tee_smem_devs[idx].dev_name);
 		if (INVALID(t_device)) {
-			pr_info("don't create TEE tmem device: %d:%s\n",
+			pr_debug("don't create TEE tmem device: %d:%s\n",
 			       tee_smem_devs[idx].kern_tmem_type,
 			       tee_smem_devs[idx].dev_name);
 		}
 	}
 
-	pr_info("%s:%d (end)\n", __func__, __LINE__);
+	pr_debug("%s:%d (end)\n", __func__, __LINE__);
 	return TMEM_OK;
 }
 

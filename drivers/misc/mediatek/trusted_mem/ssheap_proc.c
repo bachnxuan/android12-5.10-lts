@@ -39,7 +39,7 @@ static int get_reserved_cma_memory(struct device *dev)
 	np = of_parse_phandle(dev->of_node, "memory-region", 0);
 
 	if (!np) {
-		pr_info("%s, no ssheap region\n", __func__);
+		pr_debug("%s, no ssheap region\n", __func__);
 		return -EINVAL;
 	}
 
@@ -47,7 +47,7 @@ static int get_reserved_cma_memory(struct device *dev)
 	of_node_put(np);
 
 	if (!rmem) {
-		pr_info("%s, no ssheap device info\n", __func__);
+		pr_debug("%s, no ssheap device info\n", __func__);
 		return -EINVAL;
 	}
 
@@ -56,7 +56,7 @@ static int get_reserved_cma_memory(struct device *dev)
 	 */
 	of_reserved_mem_device_init_by_idx(dev, dev->of_node, 0);
 
-	pr_info("cma base=%pa, size=%pa\n", &rmem->base, &rmem->size);
+	pr_debug("cma base=%pa, size=%pa\n", &rmem->base, &rmem->size);
 	ssheap_set_cma_region(rmem->base, rmem->size);
 
 	return 0;
@@ -64,7 +64,7 @@ static int get_reserved_cma_memory(struct device *dev)
 
 int ssheap_init(struct platform_device *pdev)
 {
-	pr_info("%s:%d\n", __func__, __LINE__);
+	pr_debug("%s:%d\n", __func__, __LINE__);
 
 	ssheap_set_dev(&pdev->dev);
 
@@ -81,7 +81,7 @@ int ssheap_init(struct platform_device *pdev)
 
 int ssheap_exit(struct platform_device *pdev)
 {
-	pr_info("%s:%d\n", __func__, __LINE__);
+	pr_debug("%s:%d\n", __func__, __LINE__);
 	return 0;
 }
 

@@ -79,7 +79,7 @@ static void cm_get_base_addr(void)
 	dn = of_find_node_by_name(NULL, "cpuhvfs");
 	if (!dn) {
 		ret = -ENOMEM;
-		pr_info("find cpuhvfs node failed\n");
+		pr_debug("find cpuhvfs node failed\n");
 		return;
 	}
 
@@ -87,21 +87,21 @@ static void cm_get_base_addr(void)
 	of_node_put(dn);
 	if (!pdev) {
 		ret = -ENODEV;
-		pr_info("cpuhvfs is not ready\n");
+		pr_debug("cpuhvfs is not ready\n");
 		return;
 	}
 
 	csram_res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
 	if (!csram_res) {
 		ret = -ENODEV;
-		pr_info("cpuhvfs resource is not found\n");
+		pr_debug("cpuhvfs resource is not found\n");
 		return;
 	}
 
 	csram_base = ioremap(csram_res->start, resource_size(csram_res));
 	if (IS_ERR_OR_NULL((void *)csram_base)) {
 		ret = -ENOMEM;
-		pr_info("find csram base failed\n");
+		pr_debug("find csram base failed\n");
 		return;
 	}
 }
@@ -137,11 +137,11 @@ static int cm_mgr_check_dram_type(void)
 
 	if (ddr_type == TYPE_LPDDR4X || ddr_type == TYPE_LPDDR4)
 		cm_mgr_idx = CM_MGR_LP4;
-	pr_info("#@# %s(%d) ddr_type 0x%x, ddr_hz %d, cm_mgr_idx 0x%x\n",
+	pr_debug("#@# %s(%d) ddr_type 0x%x, ddr_hz %d, cm_mgr_idx 0x%x\n",
 			__func__, __LINE__, ddr_type, ddr_hz, cm_mgr_idx);
 #else
 	cm_mgr_idx = 0;
-	pr_info("#@# %s(%d) NO CONFIG_MTK_DRAMC !!! set cm_mgr_idx to 0x%x\n",
+	pr_debug("#@# %s(%d) NO CONFIG_MTK_DRAMC !!! set cm_mgr_idx to 0x%x\n",
 			__func__, __LINE__, cm_mgr_idx);
 #endif /* CONFIG_MTK_DRAMC */
 
@@ -425,7 +425,7 @@ static int platform_cm_mgr_probe(struct platform_device *pdev)
 	spin_lock_init(&cm_mgr_lock);
 	ret = cm_mgr_common_init();
 	if (ret) {
-		pr_info("[CM_MGR] FAILED TO INIT(%d)\n", ret);
+		pr_debug("[CM_MGR] FAILED TO INIT(%d)\n", ret);
 		return ret;
 	}
 
@@ -434,7 +434,7 @@ static int platform_cm_mgr_probe(struct platform_device *pdev)
 	/* required-opps */
 	ret = of_count_phandle_with_args(node, "required-opps", NULL);
 	cm_mgr_set_num_perf(ret);
-	pr_info("#@# %s(%d) cm_mgr_num_perf %d\n",
+	pr_debug("#@# %s(%d) cm_mgr_num_perf %d\n",
 			__func__, __LINE__, ret);
 
 	bw_path = of_icc_get(&pdev->dev, "cm-perf-bw");
@@ -464,7 +464,7 @@ static int platform_cm_mgr_probe(struct platform_device *pdev)
 		cm_mgr_set_num_array(ret - 1);
 	} else
 		cm_mgr_set_num_array(0);
-	pr_info("#@# %s(%d) cm_mgr_num_array %d\n",
+	pr_debug("#@# %s(%d) cm_mgr_num_array %d\n",
 			__func__, __LINE__, cm_mgr_get_num_array());
 
 #if IS_ENABLED(CONFIG_MTK_CM_IPI)
@@ -476,23 +476,23 @@ static int platform_cm_mgr_probe(struct platform_device *pdev)
 			"dvfs-config", (const char **)&buf);
 		if (!err) {
 			if (!strcmp(buf, "mcl50")) {
-				pr_info("@[CM_MGR] send dsu perf to sspm\n");
+				pr_debug("@[CM_MGR] send dsu perf to sspm\n");
 				cm_mgr_to_sspm_command(IPI_CM_MGR_DSU_MODE, 1);
-				pr_info("@[CM_MGR] dsu mode %d\n", csram_read(OFFS_CCI_TBL_MODE));
+				pr_debug("@[CM_MGR] dsu mode %d\n", csram_read(OFFS_CCI_TBL_MODE));
 				mcl50_flag = 1;
 
 			}
 		} else
-			pr_info("@[CM_MGR] not mcl50 load %d\n", err);
+			pr_debug("@[CM_MGR] not mcl50 load %d\n", err);
 	} else
-		pr_info("CM_MGR cant find mcl node\n");
+		pr_debug("CM_MGR cant find mcl node\n");
 
 #endif
 
 
 	ret = cm_mgr_check_dts_setting(pdev);
 	if (ret) {
-		pr_info("[CM_MGR] FAILED TO GET DTS DATA(%d)\n", ret);
+		pr_debug("[CM_MGR] FAILED TO GET DTS DATA(%d)\n", ret);
 		return ret;
 	}
 	INIT_DELAYED_WORK(&cm_mgr_timeout_work, cm_mgr_timeout_process);
@@ -518,7 +518,7 @@ static int platform_cm_mgr_probe(struct platform_device *pdev)
 
 	cm_mgr_init_done = 1;
 
-	pr_info("[CM_MGR] platform-cm_mgr_probe Done.\n");
+	pr_debug("[CM_MGR] platform-cm_mgr_probe Done.\n");
 
 	return 0;
 
@@ -568,7 +568,7 @@ static int __init platform_cm_mgr_init(void)
 static void __exit platform_cm_mgr_exit(void)
 {
 	platform_driver_unregister(&mtk_platform_cm_mgr_driver);
-	pr_info("[CM_MGR] platform-cm_mgr Exit.\n");
+	pr_debug("[CM_MGR] platform-cm_mgr Exit.\n");
 }
 
 subsys_initcall(platform_cm_mgr_init);

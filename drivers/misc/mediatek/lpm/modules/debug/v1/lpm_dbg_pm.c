@@ -30,7 +30,7 @@ static int lpm_dbg_suspend_noirq(struct device *dev)
 	ret = spm_common_dbg_dump();
 
 	if (kernel_suspend_only == 1) {
-		pr_info("[LPM] kernel suspend only ....\n");
+		pr_debug("[LPM] kernel suspend only ....\n");
 		pm_system_wakeup();
 	}
 
@@ -85,7 +85,7 @@ int lpm_dbg_pm_init(void)
 		of_node_put(lpm_node);
 	}
 
-	pr_info("[name:mtk_lpm][P] - kernel suspend only = %d (%s:%d)\n",
+	pr_debug("[name:mtk_lpm][P] - kernel suspend only = %d (%s:%d)\n",
 					kernel_suspend_only, __func__, __LINE__);
 
 	return 0;

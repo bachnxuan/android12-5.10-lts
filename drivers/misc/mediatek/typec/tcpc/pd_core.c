@@ -54,7 +54,7 @@ static inline void pd_parse_pdata_bat_info(
 	ret = snprintf(mfrs_info->mfrs_string,
 		sizeof(mfrs_info->mfrs_string), "%s", mstring);
 	if (ret < 0 || ret >= sizeof(mfrs_info->mfrs_string))
-		pr_info("%s-%d snprintf fail\n", __func__, __LINE__);
+		pr_debug("%s-%d snprintf fail\n", __func__, __LINE__);
 #endif	/* CONFIG_USB_PD_REV30_MFRS_INFO_LOCAL */
 
 	ret = of_property_read_u32(sub, "bat,design_cap", &design_cap);
@@ -90,7 +90,7 @@ static inline int pd_parse_pdata_bats(
 	}
 
 	pd_port->bat_nr = val;
-	pr_info("%s Battery NR = %d\n", __func__, pd_port->bat_nr);
+	pr_debug("%s Battery NR = %d\n", __func__, pd_port->bat_nr);
 
 	pd_port->fix_bat_info = devm_kzalloc(&pd_port->tcpc->dev,
 		sizeof(struct pd_battery_info)*pd_port->bat_nr,
@@ -114,7 +114,7 @@ static inline int pd_parse_pdata_bats(
 	}
 
 	for (i = 0; i < pd_port->bat_nr; i++) {
-		pr_info("%s fix_bat_info[%d].mfrs_info.vid = 0x%x, .mfrs_info.pid = 0x%x, .mfrs_string = %s, .bat_design_cap = %d\n",
+		pr_debug("%s fix_bat_info[%d].mfrs_info.vid = 0x%x, .mfrs_info.pid = 0x%x, .mfrs_string = %s, .bat_design_cap = %d\n",
 			__func__, i,
 			pd_port->fix_bat_info[i].mfrs_info.vid,
 			pd_port->fix_bat_info[i].mfrs_info.pid,
@@ -195,7 +195,7 @@ static inline int pd_parse_pdata_countries(
 		return 0;
 	}
 
-	pr_info("%s Country NR = %d\n", __func__, pd_port->country_nr);
+	pr_debug("%s Country NR = %d\n", __func__, pd_port->country_nr);
 
 	pd_port->country_info = devm_kzalloc(&pd_port->tcpc->dev,
 		sizeof(struct pd_country_authority)*pd_port->country_nr,
@@ -222,12 +222,12 @@ static inline int pd_parse_pdata_countries(
 	}
 
 	for (i = 0; i < pd_port->country_nr; i++) {
-		pr_info("%s country_info[%d].code = 0x%x, .len = %d\n",
+		pr_debug("%s country_info[%d].code = 0x%x, .len = %d\n",
 			__func__, i,
 			pd_port->country_info[i].code,
 			pd_port->country_info[i].len);
 		for (j = 0; j < pd_port->country_info[i].len; j++) {
-			pr_info("%s country_info[%d].data[%d] = 0x%x\n",
+			pr_debug("%s country_info[%d].data[%d] = 0x%x\n",
 				__func__, i, j,
 				pd_port->country_info[i].data[j]);
 		}
@@ -239,12 +239,12 @@ static inline int pd_parse_pdata_countries(
 #if CONFIG_USB_PD_REV30_SRC_CAP_EXT_LOCAL
 static void pd_parse_log_src_cap_ext(struct pd_source_cap_ext *cap)
 {
-	pr_info("%s vid = 0x%x, pid = 0x%x, xid = 0x%x, fw_ver = 0x%x, hw_ver = 0x%0x\n",
+	pr_debug("%s vid = 0x%x, pid = 0x%x, xid = 0x%x, fw_ver = 0x%x, hw_ver = 0x%0x\n",
 		__func__,
 		cap->vid, cap->pid, cap->xid,
 		cap->fw_ver, cap->hw_ver);
 
-	pr_info("%s voltage_regulation = %d, hold_time_ms = %d, compliance = 0x%x, touch_current = 0x%x, peak_current = %d %d %d\n",
+	pr_debug("%s voltage_regulation = %d, hold_time_ms = %d, compliance = 0x%x, touch_current = 0x%x, peak_current = %d %d %d\n",
 		__func__,
 		cap->voltage_regulation,
 		cap->hold_time_ms,
@@ -254,7 +254,7 @@ static void pd_parse_log_src_cap_ext(struct pd_source_cap_ext *cap)
 		cap->peak_current[1],
 		cap->peak_current[2]);
 
-	pr_info("%s touch_temp = %d, source_inputs = 0x%x, batteries = 0x%x, source_pdp = 0x%x\n",
+	pr_debug("%s touch_temp = %d, source_inputs = 0x%x, batteries = 0x%x, source_pdp = 0x%x\n",
 		__func__,
 		cap->touch_temp,
 		cap->source_inputs,
@@ -313,7 +313,7 @@ static inline void pd_parse_pdata_mfrs(
 		pid = PD_PRODUCT_PID(pd_port->id_vdos[2]);
 	}
 
-	pr_info("%s VID = 0x%x, PID = 0x%x\n", __func__, vid, pid);
+	pr_debug("%s VID = 0x%x, PID = 0x%x\n", __func__, vid, pid);
 
 #if CONFIG_USB_PD_REV30_MFRS_INFO_LOCAL
 	mfrs_info->vid = vid;
@@ -327,9 +327,9 @@ static inline void pd_parse_pdata_mfrs(
 	ret = snprintf(mfrs_info->mfrs_string,
 		sizeof(mfrs_info->mfrs_string), "%s", mstring);
 	if (ret < 0 || ret >= sizeof(mfrs_info->mfrs_string))
-		pr_info("%s-%d snprintf fail\n", __func__, __LINE__);
+		pr_debug("%s-%d snprintf fail\n", __func__, __LINE__);
 
-	pr_info("%s PD mfrs_string = %s\n",
+	pr_debug("%s PD mfrs_string = %s\n",
 		__func__, mfrs_info->mfrs_string);
 #endif	/* CONFIG_USB_PD_REV30_MFRS_INFO_LOCAL */
 
@@ -353,7 +353,7 @@ static int pd_parse_pdata(struct pd_port *pd_port)
 	struct device_node *np;
 	int ret = 0, i;
 
-	pr_info("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 	np = of_find_node_by_name(pd_port->tcpc->dev.of_node, "pd-data");
 
 	if (np) {
@@ -368,9 +368,9 @@ static int pd_parse_pdata(struct pd_port *pd_port)
 		if (ret < 0)
 			pr_err("%s get source pdo data fail\n", __func__);
 
-		pr_info("%s src pdo data =\n", __func__);
+		pr_debug("%s src pdo data =\n", __func__);
 		for (i = 0; i < pd_port->local_src_cap_default.nr; i++) {
-			pr_info("%s %d: 0x%08x\n", __func__, i,
+			pr_debug("%s %d: 0x%08x\n", __func__, i,
 				pd_port->local_src_cap_default.pdos[i]);
 		}
 
@@ -385,9 +385,9 @@ static int pd_parse_pdata(struct pd_port *pd_port)
 		if (ret < 0)
 			pr_err("%s get sink pdo data fail\n", __func__);
 
-		pr_info("%s snk pdo data =\n", __func__);
+		pr_debug("%s snk pdo data =\n", __func__);
 		for (i = 0; i < pd_port->local_snk_cap.nr; i++) {
-			pr_info("%s %d: 0x%08x\n", __func__, i,
+			pr_debug("%s %d: 0x%08x\n", __func__, i,
 				pd_port->local_snk_cap.pdos[i]);
 
 #if CONFIG_USB_PD_REV30_PPS_SINK
@@ -410,20 +410,20 @@ static int pd_parse_pdata(struct pd_port *pd_port)
 		if (ret < 0)
 			pr_err("%s get id vdo data fail\n", __func__);
 
-		pr_info("%s id vdos data =\n", __func__);
+		pr_debug("%s id vdos data =\n", __func__);
 		for (i = 0; i < pd_port->id_vdo_nr; i++)
-			pr_info("%s %d: 0x%08x\n", __func__, i,
+			pr_debug("%s %d: 0x%08x\n", __func__, i,
 			pd_port->id_vdos[i]);
 
 		pd_port->id_header = pd_port->id_vdos[0];
 
 		val = DPM_CHARGING_POLICY_MAX_POWER_LVIC;
 		if (of_property_read_u32(np, "pd,charging_policy", &val) < 0)
-			pr_info("%s get charging policy fail\n", __func__);
+			pr_debug("%s get charging policy fail\n", __func__);
 
 		pd_port->dpm_charging_policy = val;
 		pd_port->dpm_charging_policy_default = val;
-		pr_info("%s charging_policy = %d\n", __func__, val);
+		pr_debug("%s charging_policy = %d\n", __func__, val);
 
 #if CONFIG_USB_PD_REV30_BAT_INFO
 		ret = pd_parse_pdata_bats(pd_port, np);
@@ -489,7 +489,7 @@ static void pd_core_power_flags_init(struct pd_port *pd_port)
 			supported_dpm_caps[i].prop_name))
 			pd_port->dpm_caps |=
 				supported_dpm_caps[i].val;
-			pr_info("dpm_caps: %s\n",
+			pr_debug("dpm_caps: %s\n",
 				supported_dpm_caps[i].prop_name);
 	}
 
@@ -503,7 +503,7 @@ static void pd_core_power_flags_init(struct pd_port *pd_port)
 	else
 		pr_err("%s get dr_check data fail\n", __func__);
 
-	pr_info("dpm_caps = 0x%08x\n", pd_port->dpm_caps);
+	pr_debug("dpm_caps = 0x%08x\n", pd_port->dpm_caps);
 
 	src_flag = 0;
 	if (pd_port->dpm_caps & DPM_CAP_LOCAL_DR_POWER)

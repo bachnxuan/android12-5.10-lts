@@ -193,9 +193,9 @@ static int eem_cur_volt_proc_show(struct seq_file *m, void *v)
 		lock = eemsn_log->lock;
 		locklimit++;
 		mdelay(5); /* wait 5 ms */
-		/* pr_info("1 lock=0x%X\n", lock); */
+		/* pr_debug("1 lock=0x%X\n", lock); */
 		lock = eemsn_log->lock;
-		/* pr_info("2 lock=0x%X\n", lock); */
+		/* pr_debug("2 lock=0x%X\n", lock); */
 		if ((lock & 0x1) && (locklimit < 5))
 			continue; /* if lock, read dram again */
 		else
@@ -380,9 +380,9 @@ static int eem_pull_data_proc_show(struct seq_file *m, void *v)
 		lock = eemsn_log->lock;
 		locklimit++;
 		mdelay(5); /* wait 5 ms */
-		/* pr_info("1 lock=0x%X\n", lock); */
+		/* pr_debug("1 lock=0x%X\n", lock); */
 		lock = eemsn_log->lock;
-		/* pr_info("2 lock=0x%X\n", lock); */
+		/* pr_debug("2 lock=0x%X\n", lock); */
 		if ((lock & 0x1) && (locklimit < 5))
 			continue; /* if lock, read dram again */
 		else
@@ -465,9 +465,9 @@ static int eem_dbg_repo_proc_show(struct seq_file *m, void *v)
 		lock = eemsn_log->lock;
 		locklimit++;
 		mdelay(5); /* wait 5 ms */
-		/* pr_info("1 lock=0x%X\n", lock); */
+		/* pr_debug("1 lock=0x%X\n", lock); */
 		lock = eemsn_log->lock;
-		/* pr_info("2 lock=0x%X\n", lock); */
+		/* pr_debug("2 lock=0x%X\n", lock); */
 		if ((lock & 0x1) && (locklimit < 5))
 			continue; /* if lock, read dram again */
 		else
@@ -526,7 +526,7 @@ static int create_debug_fs(void)
 	for (i = 0; i < ARRAY_SIZE(eem_entries); i++) {
 		if (!proc_create(eem_entries[i].name, 0664,
 					eem_dir, eem_entries[i].fops)) {
-			pr_info("[%s]: create /proc/eem/%s failed\n",
+			pr_debug("[%s]: create /proc/eem/%s failed\n",
 					__func__,
 					eem_entries[i].name);
 		}
@@ -566,7 +566,7 @@ int mtk_eem_init(struct platform_device *pdev)
 	err = mtk_ipi_register(get_mcupm_ipidev(), CH_S_EEMSN, NULL, NULL,
 		(void *)&ipi_ackdata);
 	if (err != 0) {
-		pr_info("%s error ret:%d\n", __func__, err);
+		pr_debug("%s error ret:%d\n", __func__, err);
 		return 0;
 	}
 

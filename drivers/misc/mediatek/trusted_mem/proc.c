@@ -43,7 +43,7 @@ static int tmem_open(struct inode *inode, struct file *file)
 	UNUSED(inode);
 	UNUSED(file);
 
-	pr_info("%s:%d\n", __func__, __LINE__);
+	pr_debug("%s:%d\n", __func__, __LINE__);
 	return TMEM_OK;
 }
 
@@ -52,7 +52,7 @@ static int tmem_release(struct inode *ino, struct file *file)
 	UNUSED(ino);
 	UNUSED(file);
 
-	pr_info("%s:%d\n", __func__, __LINE__);
+	pr_debug("%s:%d\n", __func__, __LINE__);
 	return TMEM_OK;
 }
 
@@ -68,7 +68,7 @@ static void trusted_mem_device_chunk_alloc(enum TRUSTED_MEM_TYPE mem_type)
 			mem_type, alignment, min_chunk_sz, &ref_count,
 			&g_common_mem_handle[mem_type], NULL, 0, 0);
 	else
-		pr_info("%d chunk is already allocated, handle:0x%x\n",
+		pr_debug("%d chunk is already allocated, handle:0x%x\n",
 			mem_type, g_common_mem_handle[mem_type]);
 
 	if (ret)
@@ -142,7 +142,7 @@ static void trusted_mem_region_status_dump(void)
 	for (mem_idx = 0; mem_idx < TRUSTED_MEM_MAX; mem_idx++) {
 		is_region_on = tmem_core_is_regmgr_region_on(mem_idx);
 		is_dev_registered = tmem_core_is_device_registered(mem_idx);
-		pr_info("mem%d reg_state:%s registered:%s\n", mem_idx,
+		pr_debug("mem%d reg_state:%s registered:%s\n", mem_idx,
 			is_region_on ? "BUSY" : "IDLE",
 			is_dev_registered ? "YES" : "NO");
 	}
@@ -272,7 +272,7 @@ MODULE_PARM_DESC(ut_saturation_stress_pmem_min_chunk_size,
 
 static int trusted_mem_init(struct platform_device *pdev)
 {
-	pr_info("%s:%d\n", __func__, __LINE__);
+	pr_debug("%s:%d\n", __func__, __LINE__);
 
 #if WITH_SSHEAP_PROC
 	if (strncmp(dev_name(&pdev->dev), "ssheap", 6) == 0)
@@ -301,7 +301,7 @@ static int trusted_mem_init(struct platform_device *pdev)
 
 	trusted_mem_create_proc_entry();
 
-	pr_info("%s:%d (end)\n", __func__, __LINE__);
+	pr_debug("%s:%d (end)\n", __func__, __LINE__);
 	return TMEM_OK;
 }
 

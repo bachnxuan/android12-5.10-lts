@@ -47,7 +47,7 @@ void init_md_section_level(enum pbm_kicker kicker, u32 *share_mem)
 	}
 #if IS_ENABLED(CONFIG_MTK_ECCCI_DRIVER)
 	if (share_mem == NULL) {
-		pr_info_ratelimited("can't get dbm share memory\n");
+		pr_debug_ratelimited("can't get dbm share memory\n");
 		return;
 	}
 #ifdef DBM_RESERVE_OFFSET
@@ -91,7 +91,7 @@ int get_md1_power(enum mdpm_power_type power_type, bool need_update)
 	memset((void *)&mdpm_power_sta, 0, sizeof(struct md_power_status));
 
 	if (!md1_ccci_ready) {
-		pr_info_ratelimited("%s: md1_ccci_ready=%d\n", __func__, md1_ccci_ready);
+		pr_debug_ratelimited("%s: md1_ccci_ready=%d\n", __func__, md1_ccci_ready);
 		return MAX_MD1_POWER;
 	}
 
@@ -111,7 +111,7 @@ int get_md1_power(enum mdpm_power_type power_type, bool need_update)
 		&mdpm_power_sta);
 
 	if (mt_mdpm_debug)
-		pr_info("[md1_power] scenario_power=%d tx_power=%d total=%d\n",
+		pr_debug("[md1_power] scenario_power=%d tx_power=%d total=%d\n",
 			scenario_power, tx_power, scenario_power + tx_power);
 
 	return scenario_power + tx_power;
@@ -343,11 +343,11 @@ static u32 check_shm_version(u32 *share_mem)
 	switch (mdpm_version_check) {
 	case VERSION_INIT:
 		if (mt_mdpm_debug)
-			pr_info_ratelimited("mdpm share memory: MD not init\n");
+			pr_debug_ratelimited("mdpm share memory: MD not init\n");
 
 		break;
 	case VERSION_INVALID:
-		pr_info("dpm share memory: MD check version ERROR\n");
+		pr_debug("dpm share memory: MD check version ERROR\n");
 		WARN_ON_ONCE(1);
 		break;
 	case VERSION_VALID:
@@ -431,33 +431,33 @@ void init_md1_section_level(u32 *share_mem)
 	memcpy(&share_mem[SECTION_LEVEL_2_START], &mem[SECTION_LEVEL_2_START],
 		sizeof(u32) * (SECTION_LEVEL_2_END - SECTION_LEVEL_2_START + 1));
 
-	pr_info("AP2MD1 section, 2G: 0x%08x%08x(0x%08x%08x), 3G: 0x%08x%08x(0x%08x %08x)\n",
+	pr_debug("AP2MD1 section, 2G: 0x%08x%08x(0x%08x%08x), 3G: 0x%08x%08x(0x%08x %08x)\n",
 		mem[M_2G_SECTION_LEVEL], mem[M_2G_SECTION_1_LEVEL],
 		share_mem[M_2G_SECTION_LEVEL], share_mem[M_2G_SECTION_1_LEVEL],
 		mem[M_3G_SECTION_LEVEL], mem[M_3G_SECTION_1_LEVEL],
 		share_mem[M_3G_SECTION_LEVEL],
 		share_mem[M_3G_SECTION_1_LEVEL]);
-	pr_info("4G_CC0:0x%08x%08x(0x%08x%08x),4G_CC1:0x%08x%08x(0x%08x%08x)\n",
+	pr_debug("4G_CC0:0x%08x%08x(0x%08x%08x),4G_CC1:0x%08x%08x(0x%08x%08x)\n",
 		mem[M_4G_SECTION_LEVEL], mem[M_4G_SECTION_9_LEVEL],
 		share_mem[M_4G_SECTION_LEVEL], share_mem[M_4G_SECTION_9_LEVEL],
 		mem[M_4G_SECTION_LEVEL], mem[M_4G_SECTION_9_LEVEL],
 		share_mem[M_4G_SECTION_LEVEL],
 		share_mem[M_4G_SECTION_9_LEVEL]);
-	pr_info("3GTDD: 0x%08x%08x(0x%08x%08x)\n",
+	pr_debug("3GTDD: 0x%08x%08x(0x%08x%08x)\n",
 		mem[M_TDD_SECTION_LEVEL], mem[M_TDD_SECTION_1_LEVEL],
 		share_mem[M_TDD_SECTION_LEVEL],
 		share_mem[M_TDD_SECTION_1_LEVEL]);
-	pr_info("C2K: 0x%08x%08x(0x%08x%08x), addr: 0x%p\n",
+	pr_debug("C2K: 0x%08x%08x(0x%08x%08x), addr: 0x%p\n",
 		mem[M_C2K_SECTION_1_LEVEL], mem[M_C2K_SECTION_2_LEVEL],
 		share_mem[M_C2K_SECTION_1_LEVEL],
 		share_mem[M_C2K_SECTION_2_LEVEL], share_mem);
-	pr_info("NR_CC0:0x%08x%08x(0x%08x%08x),NR_CC1:0x%08x%08x(0x%08x%08x)\n",
+	pr_debug("NR_CC0:0x%08x%08x(0x%08x%08x),NR_CC1:0x%08x%08x(0x%08x%08x)\n",
 		mem[M_NR_SECTION_LEVEL], mem[M_NR_SECTION_1_LEVEL],
 		share_mem[M_NR_SECTION_LEVEL], share_mem[M_NR_SECTION_1_LEVEL],
 		mem[M_NR_SECTION_2_LEVEL], mem[M_NR_SECTION_3_LEVEL],
 		share_mem[M_NR_SECTION_2_LEVEL],
 		share_mem[M_NR_SECTION_3_LEVEL]);
-	pr_info("MMW_TX1:0x%08x%08x(0x%08x%08x),MMW_TX2:0x%08x%08x(0x%08x%08x)\n",
+	pr_debug("MMW_TX1:0x%08x%08x(0x%08x%08x),MMW_TX2:0x%08x%08x(0x%08x%08x)\n",
 		mem[M_MMW_SECTION_LEVEL], mem[M_MMW_SECTION_1_LEVEL],
 		share_mem[M_MMW_SECTION_LEVEL], share_mem[M_MMW_SECTION_1_LEVEL],
 		mem[M_MMW_SECTION_2_LEVEL], mem[M_MMW_SECTION_3_LEVEL],
@@ -479,7 +479,7 @@ enum md_scenario get_md1_scenario_by_shm(u32 *share_mem)
 	scenario = (scenario < 0) ? S_STANDBY : scenario;
 
 	if (mt_mdpm_debug)
-		pr_info("MD1 scenario: %d(%s), scen_status: 0x%x\n",
+		pr_debug("MD1 scenario: %d(%s), scen_status: 0x%x\n",
 			scenario, mdpm_scen[scenario].scenario_name,
 			scen_status);
 
@@ -498,7 +498,7 @@ enum md_scenario get_md1_scenario(u32 share_reg,
 	scenario = (scenario < 0) ? S_STANDBY : scenario;
 
 	if (mt_mdpm_debug)
-		pr_info("MD1 scenario: %d(%s), reg: 0x%x\n",
+		pr_debug("MD1 scenario: %d(%s), reg: 0x%x\n",
 			scenario, mdpm_scen[scenario].scenario_name,
 			share_reg);
 
@@ -563,7 +563,7 @@ static int get_md1_tx_power_by_table(u32 *dbm_mem, u32 *old_dbm_mem,
 
 	if (cmp) {
 		if (mt_mdpm_debug == 2)
-			pr_info("%s dBm no TX power, reg: 0x%08x%08x(0x%08x%08x) return 0\n",
+			pr_debug("%s dBm no TX power, reg: 0x%08x%08x(0x%08x%08x) return 0\n",
 			tx_pwr->dbm_name,
 			dbm_mem[tx_pwr->shm_dbm_idx[0]],
 			dbm_mem[tx_pwr->shm_dbm_idx[1]],
@@ -596,7 +596,7 @@ static int get_md1_tx_power_by_table(u32 *dbm_mem, u32 *old_dbm_mem,
 			}
 
 			if (mt_mdpm_debug)
-				pr_info("%s dBm: reg:0x%08x%08x(0x%08x%08x),pa:%d,rf:%d,s:%d\n",
+				pr_debug("%s dBm: reg:0x%08x%08x(0x%08x%08x),pa:%d,rf:%d,s:%d\n",
 				tx_pwr->dbm_name, dbm_mem[tx_pwr->shm_dbm_idx[0]],
 				dbm_mem[tx_pwr->shm_dbm_idx[1]],
 				old_dbm_mem[tx_pwr->shm_dbm_idx[0]],
@@ -716,7 +716,7 @@ int get_md1_tx_power(enum md_scenario scenario, u32 *share_mem,
 
 	if (share_mem == NULL) {
 		if (mt_mdpm_debug)
-			pr_info("MD1 share_mem is NULL\n");
+			pr_debug("MD1 share_mem is NULL\n");
 
 		return 0;
 	}
@@ -733,7 +733,7 @@ int get_md1_tx_power(enum md_scenario scenario, u32 *share_mem,
 
 			if ((i + 1) % 10 == 0 || (i + 1) == SHARE_MEM_SIZE) {
 				usedBytes = 0;
-				pr_info("%s\n", log_buffer);
+				pr_debug("%s\n", log_buffer);
 			}
 		}
 

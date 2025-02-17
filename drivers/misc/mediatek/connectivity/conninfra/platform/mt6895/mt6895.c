@@ -192,7 +192,7 @@ int consys_co_clock_type_mt6895(void)
 				clock_type = CONNSYS_CLOCK_SCHEMATIC_52M_COTMS;
 		}
 	}
-	pr_info("[%s] conf->tcxo_gpio=%d conn_hw_env.tcxo_support=%d, %s",
+	pr_debug("[%s] conf->tcxo_gpio=%d conn_hw_env.tcxo_support=%d, %s",
 		__func__, conf->tcxo_gpio, conn_hw_env.tcxo_support, clock_name[clock_type]);
 
 	return clock_type;
@@ -219,26 +219,26 @@ int consys_platform_spm_conn_ctrl_mt6895(unsigned int enable)
 	struct platform_device *pdev = get_consys_device();
 
         if (!pdev) {
-                pr_info("get_consys_device fail.\n");
+                pr_debug("get_consys_device fail.\n");
                 return -1;
         }
 
 	if (enable) {
 		ret = pm_runtime_get_sync(&(pdev->dev));
 		if (ret)
-			pr_info("pm_runtime_get_sync() fail(%d)\n", ret);
+			pr_debug("pm_runtime_get_sync() fail(%d)\n", ret);
 
 		ret = device_init_wakeup(&(pdev->dev), true);
 		if (ret)
-			pr_info("device_init_wakeup(true) fail.\n");
+			pr_debug("device_init_wakeup(true) fail.\n");
 	} else {
 		ret = device_init_wakeup(&(pdev->dev), false);
 		if (ret)
-			pr_info("device_init_wakeup(false) fail.\n");
+			pr_debug("device_init_wakeup(false) fail.\n");
 
 		ret = pm_runtime_put_sync(&(pdev->dev));
 		if (ret)
-			pr_info("pm_runtime_put_sync() fail.\n");
+			pr_debug("pm_runtime_put_sync() fail.\n");
 	}
 	return ret;
 }
@@ -360,12 +360,12 @@ static void consys_print_irq_status(void)
 	// conn_bgf_hif_on_host_int_b
 	// (~(0x1806_0038[0] & 0x1806_0034[0])) & (~(0x1806_0038[1] & 0x1806_003C[0]))
 	if ((val_1 && val_2) || (val_1 && val_3))
-		pr_info("conn_bgf_hif_on_host_int_b %x %x %x", val_1, val_2, val_3);
+		pr_debug("conn_bgf_hif_on_host_int_b %x %x %x", val_1, val_2, val_3);
 
  	// conn_gps_hif_on_host_int_b
 	// ~ (0x1806_0038[0] & 0x1806_0044[0])
 	if (val_1 && val_4)
-		pr_info("conn_gps_hif_on_host_int_b %x %x", val_1, val_4);
+		pr_debug("conn_gps_hif_on_host_int_b %x %x", val_1, val_4);
 
 
 	if (consys_check_conninfra_on_domain_mt6895() == 0)
@@ -375,13 +375,13 @@ static void consys_print_irq_status(void)
 	if (ccif_wf2ap_sw_irq_b_addr) {
 		val_1 = CONSYS_REG_READ(ccif_wf2ap_sw_irq_b_addr) & 0xFF;
 		if (val_1 > 0)
-			pr_info("ccif_wf2ap_sw_irq_b %x", val_1);
+			pr_debug("ccif_wf2ap_sw_irq_b %x", val_1);
 	}
 
 	if (ccif_bgf2ap_sw_irq_b_addr) {
 		val_1 = CONSYS_REG_READ(ccif_bgf2ap_sw_irq_b_addr) & 0xFF;
 		if (val_1 > 0)
-			pr_info("ccif_bgf2ap_sw_irq_b %x", val_1);
+			pr_debug("ccif_bgf2ap_sw_irq_b %x", val_1);
 	}
 }
 
@@ -409,7 +409,7 @@ static void consys_power_state(void)
 		}
 	}
 	if (r & 0xFFFF)
-		pr_info("[%s] [0x%x] %s", __func__, r, buf);
+		pr_debug("[%s] [0x%x] %s", __func__, r, buf);
 
 	consys_print_irq_status();
 }
@@ -526,7 +526,7 @@ static int consys_power_state_dump(char *buf, unsigned int size, int print_log)
 		CONN_TICK_TO_SEC(t_gps_sleep_time),
 		CONN_TICK_TO_SEC((t_gps_sleep_time % CONN_32K_TICKS_PER_SEC)* 1000),
 		t_gps_sleep_cnt) > 0) {
-			pr_info("%s", buf_p);
+			pr_debug("%s", buf_p);
 	}
 
 	/* Power state */
@@ -572,7 +572,7 @@ static int calculate_thermal_temperature(int y)
 			(data->slop_molecule + 1866) / 1000 + const_offset;
 
 	if (t > PRINT_THERMAL_LOG_THRESHOLD)
-		pr_info("y=[%d] b=[%d] constOffset=[%d] [%d] [%d] => t=[%d]\n",
+		pr_debug("y=[%d] b=[%d] constOffset=[%d] [%d] [%d] => t=[%d]\n",
 			y, data->thermal_b, const_offset, data->slop_molecule, data->offset, t);
 	return t;
 }
@@ -640,7 +640,7 @@ int consys_thermal_query_mt6895(void)
 	}
 	res = calculate_thermal_temperature(cal_val);
 	if (res > PRINT_THERMAL_LOG_THRESHOLD)
-		pr_info("[%s] efuse:[0x%08x][0x%08x][0x%08x][0x%08x] thermal dump: %s",
+		pr_debug("[%s] efuse:[0x%08x][0x%08x][0x%08x][0x%08x] thermal dump: %s",
 			__func__, efuse0, efuse1, efuse2, efuse3, tmp_buf);
 
 	/* GPT2 disable */
@@ -677,7 +677,7 @@ static unsigned long long consys_soc_timestamp_get_mt6895(void)
 		} while (tick_h != tmp_h);
 		iounmap(addr);
 	} else {
-		pr_info("[%s] remap fail", __func__);
+		pr_debug("[%s] remap fail", __func__);
 		return 0;
 	}
 
@@ -699,7 +699,7 @@ unsigned int consys_get_adie_chipid_mt6895(void)
 
 static void consys_set_mcu_control_mt6895(int type, bool onoff)
 {
-	pr_info("[%s] Set mcu control type=[%d] onoff=[%d]\n", __func__, type, onoff);
+	pr_debug("[%s] Set mcu control type=[%d] onoff=[%d]\n", __func__, type, onoff);
 
 	if (onoff) { // Turn on
 		CONSYS_SET_BIT(CONN_INFRA_SYSRAM_SW_CR_MCU_LOG_CONTROL, (0x1 << type));
@@ -713,7 +713,7 @@ static int consys_pre_cal_backup_mt6895(unsigned int offset, unsigned int size)
 	void __iomem* vir_addr = 0;
 	unsigned int expected_size = 0;
 
-	pr_info("[%s] emi base=0x%x offset=0x%x size=%d", __func__, gConEmiPhyBase, offset, size);
+	pr_debug("[%s] emi base=0x%x offset=0x%x size=%d", __func__, gConEmiPhyBase, offset, size);
 	if ((size == 0) || ((offset & 0x3) != 0x0))
 		return 1;
 	if (mt6637_backup_data != NULL) {
@@ -762,11 +762,11 @@ int consys_pre_cal_restore_mt6895(void)
 	int i;
 
 	if (mt6637_backup_cr_number == 0 || mt6637_backup_data == NULL) {
-		pr_info("[%s] mt6637_backup_cr_number=%d mt6637_backup_data=%x",
+		pr_debug("[%s] mt6637_backup_cr_number=%d mt6637_backup_data=%x",
 			__func__, mt6637_backup_cr_number, mt6637_backup_data);
 		return 1;
 	}
-	pr_info("[%s] mt6637_backup_cr_number=%d mt6637_backup_data=%x",
+	pr_debug("[%s] mt6637_backup_cr_number=%d mt6637_backup_data=%x",
 		__func__, mt6637_backup_cr_number, mt6637_backup_data);
 	/* Acquire semaphore */
 	if (consys_sema_acquire_timeout_mt6895(CONN_SEMA_RFSPI_INDEX, CONN_SEMA_TIMEOUT) == CONN_SEMA_GET_FAIL) {

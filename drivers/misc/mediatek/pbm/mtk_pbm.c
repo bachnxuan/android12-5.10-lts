@@ -103,13 +103,13 @@ static unsigned int ma_to_mw(unsigned int bat_cur)
 	ret = power_supply_get_property(psy,
 		POWER_SUPPLY_PROP_VOLTAGE_NOW, &prop);
 	if (ret || prop.intval < 0) {
-		pr_info("%s: POWER_SUPPLY_PROP_VOLTAGE_NOW fail\n", __func__);
+		pr_debug("%s: POWER_SUPPLY_PROP_VOLTAGE_NOW fail\n", __func__);
 		return 0;
 	}
 
 	bat_vol = prop.intval / 1000;
 	ret_val = (bat_vol * bat_cur) / 1000;
-	pr_info("[%s] %d(mV) * %d(mA) = %d(mW)\n",
+	pr_debug("[%s] %d(mV) * %d(mA) = %d(mW)\n",
 		__func__, bat_vol, bat_cur, ret_val);
 
 	return ret_val;
@@ -209,7 +209,7 @@ static void mtk_cpu_dlpt_set_limit_by_pbm(unsigned int limit_power)
 		num_cpus = cpumask_weight(pbm_policy->policy->cpus);
 
 		if (num_cpus == 0 || total_power_weight == 0) {
-			pr_info("warning: num_cpus=%d total_power_weight=%d\n", num_cpus,
+			pr_debug("warning: num_cpus=%d total_power_weight=%d\n", num_cpus,
 				total_power_weight);
 			continue;
 		}
@@ -281,7 +281,7 @@ static void pbm_allocate_budget_manager(void)
 
 	if (dlpt == 0) {
 		if (mt_pbm_debug)
-			pr_info("DLPT=0\n");
+			pr_debug("DLPT=0\n");
 
 		return;
 	}
@@ -341,19 +341,19 @@ static void pbm_allocate_budget_manager(void)
 	hpf_ctrl.to_gpu_budget = togpu;
 
 	if (mt_pbm_debug) {
-		pr_info("(C/G)=%d,%d=>(D/M1/F/C/G)=%d,%d,%d,%d,%d(Multi:%d),%d\n",
+		pr_debug("(C/G)=%d,%d=>(D/M1/F/C/G)=%d,%d,%d,%d,%d(Multi:%d),%d\n",
 			cpu, gpu, dlpt, md1, flash, tocpu, togpu,
 			multiple, cpu_lower_bound);
 	} else {
 		if (((abs(pre_tocpu - tocpu) >= 10) && cpu > tocpu) ||
 			((abs(pre_togpu - togpu) >= 10) && gpu > togpu)) {
-			pr_info("(C/G)=%d,%d=>(D/M1/F/C/G)=%d,%d,%d,%d,%d(Multi:%d),%d\n",
+			pr_debug("(C/G)=%d,%d=>(D/M1/F/C/G)=%d,%d,%d,%d,%d(Multi:%d),%d\n",
 				cpu, gpu, dlpt, md1, flash, tocpu, togpu,
 				multiple, cpu_lower_bound);
 			pre_tocpu = tocpu;
 			pre_togpu = togpu;
 		} else if ((cpu > tocpu) || (gpu > togpu)) {
-			pr_info_ratelimited("(C/G)=%d,%d => (D/M1/F/C/G)=%d,%d,%d,%d,%d (Multi:%d),%d\n",
+			pr_debug_ratelimited("(C/G)=%d,%d => (D/M1/F/C/G)=%d,%d,%d,%d,%d (Multi:%d),%d\n",
 				cpu, gpu, dlpt, md1, flash, tocpu, togpu, multiple,
 				cpu_lower_bound);
 		} else {
@@ -368,7 +368,7 @@ static bool pbm_func_enable_check(void)
 	struct pbm *pwrctrl = &pbm_ctrl;
 
 	if (!pwrctrl->pbm_drv_done) {
-		pr_info("pwrctrl->pbm_drv_done: %d\n", pwrctrl->pbm_drv_done);
+		pr_debug("pwrctrl->pbm_drv_done: %d\n", pwrctrl->pbm_drv_done);
 		return false;
 	}
 
@@ -394,7 +394,7 @@ static bool pbm_update_table_info(enum pbm_kicker kicker, struct mrp *mrpmgr)
 		}
 		break;
 	case KR_MD3:
-		pr_info("should not kicker KR_MD3\n");
+		pr_debug("should not kicker KR_MD3\n");
 		break;
 	case KR_CPU:
 		if (hpfmgr->loading_cpu != mrpmgr->loading_cpu) {
@@ -417,7 +417,7 @@ static bool pbm_update_table_info(enum pbm_kicker kicker, struct mrp *mrpmgr)
 		}
 		break;
 	default:
-		pr_info("[%s] ERROR, unknown kicker [%d]\n", __func__, kicker);
+		pr_debug("[%s] ERROR, unknown kicker [%d]\n", __func__, kicker);
 		WARN_ON_ONCE(1);
 		break;
 	}
@@ -464,13 +464,13 @@ void pbm_check_and_run_polling(int uisoc, int pbm_stop)
 				|| pbm_stop == 2) && g_start_polling == 0) {
 		g_start_polling = 1;
 		pbm_timer_add(g_start_polling);
-		pr_info("[DLPT] pbm polling, soc=%d polling=%d stop=%d\n", uisoc,
+		pr_debug("[DLPT] pbm polling, soc=%d polling=%d stop=%d\n", uisoc,
 			g_start_polling, pbm_ctrl.pbm_stop);
 	} else if (((uisoc > BAT_PERCENT_LIMIT && pbm_stop == 0)
 			|| pbm_stop == 1) && g_start_polling == 1) {
 		g_start_polling = 0;
 
-		pr_info("[DLPT] pbm release polling, soc=%d polling=%d stop=%d\n",
+		pr_debug("[DLPT] pbm release polling, soc=%d polling=%d stop=%d\n",
 			uisoc, g_start_polling, pbm_ctrl.pbm_stop);
 	}
 }
@@ -581,13 +581,13 @@ static int _mt_pbm_pm_callback(struct notifier_block *nb, unsigned long action, 
 
 	case PM_SUSPEND_PREPARE:
 		if (mt_pbm_debug)
-			pr_info("PM_SUSPEND_PREPARE:start\n");
+			pr_debug("PM_SUSPEND_PREPARE:start\n");
 
 		mutex_lock(&pbm_mutex);
 		g_dlpt_need_do = 0;
 		mutex_unlock(&pbm_mutex);
 		if (mt_pbm_debug)
-			pr_info("PM_SUSPEND_PREPARE:end\n");
+			pr_debug("PM_SUSPEND_PREPARE:end\n");
 
 		break;
 
@@ -596,13 +596,13 @@ static int _mt_pbm_pm_callback(struct notifier_block *nb, unsigned long action, 
 
 	case PM_POST_SUSPEND:
 		if (mt_pbm_debug)
-			pr_info("PM_POST_SUSPEND:start\n");
+			pr_debug("PM_POST_SUSPEND:start\n");
 
 		mutex_lock(&pbm_mutex);
 		g_dlpt_need_do = 1;
 		mutex_unlock(&pbm_mutex);
 		if (mt_pbm_debug)
-			pr_info("PM_POST_SUSPEND:end\n");
+			pr_debug("PM_POST_SUSPEND:end\n");
 
 		break;
 
@@ -943,7 +943,7 @@ static int pbm_probe(struct platform_device *pdev)
 
 	FOR_EACH_INTEREST(i) {
 		if (pbm_tracepoints[i].tp == NULL) {
-			pr_info("pbm Error, %s not found\n", pbm_tracepoints[i].name);
+			pr_debug("pbm Error, %s not found\n", pbm_tracepoints[i].name);
 			tracepoint_cleanup();
 			return -1;
 		}
@@ -954,7 +954,7 @@ static int pbm_probe(struct platform_device *pdev)
 	if (!ret)
 		pbm_tracepoints[0].registered = true;
 	else
-		pr_info("cpu_frequency: Couldn't activate tracepoint\n");
+		pr_debug("cpu_frequency: Couldn't activate tracepoint\n");
 
 #if IS_ENABLED(CONFIG_MTK_DYNAMIC_LOADING_POWER_THROTTLING)
 	register_dlpt_notify(&kicker_pbm_by_dlpt, DLPT_PRIO_PBM);
@@ -972,7 +972,7 @@ static int pbm_probe(struct platform_device *pdev)
 
 			i = cpufreq_table_count_valid_entries(policy);
 			if (!i) {
-				pr_info("%s: CPUFreq table not found or has no valid entries\n",
+				pr_debug("%s: CPUFreq table not found or has no valid entries\n",
 					 __func__);
 				return -ENODEV;
 			}
@@ -981,7 +981,7 @@ static int pbm_probe(struct platform_device *pdev)
 			if (pbm_policy->em) {
 				pbm_policy->max_perf_state = pbm_policy->em->nr_perf_states;
 			} else {
-				pr_info("%s: Fail to get em from cpu %d\n",
+				pr_debug("%s: Fail to get em from cpu %d\n",
 					__func__, policy->cpu);
 			}
 			pbm_policy->policy = policy;

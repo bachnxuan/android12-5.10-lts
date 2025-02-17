@@ -9,7 +9,7 @@
 #include <aee.h>
 #define mnoc_aee_warn(key, format, args...) \
 	do { \
-		pr_info(format, ##args); \
+		pr_debug(format, ##args); \
 		aee_kernel_warning("MNOC", \
 			"\nCRDISPATCH_KEY:" key "\n" format, ##args); \
 	} while (0)

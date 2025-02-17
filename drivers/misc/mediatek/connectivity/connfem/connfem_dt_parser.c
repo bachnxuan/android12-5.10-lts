@@ -129,7 +129,7 @@ int cfm_dt_parse(struct connfem_context *cfm)
 	if (connfem_is_internal()) {
 		np = of_get_child_by_name(dn, CFM_DT_NODE_EPAELNA_MTK);
 		if (!np) {
-			pr_info("Missing '%s', trying '%s'",
+			pr_debug("Missing '%s', trying '%s'",
 				CFM_DT_NODE_EPAELNA_MTK,
 				CFM_DT_NODE_EPAELNA);
 			np = of_get_child_by_name(dn, CFM_DT_NODE_EPAELNA);
@@ -139,12 +139,12 @@ int cfm_dt_parse(struct connfem_context *cfm)
 	}
 
 	if (np) {
-		pr_info("Selecting '%s'", np->name);
+		pr_debug("Selecting '%s'", np->name);
 		err = cfm_dt_epaelna_parse(np, cfm);
 		of_node_put(np);
 		np = NULL;
 	} else {
-		pr_info("Missing '%s'", CFM_DT_NODE_EPAELNA);
+		pr_debug("Missing '%s'", CFM_DT_NODE_EPAELNA);
 	}
 
 	return err;
@@ -258,7 +258,7 @@ static int cfm_dt_epaelna_parse(struct device_node *np,
 			return -EINVAL;
 	} else {
 		dt->hwid = hwid;
-		pr_info("Force HWID: %d", dt->hwid);
+		pr_debug("Force HWID: %d", dt->hwid);
 	}
 
 	/* Parse parts property */
@@ -310,7 +310,7 @@ static int cfm_dt_epaelna_parse(struct device_node *np,
 			goto dt_epaelna_err;
 		}
 	} else {
-		pr_info("Skip ANTSEL pin info collection");
+		pr_debug("Skip ANTSEL pin info collection");
 	}
 
 	/* Apply PINMUX only if device tree successfully parsed */
@@ -321,7 +321,7 @@ static int cfm_dt_epaelna_parse(struct device_node *np,
 			goto dt_epaelna_err;
 		}
 	} else {
-		pr_info("Skip applying GPIO PINMUX");
+		pr_debug("Skip applying GPIO PINMUX");
 	}
 
 	return 0;
@@ -391,7 +391,7 @@ static int cfm_dt_epaelna_hwid_parse(struct device_node *np,
 	/* Update output parameter */
 	*hwid_out = hwid;
 
-	pr_info("hwid: %d, nbits: %d", hwid, nbits);
+	pr_debug("hwid: %d, nbits: %d", hwid, nbits);
 
 	return 0;
 }
@@ -424,11 +424,11 @@ static int cfm_dt_epaelna_hwid_gpio_parse(struct device_node *np,
 
 	cnt = of_gpio_named_count(np, CFM_DT_PROP_GPIO);
 	if (cnt <= 0 && cnt != -ENOENT) {
-		pr_info("[WARN] Invalid '%s' property", CFM_DT_PROP_GPIO);
+		pr_debug("[WARN] Invalid '%s' property", CFM_DT_PROP_GPIO);
 		return -EINVAL;
 	}
 
-	pr_info("Number of HWID GPIO PINs: %d",
+	pr_debug("Number of HWID GPIO PINs: %d",
 		(cnt == -ENOENT ? 0 : cnt));
 
 	if (cnt <= 0)
@@ -441,7 +441,7 @@ static int cfm_dt_epaelna_hwid_gpio_parse(struct device_node *np,
 
 		/* Abort if it's not valid */
 		if (!gpio_is_valid(gpio_num)) {
-			pr_info("[WARN] Invalid '%s' property: idx(%d)err(%d)",
+			pr_debug("[WARN] Invalid '%s' property: idx(%d)err(%d)",
 				CFM_DT_NODE_HWID,
 				i, gpio_num);
 			hwid = 0;
@@ -451,7 +451,7 @@ static int cfm_dt_epaelna_hwid_gpio_parse(struct device_node *np,
 		/* Read GPIO PIN */
 		gpio_value = gpio_get_value(gpio_num);
 		hwid |= ((gpio_value & 0x1) << i);
-		pr_info("%s[%d]: GPIO(%d)=%d, hwid(%u)",
+		pr_debug("%s[%d]: GPIO(%d)=%d, hwid(%u)",
 			CFM_DT_NODE_HWID, i,
 			gpio_num, gpio_value, hwid);
 
@@ -507,7 +507,7 @@ static int cfm_dt_epaelna_hwid_pmic_parse(
 	/* Retrieve name number from pmic node */
 	cnt = of_property_count_strings(pmic_node, CFM_DT_PROP_CHANNEL_NAME);
 	if (cnt < 0) {
-		pr_info("[WARN] Missing '%s', cnt: %d",
+		pr_debug("[WARN] Missing '%s', cnt: %d",
 			CFM_DT_PROP_CHANNEL_NAME,
 			cnt);
 		return -EINVAL;
@@ -523,17 +523,17 @@ static int cfm_dt_epaelna_hwid_pmic_parse(
 				i,
 				&channel_name);
 		if (err < 0) {
-			pr_info("[WARN] Invalid '%s' property: idx(%d)err(%d)",
+			pr_debug("[WARN] Invalid '%s' property: idx(%d)err(%d)",
 				CFM_DT_PROP_CHANNEL_NAME,
 				i,
 				err);
 			return -EINVAL;
 		}
-		pr_info("Channel_name: %s, idx: %d", channel_name, i);
+		pr_debug("Channel_name: %s, idx: %d", channel_name, i);
 
 		err = of_property_match_string(pdev->dev.of_node, CFM_DT_PROP_IO_CHANNEL_NAMES, channel_name);
 		if (err < 0) {
-			pr_info("[WARN] '%s' not found, err(%d)",
+			pr_debug("[WARN] '%s' not found, err(%d)",
 				channel_name,
 				err);
 			return -EINVAL;
@@ -566,7 +566,7 @@ static int cfm_dt_epaelna_hwid_pmic_parse(
 		hwid |= (hwid_tmp << nbits);
 		nbits += bits;
 
-		pr_info("After apply '%s', hwid set to %d", channel_name, hwid);
+		pr_debug("After apply '%s', hwid set to %d", channel_name, hwid);
 	}
 
 	*hwid_out = hwid;
@@ -613,7 +613,7 @@ static int cfm_dt_epaelna_hwid_pmic_match(
 	range_count =
 			of_property_count_u32_elems(pmic_node, range_n);
 	if (range_count <= 0) {
-		pr_info("[WARN] Can not find '%s' property, err %d",
+		pr_debug("[WARN] Can not find '%s' property, err %d",
 			range_n,
 			range_count);
 		return -EINVAL;
@@ -625,13 +625,13 @@ static int cfm_dt_epaelna_hwid_pmic_match(
 		err = of_property_read_u32_index(pmic_node,
 			 range_n, i, &curr_range);
 		if (err < 0) {
-			pr_info("[WARN] Can not get value from '%s' property, err %d",
+			pr_debug("[WARN] Can not get value from '%s' property, err %d",
 				range_n,
 				range_count);
 			return -EINVAL;
 		}
 
-		pr_info("property: %s, [%d/%d], curr_range: %d, prev_range: %d",
+		pr_debug("property: %s, [%d/%d], curr_range: %d, prev_range: %d",
 				range_n,
 				i,
 				range_count,
@@ -639,7 +639,7 @@ static int cfm_dt_epaelna_hwid_pmic_match(
 				prev_range);
 
 		if (prev_range >= curr_range) {
-			pr_info("[WARN] '%s' values are not from small to large",
+			pr_debug("[WARN] '%s' values are not from small to large",
 				range_n);
 			return -EINVAL;
 		}
@@ -661,7 +661,7 @@ static int cfm_dt_epaelna_hwid_pmic_match(
 		tmp >>= 1;
 	}
 
-	pr_info("hwid set to: %d, consumed bits for '%s': %d",
+	pr_debug("hwid set to: %d, consumed bits for '%s': %d",
 			hwid,
 			range_n,
 			nbits);
@@ -701,23 +701,23 @@ static int cfm_dt_epaelna_hwid_pmic_read(
 	ret = PTR_ERR_OR_ZERO(chan_iio_channel);
 
 	if (ret) {
-		pr_info("PMIC '%s' get fail, err: %d", channel_name, ret);
+		pr_debug("PMIC '%s' get fail, err: %d", channel_name, ret);
 		/* if error code is EPROBE_DEFER (517),
 		 * probe function will be called again
 		 */
 		if (ret == -EPROBE_DEFER) {
-			pr_info("[WARN] Got EPROBE_DEFER, err: %d", ret);
+			pr_debug("[WARN] Got EPROBE_DEFER, err: %d", ret);
 			return -EAGAIN;
 		}
 	} else {
 		ret = iio_read_channel_processed(chan_iio_channel, &val);
 		if (ret < 0) {
-			pr_info("'%s' read fail, err: %d",
+			pr_debug("'%s' read fail, err: %d",
 					channel_name,
 					ret);
 			return ret;
 		} else {
-			pr_info("'%s' read success, val: %d",
+			pr_debug("'%s' read success, val: %d",
 					channel_name,
 					val);
 		}
@@ -756,20 +756,20 @@ static int cfm_dt_epaelna_parts_parse(
 	/* 'parts' property must exist */
 	cnt = of_property_count_u32_elems(np, CFM_DT_PROP_PARTS);
 	if (cnt <= 0) {
-		pr_info("[WARN] Missing '%s' property", CFM_DT_PROP_PARTS);
+		pr_debug("[WARN] Missing '%s' property", CFM_DT_PROP_PARTS);
 		return -EINVAL;
 	}
 
 	/* Ensure 'parts' property is valid */
 	if ((cnt % CONNFEM_PORT_NUM) != 0) {
-		pr_info("[WARN] %s has %d items, must be multiple of %d",
+		pr_debug("[WARN] %s has %d items, must be multiple of %d",
 			CFM_DT_PROP_PARTS,
 			cnt, CONNFEM_PORT_NUM);
 		return -EINVAL;
 	}
 
 	if (((hwid + 1) * CONNFEM_PORT_NUM) > cnt) {
-		pr_info("[WARN] %s has %dx%d items, need %dx%d for hwid %d",
+		pr_debug("[WARN] %s has %dx%d items, need %dx%d for hwid %d",
 			CFM_DT_PROP_PARTS,
 			(cnt / 2), CONNFEM_PORT_NUM,
 			(hwid + 1), CONNFEM_PORT_NUM,
@@ -785,7 +785,7 @@ static int cfm_dt_epaelna_parts_parse(
 			of_parse_phandle(np, CFM_DT_PROP_PARTS, start + i);
 
 		if (!parts_np[i]) {
-			pr_info("[WARN] %s[%d][%d]: Invalid node at index %d",
+			pr_debug("[WARN] %s[%d][%d]: Invalid node at index %d",
 				CFM_DT_PROP_PARTS,
 				hwid, i,
 				start + i);
@@ -793,7 +793,7 @@ static int cfm_dt_epaelna_parts_parse(
 			break;
 		}
 
-		pr_info("Found %s[%d][%d]: %s",
+		pr_debug("Found %s[%d][%d]: %s",
 			CFM_DT_PROP_PARTS,
 			hwid, i,
 			parts_np[i]->name);
@@ -835,13 +835,13 @@ static int cfm_dt_epaelna_pctl_pinmux_apply(
 
 	pinctrl = devm_pinctrl_get(&pdev->dev);
 	if (IS_ERR(pinctrl)) {
-		pr_info("Unable to get pinctrl: %ld", PTR_ERR(pinctrl));
+		pr_debug("Unable to get pinctrl: %ld", PTR_ERR(pinctrl));
 		return -EINVAL;
 	}
 
 	pin_state = pinctrl_lookup_state(pinctrl, pctl->state.name);
 	if (IS_ERR(pin_state)) {
-		pr_info("Unable to find state '%s': %ld",
+		pr_debug("Unable to find state '%s': %ld",
 			pctl->state.name,
 			PTR_ERR(pin_state));
 
@@ -851,11 +851,11 @@ static int cfm_dt_epaelna_pctl_pinmux_apply(
 
 	err = pinctrl_select_state(pinctrl, pin_state);
 	if (err < 0) {
-		pr_info("Failed to apply pinctrl for state '%s', err %d",
+		pr_debug("Failed to apply pinctrl for state '%s', err %d",
 			pctl->state.name, err);
 		err = -EINVAL;
 	} else {
-		pr_info("'%s' pinmux successfully applied",
+		pr_debug("'%s' pinmux successfully applied",
 			pctl->state.name);
 		err = 0;
 	}
@@ -891,7 +891,7 @@ static int cfm_dt_epaelna_pctl_state_parse(
 		     fem_info->part_name[CONNFEM_PORT_WFG],
 		     fem_info->part_name[CONNFEM_PORT_WFA]);
 	if (c < 0 || c >= sizeof(pstate->name)) {
-		pr_info("[WARN] pinctrl state name error %d, sz %u, '%s'_'%s'",
+		pr_debug("[WARN] pinctrl state name error %d, sz %u, '%s'_'%s'",
 			c,
 			(unsigned int)sizeof(pstate->name),
 			fem_info->part_name[CONNFEM_PORT_WFG],
@@ -910,7 +910,7 @@ static int cfm_dt_epaelna_pctl_state_parse(
 		 "%s%d",
 		 CFM_DT_PROP_PINCTRL_PREFIX, pstate->index);
 	if (c < 0 || c >= sizeof(pstate->prop_name)) {
-		pr_info("[WARN] pinctrl prop name error %d, sz %u, '%s%d'",
+		pr_debug("[WARN] pinctrl prop name error %d, sz %u, '%s%d'",
 			c,
 			(unsigned int)sizeof(pstate->prop_name),
 			CFM_DT_PROP_PINCTRL_PREFIX,
@@ -920,7 +920,7 @@ static int cfm_dt_epaelna_pctl_state_parse(
 
 	err = of_property_count_u32_elems(dn, pstate->prop_name);
 	if (err <= 0) {
-		pr_info("[WARN] '%s' is at %d, invalid '%s' prop, err %d",
+		pr_debug("[WARN] '%s' is at %d, invalid '%s' prop, err %d",
 			pstate->name,
 			pstate->index,
 			pstate->prop_name,
@@ -929,7 +929,7 @@ static int cfm_dt_epaelna_pctl_state_parse(
 	}
 	pstate->np_cnt = (unsigned int)err;
 
-	pr_info("Found pinctrl state '%s', prop '%s', with %d nodes",
+	pr_debug("Found pinctrl state '%s', prop '%s', with %d nodes",
 		pstate->name, pstate->prop_name, pstate->np_cnt);
 
 	pstate->np = kcalloc(pstate->np_cnt,
@@ -940,12 +940,12 @@ static int cfm_dt_epaelna_pctl_state_parse(
 	for (i = 0; i < pstate->np_cnt; i++) {
 		pstate->np[i] = of_parse_phandle(dn, pstate->prop_name, i);
 		if (!pstate->np[i]) {
-			pr_info("[WARN] Unable to get pinctrl node %s[%d]",
+			pr_debug("[WARN] Unable to get pinctrl node %s[%d]",
 				pstate->prop_name, i);
 			err = -EINVAL;
 			break;
 		}
-		/* pr_info("Collected [%d]'%s'", i, pstate->np[i]->name); */
+		/* pr_debug("Collected [%d]'%s'", i, pstate->np[i]->name); */
 	}
 
 	/* Release the partially collected pinctrl nodes in case of error */
@@ -987,7 +987,7 @@ static int cfm_dt_epaelna_pctl_state_find(
 	}
 
 	if (!name) {
-		pr_info("[WARN] pinctrl-names does not have '%s' state",
+		pr_debug("[WARN] pinctrl-names does not have '%s' state",
 			state_name);
 		return -ENOENT;
 	}
@@ -1036,7 +1036,7 @@ static int cfm_dt_epaelna_pctl_walk(
 
 	for (i = 0; i < pctl->state.np_cnt; i++) {
 		for_each_child_of_node(pctl->state.np[i], np) {
-			pr_info("Checking [%d]%s.%s",
+			pr_debug("Checking [%d]%s.%s",
 				i, pctl->state.np[i]->name, np->name);
 
 			/* Aligned with Kernel pinctrl's expectation on the
@@ -1052,7 +1052,7 @@ static int cfm_dt_epaelna_pctl_walk(
 			 *
 			 */
 			if (!of_get_property(np, CFM_DT_PROP_PINMUX, NULL)) {
-				pr_info("Missing '%s' property",
+				pr_debug("Missing '%s' property",
 					CFM_DT_PROP_PINMUX);
 				of_node_put(np);
 				continue;
@@ -1077,7 +1077,7 @@ static int cfm_dt_epaelna_pctl_walk(
 	}
 
 	if (err < 0) {
-		pr_info("[WARN] Error while parsing [%d]%s.%s",
+		pr_debug("[WARN] Error while parsing [%d]%s.%s",
 			i, pctl->state.np[i]->name,
 			(np ? np->name : "(null)"));
 		of_node_put(np);
@@ -1152,7 +1152,7 @@ static int cfm_dt_epaelna_pctl_data_mapping_parse(
 	/* Get number of entries in pinmux and mapping */
 	err = of_property_count_u32_elems(np, CFM_DT_PROP_PINMUX);
 	if (err <= 0) {
-		pr_info("[WARN] Invalid or missing '%s' property, err %d",
+		pr_debug("[WARN] Invalid or missing '%s' property, err %d",
 			CFM_DT_PROP_PINMUX, err);
 		return -EINVAL;
 	}
@@ -1161,7 +1161,7 @@ static int cfm_dt_epaelna_pctl_data_mapping_parse(
 
 	err = of_property_count_u32_elems(np, CFM_DT_PROP_MAPPING);
 	if (err <= 0) {
-		pr_info("[WARN] Invalid or missing '%s' property, err %d",
+		pr_debug("[WARN] Invalid or missing '%s' property, err %d",
 			CFM_DT_PROP_MAPPING, err);
 		return -EINVAL;
 	}
@@ -1170,7 +1170,7 @@ static int cfm_dt_epaelna_pctl_data_mapping_parse(
 
 	/* Validate the number of entries in pinmux and mapping */
 	if (pin_cnt > CONNFEM_EPAELNA_PIN_COUNT) {
-		pr_info("[WARN] '%s' exceeds limit of %d PINs, currently %d",
+		pr_debug("[WARN] '%s' exceeds limit of %d PINs, currently %d",
 			CFM_DT_PROP_PINMUX,
 			CONNFEM_EPAELNA_PIN_COUNT,
 			pin_cnt);
@@ -1178,7 +1178,7 @@ static int cfm_dt_epaelna_pctl_data_mapping_parse(
 	}
 
 	if ((mappings % CFM_DT_MAPPING_SIZE) != 0) {
-		pr_info("[WARN] '%s' needs to be multiple of %d, currently %d",
+		pr_debug("[WARN] '%s' needs to be multiple of %d, currently %d",
 			CFM_DT_PROP_MAPPING, CFM_DT_MAPPING_SIZE, mappings);
 		return -EINVAL;
 	}
@@ -1186,7 +1186,7 @@ static int cfm_dt_epaelna_pctl_data_mapping_parse(
 	mappings /= CFM_DT_MAPPING_SIZE;
 
 	if (pin_cnt != mappings) {
-		pr_info("[WARN] Unequal number of entries: '%s':%d,'%s':%d",
+		pr_debug("[WARN] Unequal number of entries: '%s':%d,'%s':%d",
 			CFM_DT_PROP_PINMUX, pin_cnt,
 			CFM_DT_PROP_MAPPING, mappings);
 		return -EINVAL;
@@ -1225,7 +1225,7 @@ static int cfm_dt_epaelna_pctl_data_laa_pinmux_parse(
 
 	/* Validate the number of entries in laa-pinmux */
 	if ((laa_cnt % CFM_DT_LAA_PINMUX_SIZE) != 0) {
-		pr_info("[WARN] '%s' needs to be multiple of %d, currently %d",
+		pr_debug("[WARN] '%s' needs to be multiple of %d, currently %d",
 			CFM_DT_PROP_LAA_PINMUX,
 			CFM_DT_LAA_PINMUX_SIZE,
 			laa_cnt);
@@ -1235,7 +1235,7 @@ static int cfm_dt_epaelna_pctl_data_laa_pinmux_parse(
 	laa_cnt /= CFM_DT_LAA_PINMUX_SIZE;
 
 	if (laa_cnt > CONNFEM_EPAELNA_LAA_PIN_COUNT) {
-		pr_info("[WARN] '%s' exceeds limit of %d PINs, currently %d",
+		pr_debug("[WARN] '%s' exceeds limit of %d PINs, currently %d",
 			CFM_DT_PROP_LAA_PINMUX,
 			CONNFEM_EPAELNA_LAA_PIN_COUNT,
 			laa_cnt);
@@ -1287,7 +1287,7 @@ static int cfm_dt_epaelna_flags_parse(
 		 "%s%d",
 		 CFM_DT_PROP_FLAGS_PREFIX, hwid);
 	if (c < 0 || c >= sizeof(flags.node_name)) {
-		pr_info("[WARN] flag node name error %d, sz %u, '%s%d'",
+		pr_debug("[WARN] flag node name error %d, sz %u, '%s%d'",
 			c,
 			(unsigned int)sizeof(flags.node_name),
 			CFM_DT_PROP_FLAGS_PREFIX,
@@ -1302,7 +1302,7 @@ static int cfm_dt_epaelna_flags_parse(
 
 		subsys_np = of_get_child_by_name(np, cfm_subsys_name[i]);
 		if (!subsys_np) {
-			pr_info("[WARN] Skip %s flags, missing '%s' node",
+			pr_debug("[WARN] Skip %s flags, missing '%s' node",
 				cfm_subsys_name[i],
 				cfm_subsys_name[i]);
 			continue;
@@ -1310,7 +1310,7 @@ static int cfm_dt_epaelna_flags_parse(
 
 		flags.np[i] = of_get_child_by_name(subsys_np, flags.node_name);
 		if (!flags.np[i]) {
-			pr_info("[WARN] Skip %s flags, missing '%s' node",
+			pr_debug("[WARN] Skip %s flags, missing '%s' node",
 				cfm_subsys_name[i],
 				flags.node_name);
 			continue;

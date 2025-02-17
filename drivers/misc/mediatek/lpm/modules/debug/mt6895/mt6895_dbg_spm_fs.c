@@ -303,7 +303,7 @@ static ssize_t mt6895_store_pwr_ctrl(int id,	const char *buf, size_t count)
 	if (sscanf(buf, "%63s %x", cmd, &val) != 2)
 		return -EINVAL;
 
-	pr_info("[SPM] pwr_ctrl: cmd = %s, val = 0x%x\n", cmd, val);
+	pr_debug("[SPM] pwr_ctrl: cmd = %s, val = 0x%x\n", cmd, val);
 
 	for (i = 0 ; i < PW_MAX_COUNT; i++) {
 		if (!strcmp(cmd, mt6895_pwr_ctrl_str[i])) {

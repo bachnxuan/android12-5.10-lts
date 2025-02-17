@@ -2954,14 +2954,14 @@ int btif_dump_data(const char *p_buf, int len)
 		if (7 == (idx % 8)) {
 			*p_str++ = '\n';
 			*p_str = '\0';
-			pr_info("%s", str);
+			pr_debug("%s", str);
 			p_str = &str[0];
 		}
 	}
 	if (len % 8) {
 		*p_str++ = '\n';
 		*p_str = '\0';
-		pr_info("%s", str);
+		pr_debug("%s", str);
 	}
 	return 0;
 }
@@ -3017,7 +3017,7 @@ int btif_log_buf_dmp_in(struct _btif_log_queue_t_ *p_log_que,
 
 /*check if log dynamic output function is enabled or not*/
 	if (output_flag) {
-		pr_info("BTIF-DBG, dir:%s, %d.%ds(%lld.%.9ld) len:%d\n",
+		pr_debug("BTIF-DBG, dir:%s, %d.%ds(%lld.%.9ld) len:%d\n",
 			 dir, (int)p_timer->tv_sec, (int)p_timer->tv_nsec,
 			 (long long)p_ts->tv_sec, p_ts->tv_nsec, len);
 /*output buffer content*/

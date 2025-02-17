@@ -50,7 +50,7 @@
 #define write_cmos_sensor(...) subdrv_i2c_wr_u16(__VA_ARGS__)
 #define xagas5kgw1_table_write_cmos_sensor(...) subdrv_i2c_wr_regs_u16(__VA_ARGS__)
 #define LOG_TAG "[xagas5kgw1]"
-#define S5KGW1_LOG_INF(format, args...) pr_info(LOG_TAG "[%s] " format, __func__, ##args)
+#define S5KGW1_LOG_INF(format, args...) pr_debug(LOG_TAG "[%s] " format, __func__, ##args)
 #define S5KGW1_LOG_DBG(format, args...) pr_debug(LOG_TAG "[%s] " format, __func__, ##args)
 
 #undef VENDOR_EDIT

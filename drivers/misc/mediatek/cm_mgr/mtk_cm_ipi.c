@@ -53,15 +53,15 @@ unsigned int cm_mgr_to_sspm_command(unsigned int cmd, unsigned int val)
 
 
 	if (cm_sspm_ready != 1) {
-		pr_info("cm ipi not ready, skip cmd=%d\n", cm_ipi_d.cmd);
+		pr_debug("cm ipi not ready, skip cmd=%d\n", cm_ipi_d.cmd);
 		goto error;
 	}
 
-	pr_info("#@# %s(%d) cmd 0x%x, arg 0x%x\n", __func__, __LINE__, cm_ipi_d.cmd, cm_ipi_d.arg);
+	pr_debug("#@# %s(%d) cmd 0x%x, arg 0x%x\n", __func__, __LINE__, cm_ipi_d.cmd, cm_ipi_d.arg);
 	ret = scmi_tinysys_common_set(_tinfo->ph, scmi_cm_id,
 			cm_ipi_d.cmd, cm_ipi_d.arg, 0, 0, 0);
 	if (ret) {
-		pr_info("cm ipi cmd %d send fail, ret = %d\n",
+		pr_debug("cm ipi cmd %d send fail, ret = %d\n",
 				cm_ipi_d.cmd, ret);
 		goto error;
 	}
@@ -81,15 +81,15 @@ void cm_ipi_init(void)
 	ret = of_property_read_u32(_tinfo->sdev->dev.of_node, "scmi_cm",
 			&scmi_cm_id);
 	if (ret) {
-		pr_info("get scmi_cm fail, ret %d\n", ret);
+		pr_debug("get scmi_cm fail, ret %d\n", ret);
 		cm_sspm_ready = -2;
 		return;
 	}
-	pr_info("#@# %s(%d) scmi_cm_id %d\n", __func__, __LINE__, scmi_cm_id);
+	pr_debug("#@# %s(%d) scmi_cm_id %d\n", __func__, __LINE__, scmi_cm_id);
 
 	cm_sspm_ready = 1;
 	cm_sspm_enable(cm_ipi_enable);
-	pr_info("cm ipi is ready!\n");
+	pr_debug("cm ipi is ready!\n");
 }
 EXPORT_SYMBOL(cm_ipi_init);
 

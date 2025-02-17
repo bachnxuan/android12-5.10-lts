@@ -279,7 +279,7 @@ static int tmem_core_alloc_chunk_internal(enum TRUSTED_MEM_TYPE mem_type,
 		mem_device->peer_ops, &mem_device->peer_mgr->peer_mgr_data,
 		mem_device->dev_desc);
 	if (unlikely(ret)) {
-		pr_info("[%d] alloc handle failed:%d, sz:0x%x, inuse_count=%d\n",
+		pr_debug("[%d] alloc handle failed:%d, sz:0x%x, inuse_count=%d\n",
 		       mem_type, ret, size, mgr_desc->valid_ref_count);
 		regmgr_offline(mem_device->reg_mgr);
 		return ret;
@@ -287,7 +287,7 @@ static int tmem_core_alloc_chunk_internal(enum TRUSTED_MEM_TYPE mem_type,
 
 	regmgr_region_ref_inc(mem_device->reg_mgr, mem_device->mem_type);
 
-	pr_info("[%d] alloc handle = 0x%x, size = 0x%x, inuse_count=%d\n",
+	pr_debug("[%d] alloc handle = 0x%x, size = 0x%x, inuse_count=%d\n",
 			mem_type, *sec_handle, size, mgr_desc->valid_ref_count);
 
 	return TMEM_OK;
@@ -314,7 +314,7 @@ int tmem_core_alloc_page(enum TRUSTED_MEM_TYPE mem_type, u32 size,
 	}
 	end = sched_clock();
 	if (end - start > 10000000ULL) {/* unit is ns */
-		pr_info("%s alloc_non_contig len: 0x%lx time: %lld ns\n",
+		pr_debug("%s alloc_non_contig len: 0x%lx time: %lld ns\n",
 			__func__, size, end - start);
 	}
 
@@ -328,7 +328,7 @@ int tmem_core_alloc_page(enum TRUSTED_MEM_TYPE mem_type, u32 size,
 	}
 	end = sched_clock();
 	if (end - start > 10000000ULL) {/* unit is ns */
-		pr_info("%s mtee assign buffer len: 0x%lx time: %lld ns\n",
+		pr_debug("%s mtee assign buffer len: 0x%lx time: %lld ns\n",
 			__func__, size, end - start);
 	}
 #endif
@@ -398,7 +398,7 @@ int tmem_core_unref_chunk(enum TRUSTED_MEM_TYPE mem_type, u32 sec_handle,
 	}
 
 	if (unlikely(!is_regmgr_region_on(mem_device->reg_mgr))) {
-		pr_info("[%d] regmgr region is still not online!\n", mem_type);
+		pr_debug("[%d] regmgr region is still not online!\n", mem_type);
 		return TMEM_REGION_IS_NOT_READY_BEFORE_MEM_FREE_OPERATION;
 	}
 
@@ -406,14 +406,14 @@ int tmem_core_unref_chunk(enum TRUSTED_MEM_TYPE mem_type, u32 sec_handle,
 		sec_handle, owner, id, mem_device->peer_ops,
 		&mem_device->peer_mgr->peer_mgr_data, mem_device->dev_desc);
 	if (unlikely(ret)) {
-		pr_info("[%d] free chunk failed!\n", mem_type);
+		pr_debug("[%d] free chunk failed!\n", mem_type);
 		return ret;
 	}
 
 	regmgr_region_ref_dec(mem_device->reg_mgr);
 	regmgr_offline(mem_device->reg_mgr);
 
-	pr_info("[%d] free handle = 0x%x, inuse_count=%d\n",
+	pr_debug("[%d] free handle = 0x%x, inuse_count=%d\n",
 			mem_type, sec_handle, mgr_desc->valid_ref_count);
 
 	return TMEM_OK;
@@ -432,7 +432,7 @@ bool tmem_core_is_regmgr_region_on(enum TRUSTED_MEM_TYPE mem_type)
 	is_phy_region_on = is_regmgr_region_on(mem_device->reg_mgr);
 	is_dev_busy = get_device_busy_status(mem_device);
 
-	pr_info("device:%d is %s(%d) (phys state:%d, active mem:%d)\n",
+	pr_debug("device:%d is %s(%d) (phys state:%d, active mem:%d)\n",
 		 mem_type, is_dev_busy ? "busy" : "not busy", is_dev_busy,
 		 is_phy_region_on, mem_device->reg_mgr->active_mem_type);
 	return is_dev_busy;
@@ -603,13 +603,13 @@ int tmem_query_gz_handle_to_pa(enum TRUSTED_MEM_TYPE mem_type, u32 alignment,
 	KREE_SESSION_HANDLE session = 0;
 
 	if (!gz_handle) {
-		pr_info("[%s] Fail.invalid parameters\n", __func__);
+		pr_debug("[%s] Fail.invalid parameters\n", __func__);
 		return TMEM_GENERAL_ERROR;
 	}
 
 	ret = KREE_CreateSession(TZ_TA_SECMEM_UUID, &session);
 	if (ret != TZ_RESULT_SUCCESS) {
-		pr_info("KREE_CreateSession error, ret = %x\n", ret);
+		pr_debug("KREE_CreateSession error, ret = %x\n", ret);
 		return ret;
 	}
 
@@ -618,12 +618,12 @@ int tmem_query_gz_handle_to_pa(enum TRUSTED_MEM_TYPE mem_type, u32 alignment,
 	ret = KREE_TeeServiceCall(session, TZCMD_MEM_Query_SECUREMEM_INFO,
 			TZ_ParamTypes2(TZPT_VALUE_INPUT, TZPT_VALUE_OUTPUT), p);
 	if (ret != TZ_RESULT_SUCCESS) {
-		pr_info("[%s] query pa Fail(0x%x)\n", __func__, ret);
+		pr_debug("[%s] query pa Fail(0x%x)\n", __func__, ret);
 		return ret;
 	}
 
 	*phy_addr = (uint64_t)p[1].value.a << SECMEM_64BIT_PHYS_SHIFT;
-	pr_info("[%s] handle=0x%x, ok(pa=0x%lx)\n", __func__, *gz_handle, *phy_addr);
+	pr_debug("[%s] handle=0x%x, ok(pa=0x%lx)\n", __func__, *gz_handle, *phy_addr);
 
 	KREE_CloseSession(session);
 

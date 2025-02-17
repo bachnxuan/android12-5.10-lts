@@ -233,7 +233,7 @@ static INT32 wmt_fb_notifier_callback(struct notifier_block *nb, ULONG value, PV
 	WMT_DBG_FUNC("wmt_fb_notifier_callback\n");
 
 	if (value == MTK_DISP_EVENT_BLANK) {
-		pr_info("%s+\n", __func__);
+		pr_debug("%s+\n", __func__);
 		if (data == MTK_DISP_BLANK_UNBLANK) {
 			atomic_set(&g_es_lr_flag_for_quick_sleep, 0);
 			atomic_set(&g_es_lr_flag_for_lpbk_onoff, 1);
@@ -252,7 +252,7 @@ static INT32 wmt_fb_notifier_callback(struct notifier_block *nb, ULONG value, PV
 		} else {
 			WMT_WARN_FUNC("@@@@@@@@@@data(%d) is not UNBLANK or POWERDOWN @@@@@@@@@@@@@@\n", data);
 		}
-		pr_info("%s-\n", __func__);
+		pr_debug("%s-\n", __func__);
 	}
 
 	return 0;

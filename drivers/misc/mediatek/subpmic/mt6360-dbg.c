@@ -29,7 +29,7 @@ static int mt6360_dbg_io_read(void *drvdata, u16 reg, void *val, u16 size)
 	u8 data = 0;
 
 	ret = regmap_bulk_read((struct regmap *)drvdata, reg, val, size);
-	pr_info("%s: reg:0x%x, data:0x%x(%d)\n", __func__, reg, data, ret);
+	pr_debug("%s: reg:0x%x, data:0x%x(%d)\n", __func__, reg, data, ret);
 	return ret;
 }
 
@@ -39,7 +39,7 @@ static int mt6360_dbg_io_write(void *drvdata,
 	int ret;
 
 	ret = regmap_bulk_write((struct regmap *)drvdata, reg, val, size);
-	pr_info("%s: reg:0x%x, val:0x%x(%d)\n", __func__, reg, *(u8 *)val, ret);
+	pr_debug("%s: reg:0x%x, val:0x%x(%d)\n", __func__, reg, *(u8 *)val, ret);
 	return ret;
 }
 

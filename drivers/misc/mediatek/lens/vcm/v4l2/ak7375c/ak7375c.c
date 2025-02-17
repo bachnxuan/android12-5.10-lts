@@ -15,7 +15,7 @@
 #define AK7375C_I2C_SLAVE_ADDR 0xE8
 
 #define LOG_INF(format, args...)                                               \
-	pr_info(DRIVER_NAME " [%s] " format, __func__, ##args)
+	pr_debug(DRIVER_NAME " [%s] " format, __func__, ##args)
 
 #define AK7375C_NAME				"ak7375c"
 #define AK7375C_MAX_FOCUS_POS			1023

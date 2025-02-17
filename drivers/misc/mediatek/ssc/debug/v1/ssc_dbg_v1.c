@@ -73,7 +73,7 @@ static ssize_t ssc_ctrl_store(struct kobject *kobj,
 	if (sscanf(buf, "%63s %x", cmd, &val) != 2)
 		return -EINVAL;
 
-	pr_info("[SSC] sysfs ctrl: cmd = %s, val = 0x%x\n", cmd, val);
+	pr_debug("[SSC] sysfs ctrl: cmd = %s, val = 0x%x\n", cmd, val);
 
 	for (i = 0 ; i < PW_SSC_REG_NUM; i++) {
 		if (!strcmp(cmd, ssc_sysfs_ctrl_str[i])) {
@@ -111,7 +111,7 @@ static ssize_t ssc_sw_req_store(struct kobject *kobj,
 	if (kstrtouint(buf, 10, &val) < 0)
 		return -EINVAL;
 
-	pr_info("[SSC] sw_req: val = 0x%x\n", val);
+	pr_debug("[SSC] sw_req: val = 0x%x\n", val);
 
 	ssc_smc(SSC_SW_REQ, val, 0, 0);
 

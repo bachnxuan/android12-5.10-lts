@@ -125,14 +125,14 @@ static int lpm_cpuidle_state_percpu_set(int cpu, struct lpm_module_reg *p)
 	drv = cpuidle_get_driver();
 
 	if (!drv || !fp) {
-		pr_info("[name:mtk_lpm][P] - cpuidle state register fail (%s:%d)\n",
+		pr_debug("[name:mtk_lpm][P] - cpuidle state register fail (%s:%d)\n",
 					__func__, __LINE__);
 		return -EINVAL;
 	}
 
 	for (idx = 1; idx < drv->state_count; ++idx) {
 		if (!IS_LPM_MODS_VALID(idx)) {
-			pr_info("[name:mtk_lpm][P] - mod(%s) out of index (%d) (%s:%d)\n",
+			pr_debug("[name:mtk_lpm][P] - mod(%s) out of index (%d) (%s:%d)\n",
 					p->data.info.name, idx,
 					__func__, __LINE__);
 			break;
@@ -160,14 +160,14 @@ static int lpm_model_percpu_set(int cpu, struct lpm_module_reg *p)
 	drv = cpuidle_get_driver();
 
 	if (!drv) {
-		pr_info("[name:mtk_lpm][P] - cpuidle drv is null (%s:%d)\n",
+		pr_debug("[name:mtk_lpm][P] - cpuidle drv is null (%s:%d)\n",
 					__func__, __LINE__);
 		return -EINVAL;
 	}
 
 	for (idx = 0; idx < drv->state_count; ++idx) {
 		if (!IS_LPM_MODS_VALID(idx)) {
-			pr_info("[name:mtk_lpm][P] - mod(%s) out of index (%d) (%s:%d)\n",
+			pr_debug("[name:mtk_lpm][P] - mod(%s) out of index (%d) (%s:%d)\n",
 					p->data.info.name, idx,
 					__func__, __LINE__);
 			break;
@@ -219,7 +219,7 @@ static int lpm_module_register_blockcall(int cpu, void *p)
 	struct lpm_module_reg *reg = (struct lpm_module_reg *)p;
 
 	if (!reg || (reg->magic != LPM_MODULE_MAGIC)) {
-		pr_info("[name:mtk_lpm][P] - registry(%d) fail (%s:%d)\n",
+		pr_debug("[name:mtk_lpm][P] - registry(%d) fail (%s:%d)\n",
 			reg ? reg->type : -1, __func__, __LINE__);
 		return -EINVAL;
 	}
@@ -628,7 +628,7 @@ static int __init lpm_init(void)
 				lpm_system.suspend.flag |=
 						LPM_REQ_NOSUSPEND;
 			}
-			pr_info("[name:mtk_lpm][P] - suspend-method:%s (%s:%d)\n",
+			pr_debug("[name:mtk_lpm][P] - suspend-method:%s (%s:%d)\n",
 						pMethod, __func__, __LINE__);
 		}
 		of_node_put(lpm_node);
@@ -642,11 +642,11 @@ static int __init lpm_init(void)
 	if (lpm_system.suspend.flag & LPM_REQ_NOSUSPEND) {
 		lpm_lock = wakeup_source_register(NULL, "lpm_lock");
 		if (!lpm_lock) {
-			pr_info("[name:mtk_lpm][P] - initialize lpm_lock wakeup source fail\n");
+			pr_debug("[name:mtk_lpm][P] - initialize lpm_lock wakeup source fail\n");
 			return -1;
 		}
 		__pm_stay_awake(lpm_lock);
-		pr_info("[name:mtk_lpm][P] - device not support kernel suspend\n");
+		pr_debug("[name:mtk_lpm][P] - device not support kernel suspend\n");
 	}
 
 	if (!(lpm_system.suspend.flag &

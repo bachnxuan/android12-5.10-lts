@@ -173,7 +173,7 @@ unsigned long rndis_test_tx_complete;
 
 #define U_ETHER_DBG(fmt, args...) do { \
 		if (uether_debug) \
-			pr_info("U_ETHER,%s, " fmt, __func__, ## args); \
+			pr_debug("U_ETHER,%s, " fmt, __func__, ## args); \
 		} while (0)
 
 /* NETWORK DRIVER HOOKUP (to the layer above this driver) */
@@ -773,7 +773,7 @@ static netdev_tx_t eth_start_xmit(struct sk_buff *skb,
 		if ((ip_debug_ratelimit && __ratelimit(&ratelimit3)) ||
 			!ip_debug_ratelimit) {
 			iph = skb->encapsulation ? inner_ip_hdr(skb) : ip_hdr(skb);
-			pr_info("len=0x%x, id=0x%x\n",
+			pr_debug("len=0x%x, id=0x%x\n",
 				iph->tot_len, iph->id);
 		}
 
@@ -792,7 +792,7 @@ static netdev_tx_t eth_start_xmit(struct sk_buff *skb,
 		rec_data_len += skb->len;
 
 		if (duration > 1000000) {
-			pr_info("rndis rec_data_len=%llu duration=%llu,\n"
+			pr_debug("rndis rec_data_len=%llu duration=%llu,\n"
 				"speed=%llu mbps, txq_len =%d\n",
 				rec_data_len, duration,
 				((rec_data_len/1000000)/(duration/1000000))*8,
@@ -1046,7 +1046,7 @@ static void eth_start(struct eth_dev *dev, gfp_t gfp_flags)
 {
 	U_ETHER_DBG("\n");
 
-	pr_info("%s - queue_work set_rps_map\n", __func__);
+	pr_debug("%s - queue_work set_rps_map\n", __func__);
 	queue_work(uether_rps_wq, &dev->rps_map_work);
 
 	/* fill the rx queue */
@@ -1081,7 +1081,7 @@ static int eth_stop(struct net_device *net)
 	unsigned long	flags;
 
 	U_ETHER_DBG("\n");
-	pr_info("%s, START !!!!\n", __func__);
+	pr_debug("%s, START !!!!\n", __func__);
 	netif_stop_queue(net);
 
 	DBG(dev, "stop stats: rx/tx %ld/%ld, errs %ld/%ld\n",
@@ -1121,7 +1121,7 @@ static int eth_stop(struct net_device *net)
 		}
 	}
 	spin_unlock_irqrestore(&dev->lock, flags);
-	pr_info("%s, END !!!!\n", __func__);
+	pr_debug("%s, END !!!!\n", __func__);
 
 	return 0;
 }
@@ -1166,7 +1166,7 @@ static void set_rps_map_work(struct work_struct *work)
 	if (!dev->port_usb)
 		return;
 
-	pr_info("%s - set rps to 0xff\n", __func__);
+	pr_debug("%s - set rps to 0xff\n", __func__);
 	set_rps_map(dev->net->_rx, 0xff);
 }
 
@@ -1328,13 +1328,13 @@ struct net_device *mtk_gether_setup_name_default(const char *netname)
 
 	dev->net = net;
 	dev->qmult = qmult;
-	pr_info("%s - qmult:%d\n", __func__, qmult);
+	pr_debug("%s - qmult:%d\n", __func__, qmult);
 	snprintf(net->name, sizeof(net->name), "%s%%d", netname);
 
 	eth_random_addr(dev->dev_mac);
-	pr_info("using random %s ethernet address\n", "self");
+	pr_debug("using random %s ethernet address\n", "self");
 	eth_random_addr(dev->host_mac);
-	pr_info("using random %s ethernet address\n", "host");
+	pr_debug("using random %s ethernet address\n", "host");
 
 	net->netdev_ops = &eth_netdev_ops;
 
@@ -1711,18 +1711,18 @@ static int __init gether_init(void)
 {
 	uether_wq  = create_singlethread_workqueue("uether");
 	if (!uether_wq) {
-		pr_info("%s: create workqueue fail: uether\n", __func__);
+		pr_debug("%s: create workqueue fail: uether\n", __func__);
 		return -ENOMEM;
 	}
 	uether_wq1  = create_singlethread_workqueue("uether_rx1");
 	if (!uether_wq1) {
 		destroy_workqueue(uether_wq);
-		pr_info("%s: create workqueue fail: uether_rx1\n", __func__);
+		pr_debug("%s: create workqueue fail: uether_rx1\n", __func__);
 		return -ENOMEM;
 	}
 	uether_rps_wq  = create_singlethread_workqueue("uether_rps");
 	if (!uether_rps_wq)
-		pr_info("%s: create workqueue fail: uether_rps\n", __func__);
+		pr_debug("%s: create workqueue fail: uether_rps\n", __func__);
 	return 0;
 }
 module_init(gether_init);

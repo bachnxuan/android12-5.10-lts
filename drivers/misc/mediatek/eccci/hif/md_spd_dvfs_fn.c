@@ -50,7 +50,7 @@ static void cpu_cluster_freq_tbl_init(void)
 	}
 
 	if (s_cluster_num == 0) {
-		pr_info("ccci: spd: %s, no policy for cpu", __func__);
+		pr_debug("ccci: spd: %s, no policy for cpu", __func__);
 		return;
 	}
 	s_tchbst_rq = kcalloc(s_cluster_num, sizeof(struct freq_qos_request), GFP_KERNEL);
@@ -62,7 +62,7 @@ static void cpu_cluster_freq_tbl_init(void)
 		for (i = 0; i < s_cluster_num; i++)
 			s_target_freq[i] = -1;
 	else {
-		pr_info("ccci: spd: %s s_target_freq fail\n", __func__);
+		pr_debug("ccci: spd: %s s_target_freq fail\n", __func__);
 		kfree(s_tchbst_rq);
 		return;
 	}
@@ -73,7 +73,7 @@ static void cpu_cluster_freq_tbl_init(void)
 		if (!policy)
 			continue;
 		if (i >= s_cluster_num) {
-			pr_info("ccci: spd: %s fail: i >= s_cluster_num\n", __func__);
+			pr_debug("ccci: spd: %s fail: i >= s_cluster_num\n", __func__);
 			kfree(s_tchbst_rq);
 			return;
 		}
@@ -95,7 +95,7 @@ void mtk_ccci_qos_cpu_cluster_freq_update(int freq[], unsigned int num)
 	int update = 0;
 
 	if (!s_cluster_freq_rdy) {
-		pr_info("ccci: spd: cpu cluster frequency not ready\n");
+		pr_debug("ccci: spd: cpu cluster frequency not ready\n");
 		return;
 	}
 
@@ -109,7 +109,7 @@ void mtk_ccci_qos_cpu_cluster_freq_update(int freq[], unsigned int num)
 		ret += scnprintf(&buf[ret], sizeof(buf) - ret, "%d(%d),", freq[i], ret_t[i]);
 	}
 	if (update)
-		pr_info("ccci: spd: %s [%u:%u]\n", buf, num, min_num);
+		pr_debug("ccci: spd: %s [%u:%u]\n", buf, num, min_num);
 }
 
 /* DRAM qos */
@@ -129,16 +129,16 @@ void mtk_ccci_qos_dram_update(int lvl)
 		case 0:
 			peak_bw = dvfsrc_get_required_opp_peak_bw(np_node, 1); /* <<< Note here */
 			icc_set_bw(net_icc_path, 0, peak_bw);
-			pr_info("ccci: spd: dram:0\n");
+			pr_debug("ccci: spd: dram:0\n");
 			break;
 		case 1:
 			peak_bw = dvfsrc_get_required_opp_peak_bw(np_node, 0); /* <<< Note here */
 			icc_set_bw(net_icc_path, 0, peak_bw);
-			pr_info("ccci: spd: dram: 1\n");
+			pr_debug("ccci: spd: dram: 1\n");
 			break;
 		case -1:
 			icc_set_bw(net_icc_path, 0, 0);
-			pr_info("ccci: spd: dram:-1\n");
+			pr_debug("ccci: spd: dram:-1\n");
 			break;
 		default:
 			break;
@@ -153,10 +153,10 @@ static void qos_dram_init(struct device *dev)
 		return;
 	net_icc_path = of_icc_get(dev, "icc-mdspd-bw");
 	if (!net_icc_path)
-		pr_info("ccci: spd: Get icc-mdspd-bw path fail\n");
+		pr_debug("ccci: spd: Get icc-mdspd-bw path fail\n");
 	np_node = dev->of_node;
 	if (!np_node) {
-		pr_info("ccci: spd: No md driver in dtsi\n");
+		pr_debug("ccci: spd: No md driver in dtsi\n");
 		return;
 	}
 }

@@ -88,18 +88,18 @@ int apusys_register_device(struct apusys_device *adev)
 	uint32_t type = 0;
 
 	if (!mdw_dev) {
-		pr_info("[apusys] apu mdw not ready\n");
+		pr_debug("[apusys] apu mdw not ready\n");
 		return -ENODEV;
 	}
 
 	if (!mdw_dev->dev_funcs) {
-		pr_info("[apusys] apu mdw not inited\n");
+		pr_debug("[apusys] apu mdw not inited\n");
 		return -ENODEV;
 	}
 
 	type = adev->dev_type;
 	if (type >= MDW_DEV_MAX) {
-		pr_info("[apusys] invalid dev(%u)\n", type);
+		pr_debug("[apusys] invalid dev(%u)\n", type);
 		return -EINVAL;
 	}
 
@@ -112,12 +112,12 @@ int apusys_register_device(struct apusys_device *adev)
 int apusys_unregister_device(struct apusys_device *adev)
 {
 	if (!mdw_dev) {
-		pr_info("[apusys] apu mdw not ready\n");
+		pr_debug("[apusys] apu mdw not ready\n");
 		return -ENODEV;
 	}
 
 	if (!mdw_dev->dev_funcs) {
-		pr_info("[apusys] apu mdw not inited\n");
+		pr_debug("[apusys] apu mdw not inited\n");
 		return -ENODEV;
 	}
 

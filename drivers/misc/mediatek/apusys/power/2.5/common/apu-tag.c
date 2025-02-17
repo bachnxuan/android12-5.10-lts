@@ -141,7 +141,7 @@ int apupwr_init_tags(struct apusys_core_info *info)
 
 	ret = apu_tp_init(apupwr_tp_tbl);
 	if (ret)
-		pr_info("%s: unable to register\n", __func__);
+		pr_debug("%s: unable to register\n", __func__);
 
 	apupw_tag = apupw_get_tag();
 	return ret;

@@ -75,9 +75,9 @@ ssize_t conn_pwr_dev_write(struct file *filp, const char __user *buffer, size_t 
 	long res = 0;
 	static int test_enabled = -1;
 
-	pr_info("write parameter len = %d\n\r", (int) len);
+	pr_debug("write parameter len = %d\n\r", (int) len);
 	if (len >= sizeof(buf)) {
-		pr_info("input handling fail!\n");
+		pr_debug("input handling fail!\n");
 		len = sizeof(buf) - 1;
 		return -1;
 	}
@@ -86,7 +86,7 @@ ssize_t conn_pwr_dev_write(struct file *filp, const char __user *buffer, size_t 
 		return -EFAULT;
 
 	buf[len] = '\0';
-	pr_info("write parameter data = %s\n\r", buf);
+	pr_debug("write parameter data = %s\n\r", buf);
 
 	pBuf = buf;
 	pToken = strsep(&pBuf, pDelimiter);
@@ -101,7 +101,7 @@ ssize_t conn_pwr_dev_write(struct file *filp, const char __user *buffer, size_t 
 	if (pToken != NULL) {
 		kstrtol(pToken, 16, &res);
 		y = (int)res;
-		pr_info("y = 0x%08x\n\r", y);
+		pr_debug("y = 0x%08x\n\r", y);
 	}
 
 	pToken = strsep(&pBuf, "\t\n ");
@@ -110,7 +110,7 @@ ssize_t conn_pwr_dev_write(struct file *filp, const char __user *buffer, size_t 
 		z = (int)res;
 	}
 
-	pr_info("x(0x%08x), y(0x%08x), z(0x%08x)\n\r", x, y, z);
+	pr_debug("x(0x%08x), y(0x%08x), z(0x%08x)\n\r", x, y, z);
 
 	/* For eng and userdebug load, have to enable debug by
 	 * writing 0xDB9DB9 to * "/proc/driver/wmt_dbg" to avoid
@@ -128,7 +128,7 @@ ssize_t conn_pwr_dev_write(struct file *filp, const char __user *buffer, size_t 
 		conn_pwr_test_func[x] != NULL)
 		(*conn_pwr_test_func[x]) (x, y, z);
 	else
-		pr_info("no handler defined for command id(0x%08x)\n\r", x);
+		pr_debug("no handler defined for command id(0x%08x)\n\r", x);
 
 	return len;
 }
@@ -148,11 +148,11 @@ static int conn_pwr_ut_thermal(int par1, int par2, int par3)
 static void conn_pwr_ut_event_cb(const char *s, enum conn_pwr_event_type event, void *data)
 {
 	if (event == CONN_PWR_EVENT_LEVEL)
-		pr_info("%s level = %d\n", s, *((int *)data));
+		pr_debug("%s level = %d\n", s, *((int *)data));
 	else if (event == CONN_PWR_EVENT_MAX_TEMP) {
 		struct conn_pwr_event_max_temp *d = (struct conn_pwr_event_max_temp *)data;
 
-		pr_info("%s m_temp = %d, r_temp = %d\n", s, d->max_temp, d->recovery_temp);
+		pr_debug("%s m_temp = %d, r_temp = %d\n", s, d->max_temp, d->recovery_temp);
 	}
 }
 
@@ -185,17 +185,17 @@ static int conn_pwr_ut_start(int par1, int par2, int par3)
 	enum conn_pwr_low_battery_level level = CONN_PWR_THR_LV_0;
 	int ret;
 
-	pr_info("%s", __func__);
+	pr_debug("%s", __func__);
 	if (par2 < 0 || par2 >= CONN_PWR_DRV_MAX) {
-		pr_info("type %d is invalid", par2);
+		pr_debug("type %d is invalid", par2);
 		return 0;
 	}
 
 	ret = conn_pwr_register_event_cb(par2, ut_cb_tbl[par2]);
-	pr_info("%d register event cb, ret = %d", par2, ret);
+	pr_debug("%d register event cb, ret = %d", par2, ret);
 
 	ret = conn_pwr_drv_pre_on(par2, &level);
-	pr_info("type(%d) on, ret = %d, level = %d", par2, ret, level);
+	pr_debug("type(%d) on, ret = %d, level = %d", par2, ret, level);
 
 	return 0;
 }
@@ -205,7 +205,7 @@ static int conn_pwr_ut_stop(int par1, int par2, int par3)
 	int ret;
 
 	ret = conn_pwr_drv_post_off(par2);
-	pr_info("type(%d) off, ret = %d", par2, ret);
+	pr_debug("type(%d) off, ret = %d", par2, ret);
 
 	return 0;
 }
@@ -229,7 +229,7 @@ static int conn_pwr_ut_get_temp(int par1, int par2, int par3)
 	int temp = 0, ret;
 
 	ret = conn_pwr_get_temp(&temp, par2);
-	pr_info("%s ret= %d, temp = %d", __func__, ret, temp);
+	pr_debug("%s ret= %d, temp = %d", __func__, ret, temp);
 
 	return 0;
 }
@@ -239,7 +239,7 @@ static int conn_pwr_ut_get_plat_level(int par1, int par2, int par3)
 	int level = 0, ret;
 
 	ret = conn_pwr_get_plat_level(par2, &level);
-	pr_info("%s ret= %d, type = %d, level = %d", __func__, ret, par2, level);
+	pr_debug("%s ret= %d, type = %d, level = %d", __func__, ret, par2, level);
 
 	return 0;
 }
@@ -247,7 +247,7 @@ static int conn_pwr_ut_get_plat_level(int par1, int par2, int par3)
 static int conn_pwr_ut_set_customer_level(int par1, int par2, int par3)
 {
 	conn_pwr_set_customer_level(par2, par3);
-	pr_info("%s type = %d, level = %d\n", __func__, par2, par3);
+	pr_debug("%s type = %d, level = %d\n", __func__, par2, par3);
 
 	return 0;
 }
@@ -264,7 +264,7 @@ static int conn_pwr_ut_set_max_temp(int par1, int par2, int par3)
 {
 	ut_max_temp = par2;
 	ut_recovery_temp = par3;
-	pr_info("%s max = %d, recovery = %d\n", __func__, par2, par3);
+	pr_debug("%s max = %d, recovery = %d\n", __func__, par2, par3);
 	return 0;
 }
 

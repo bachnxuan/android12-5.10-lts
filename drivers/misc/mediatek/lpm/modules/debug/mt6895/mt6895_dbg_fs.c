@@ -25,6 +25,6 @@ int __init mt6895_dbg_fs_init(void)
 	lpm_rc_fs_init();
 	lpm_spm_fs_init();
 	lpm_cpuidle_fs_init();
-	pr_info("%s %d: finish", __func__, __LINE__);
+	pr_debug("%s %d: finish", __func__, __LINE__);
 	return 0;
 }

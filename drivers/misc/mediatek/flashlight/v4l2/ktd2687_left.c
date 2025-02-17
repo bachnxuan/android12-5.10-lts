@@ -151,7 +151,7 @@ static int ktd2687_pinctrl_init(struct ktd2687_flash *flash)
 	/* get pinctrl */
 	flash->ktd2687_hwen_pinctrl = devm_pinctrl_get(flash->dev);
 	if (IS_ERR(flash->ktd2687_hwen_pinctrl)) {
-		pr_info("Failed to get flashlight pinctrl.\n");
+		pr_debug("Failed to get flashlight pinctrl.\n");
 		ret = PTR_ERR(flash->ktd2687_hwen_pinctrl);
 		return ret;
 	}
@@ -161,7 +161,7 @@ static int ktd2687_pinctrl_init(struct ktd2687_flash *flash)
 			flash->ktd2687_hwen_pinctrl,
 			KTD2687_PINCTRL_STATE_HWEN_HIGH);
 	if (IS_ERR(flash->ktd2687_hwen_high)) {
-		pr_info("Failed to init (%s)\n",
+		pr_debug("Failed to init (%s)\n",
 			KTD2687_PINCTRL_STATE_HWEN_HIGH);
 		ret = PTR_ERR(flash->ktd2687_hwen_high);
 	}
@@ -169,7 +169,7 @@ static int ktd2687_pinctrl_init(struct ktd2687_flash *flash)
 			flash->ktd2687_hwen_pinctrl,
 			KTD2687_PINCTRL_STATE_HWEN_LOW);
 	if (IS_ERR(flash->ktd2687_hwen_low)) {
-		pr_info("Failed to init (%s)\n", KTD2687_PINCTRL_STATE_HWEN_LOW);
+		pr_debug("Failed to init (%s)\n", KTD2687_PINCTRL_STATE_HWEN_LOW);
 		ret = PTR_ERR(flash->ktd2687_hwen_low);
 	}
 
@@ -181,7 +181,7 @@ static int ktd2687_pinctrl_set(struct ktd2687_flash *flash, int pin, int state)
 	int ret = 0;
 
 	if (IS_ERR(flash->ktd2687_hwen_pinctrl)) {
-		pr_info("pinctrl is not available\n");
+		pr_debug("pinctrl is not available\n");
 		return -1;
 	}
 
@@ -196,13 +196,13 @@ static int ktd2687_pinctrl_set(struct ktd2687_flash *flash, int pin, int state)
 			pinctrl_select_state(flash->ktd2687_hwen_pinctrl,
 					flash->ktd2687_hwen_high);
 		else
-			pr_info("set err, pin(%d) state(%d)\n", pin, state);
+			pr_debug("set err, pin(%d) state(%d)\n", pin, state);
 		break;
 	default:
-		pr_info("set err, pin(%d) state(%d)\n", pin, state);
+		pr_debug("set err, pin(%d) state(%d)\n", pin, state);
 		break;
 	}
-	pr_info("pin(%d) state(%d)\n", pin, state);
+	pr_debug("pin(%d) state(%d)\n", pin, state);
 
 	return ret;
 }
@@ -212,7 +212,7 @@ static int ktd2687_mode_ctrl(struct ktd2687_flash *flash)
 {
 	int rval = -EINVAL;
 
-	pr_info("%s mode:%d", __func__, flash->led_mode);
+	pr_debug("%s mode:%d", __func__, flash->led_mode);
 	switch (flash->led_mode) {
 	case V4L2_FLASH_LED_MODE_NONE:
 		rval = regmap_update_bits(flash->regmap,
@@ -236,11 +236,11 @@ static int ktd2687_enable_ctrl(struct ktd2687_flash *flash,
 {
 	int rval;
 
-	pr_info("%s %d enable:%d", __func__, led_no, on);
+	pr_debug("%s %d enable:%d", __func__, led_no, on);
 
 	flashlight_kicker_pbm(on);
 	if (flashlight_pt_is_low()) {
-		pr_info("pt is low\n");
+		pr_debug("pt is low\n");
 		return 0;
 	}
 
@@ -260,11 +260,11 @@ static int ktd2687_left_single_enable_ctrl(struct ktd2687_flash *flash,
 {
 	int rval;
 
-	pr_info("%s %d enable:%d", __func__, led_no, on);
+	pr_debug("%s %d enable:%d", __func__, led_no, on);
 
 	flashlight_kicker_pbm(on);
 	if (flashlight_pt_is_low()) {
-		pr_info("pt is low\n");
+		pr_debug("pt is low\n");
 		return 0;
 	}
 
@@ -295,12 +295,12 @@ static int ktd2687_torch_brt_ctrl(struct ktd2687_flash *flash,
 	u8 br_bits;
 	int torch_cur_avg = 0;
 
-	pr_info("%s %d brt:%u", __func__, led_no, brt);
+	pr_debug("%s %d brt:%u", __func__, led_no, brt);
 	torch_cur_avg = brt / 2;
 
 	br_bits = KTD2687_TORCH_BRT_uA_TO_REG(torch_cur_avg);
 
-	pr_info("%s avg_brt:%u brt_bit :%x", __func__, torch_cur_avg ,br_bits);
+	pr_debug("%s avg_brt:%u brt_bit :%x", __func__, torch_cur_avg ,br_bits);
 
 	rval = regmap_update_bits(flash->regmap,
 				  REG_LED0_TORCH_BR, 0x7f, br_bits);
@@ -319,12 +319,12 @@ static int ktd2687_left_single_torch_brt_ctrl(struct ktd2687_flash *flash,
 	u8 br_bits;
 	int torch_cur_avg = 0;
 
-	pr_info("%s %d brt:%u", __func__, led_no, brt);
+	pr_debug("%s %d brt:%u", __func__, led_no, brt);
 	torch_cur_avg = brt;
 
 	br_bits = KTD2687_TORCH_BRT_uA_TO_REG(torch_cur_avg);
 
-	pr_info("%s avg_brt:%u brt_bit :%x", __func__, torch_cur_avg ,br_bits);
+	pr_debug("%s avg_brt:%u brt_bit :%x", __func__, torch_cur_avg ,br_bits);
 	if(led_no == KTD2687_LED0)
 		rval = regmap_update_bits(flash->regmap,
 					  REG_LED0_TORCH_BR, 0x7f, br_bits);
@@ -344,12 +344,12 @@ static int ktd2687_flash_brt_ctrl(struct ktd2687_flash *flash,
 	u8 br_bits;
 	int flash_cur_avg = 0;
 
-	pr_info("%s %d brt:%u", __func__, led_no, brt);
+	pr_debug("%s %d brt:%u", __func__, led_no, brt);
 	flash_cur_avg = brt / 2;
 
 	br_bits = KTD2687_FLASH_BRT_uA_TO_REG(flash_cur_avg);
 
-	pr_info("%s avg_brt:%u brt_bit :%x", __func__, flash_cur_avg ,br_bits);
+	pr_debug("%s avg_brt:%u brt_bit :%x", __func__, flash_cur_avg ,br_bits);
 
 	rval = regmap_update_bits(flash->regmap,
 				  REG_LED0_FLASH_BR, 0x7f, br_bits);
@@ -366,10 +366,10 @@ static int ktd2687_flash_tout_ctrl(struct ktd2687_flash *flash,
 	int rval;
 	u8 tout_bits;
 
-	pr_info("%s flash tout:%d", __func__, tout);
+	pr_debug("%s flash tout:%d", __func__, tout);
 
 	if (tout < 10 || tout > 400) {
-			pr_info("Error arguments tout(%d)\n", tout);
+			pr_debug("Error arguments tout(%d)\n", tout);
 			return -1;
 	}
 
@@ -420,7 +420,7 @@ static int ktd2687_set_ctrl(struct v4l2_ctrl *ctrl, enum ktd2687_led_id led_no)
 	struct ktd2687_flash *flash = to_ktd2687_flash(ctrl, led_no);
 	int rval = -EINVAL;
 
-	pr_info("%s led:%d ID:%d", __func__, led_no, ctrl->id);
+	pr_debug("%s led:%d ID:%d", __func__, led_no, ctrl->id);
 	mutex_lock(&flash->lock);
 
 	switch (ctrl->id) {
@@ -605,7 +605,7 @@ static int ktd2687_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
 	int ret;
 
-	pr_info("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	ret = pm_runtime_get_sync(sd->dev);
 	if (ret < 0) {
@@ -618,7 +618,7 @@ static int ktd2687_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 
 static int ktd2687_close(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
-	pr_info("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	pm_runtime_put(sd->dev);
 
@@ -638,7 +638,7 @@ static int ktd2687_subdev_init(struct ktd2687_flash *flash,
 	const char *fled_name = "frontleftflash";
 	int rval;
 
-	// pr_info("%s %d", __func__, led_no);
+	// pr_debug("%s %d", __func__, led_no);
 
 	ktd2687_v4l2_i2c_subdev_init(&flash->subdev_led[led_no],
 				client, &ktd2687_ops);
@@ -746,7 +746,7 @@ static int ktd2687_ioctl(unsigned int cmd, unsigned long arg)
 
 	switch (cmd) {
 	case FLASH_IOC_SET_ONOFF:
-		pr_info("FLASH_IOC_SET_ONOFF(%d): %d\n",
+		pr_debug("FLASH_IOC_SET_ONOFF(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		if ((int)fl_arg->arg) {
 			ktd2687_torch_brt_ctrl(ktd2687_flash_data, channel, 120000);
@@ -760,7 +760,7 @@ static int ktd2687_ioctl(unsigned int cmd, unsigned long arg)
 		}
 		break;
 	case XIAOMI_IOC_SET_FRONT_ONOFF:
-		pr_info("XIAOMI_IOC_SET_FRONT_ONOFF(%d): %d\n",
+		pr_debug("XIAOMI_IOC_SET_FRONT_ONOFF(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		if ((int)fl_arg->arg) {
 			ktd2687_enable_ctrl(ktd2687_flash_data, channel, true);
@@ -769,7 +769,7 @@ static int ktd2687_ioctl(unsigned int cmd, unsigned long arg)
 		}
 		break;
 	case XIAOMI_IOC_SET_SINGLE_FRONT_ONOFF:
-		pr_info("XIAOMI_IOC_SET_SINGLE_FRONT_ONOFF(%d): %d\n",
+		pr_debug("XIAOMI_IOC_SET_SINGLE_FRONT_ONOFF(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		if ((int)fl_arg->arg) {
 			ktd2687_left_single_enable_ctrl(ktd2687_flash_data, channel, true);
@@ -778,23 +778,23 @@ static int ktd2687_ioctl(unsigned int cmd, unsigned long arg)
 		}
 		break;
 	case XIAOMI_IOC_SET_TORCH_FRONT_CUR:
-		pr_info("XIAOMI_IOC_SET_TORCH_FRONT_CUR(%d): %d\n",
+		pr_debug("XIAOMI_IOC_SET_TORCH_FRONT_CUR(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		ktd2687_torch_brt_ctrl(ktd2687_flash_data, channel, fl_arg->arg);
 		break;
 	case XIAOMI_IOC_SET_SINGLE_TORCH_FRONT_CUR:
-		pr_info("XIAOMI_IOC_SET_SINGLE_TORCH_FRONT_CUR(%d): %d\n",
+		pr_debug("XIAOMI_IOC_SET_SINGLE_TORCH_FRONT_CUR(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		ktd2687_left_single_torch_brt_ctrl(ktd2687_flash_data, channel, fl_arg->arg);
 		break;
 	case XIAOMI_IOC_SET_FRONT_MODE:
-		pr_info("XIAOMI_IOC_SET_FRONT_MODE(%d): %d\n",
+		pr_debug("XIAOMI_IOC_SET_FRONT_MODE(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		ktd2687_flash_data->led_mode = fl_arg->arg;
 		ktd2687_mode_ctrl(ktd2687_flash_data);
 		break;
 	default:
-		pr_info("No such command and arg(%d): (%d, %d)\n",
+		pr_debug("No such command and arg(%d): (%d, %d)\n",
 				channel, _IOC_NR(cmd), (int)fl_arg->arg);
 		return -ENOTTY;
 	}
@@ -880,7 +880,7 @@ static int ktd2687_parse_dt(struct ktd2687_flash *flash)
 		flash->flash_dev_id[i].channel = i;
 		flash->flash_dev_id[i].decouple = decouple;
 
-		pr_info("Parse dt (type,ct,part,name,channel,decouple)=(%d,%d,%d,%s,%d,%d).\n",
+		pr_debug("Parse dt (type,ct,part,name,channel,decouple)=(%d,%d,%d,%s,%d,%d).\n",
 				flash->flash_dev_id[i].type,
 				flash->flash_dev_id[i].ct,
 				flash->flash_dev_id[i].part,
@@ -907,7 +907,7 @@ static int ktd2687_probe(struct i2c_client *client,
 	struct ktd2687_platform_data *pdata = dev_get_platdata(&client->dev);
 	int rval;
 
-	pr_info("%s:%d", __func__, __LINE__);
+	pr_debug("%s:%d", __func__, __LINE__);
 
 	flash = devm_kzalloc(&client->dev, sizeof(*flash), GFP_KERNEL);
 	if (flash == NULL)
@@ -955,7 +955,7 @@ static int ktd2687_probe(struct i2c_client *client,
 
 	i2c_set_clientdata(client, flash);
 
-	pr_info("%s:%d", __func__, __LINE__);
+	pr_debug("%s:%d", __func__, __LINE__);
 	return 0;
 }
 
@@ -981,7 +981,7 @@ static int __maybe_unused ktd2687_suspend(struct device *dev)
 	struct i2c_client *client = to_i2c_client(dev);
 	struct ktd2687_flash *flash = i2c_get_clientdata(client);
 
-	pr_info("%s %d", __func__, __LINE__);
+	pr_debug("%s %d", __func__, __LINE__);
 
 	return ktd2687_uninit(flash);
 }
@@ -991,7 +991,7 @@ static int __maybe_unused ktd2687_resume(struct device *dev)
 	struct i2c_client *client = to_i2c_client(dev);
 	struct ktd2687_flash *flash = i2c_get_clientdata(client);
 
-	pr_info("%s %d", __func__, __LINE__);
+	pr_debug("%s %d", __func__, __LINE__);
 
 	return ktd2687_init(flash);
 }

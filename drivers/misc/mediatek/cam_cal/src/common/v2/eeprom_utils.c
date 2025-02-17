@@ -35,7 +35,7 @@ void EEPROM_PROFILE(struct timespec64 *ptv, char *tag)
 	ktime_get_real_ts64(&now);
 	diff = timespec64_sub(now, *ptv);
 
-	pr_info("[%s]Profile = %llu ns\n", tag, timespec64_to_ns(&diff));
+	pr_debug("[%s]Profile = %llu ns\n", tag, timespec64_to_ns(&diff));
 }
 
 #else

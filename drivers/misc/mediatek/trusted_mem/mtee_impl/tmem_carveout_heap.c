@@ -94,7 +94,7 @@ out1:
 	gen_pool_free(tmem_carveout_heap[pool_idx]->pool, paddr, size);
 out2:
 	spin_unlock_irqrestore(&tmem_carveout_lock, lock_flags);
-	pr_info("%s fail: size=0x%lx, gen_pool_avail=0x%lx, pool_idx=%d\n",
+	pr_debug("%s fail: size=0x%lx, gen_pool_avail=0x%lx, pool_idx=%d\n",
 			__func__, size,
 			gen_pool_avail(tmem_carveout_heap[pool_idx]->pool), pool_idx);
 
@@ -122,7 +122,7 @@ int tmem_carveout_heap_free(enum MTEE_MCHUNKS_ID mchunk_id, u32 handle)
 	}
 	spin_unlock_irqrestore(&tmem_carveout_lock, lock_flags);
 
-	pr_info("%s fail: handle=0x%lx, idx=0x%lx\n",
+	pr_debug("%s fail: handle=0x%lx, idx=0x%lx\n",
 			__func__, handle, pool_idx);
 
 	return TMEM_KPOOL_FREE_CHUNK_FAILED;
@@ -131,7 +131,7 @@ int tmem_carveout_heap_free(enum MTEE_MCHUNKS_ID mchunk_id, u32 handle)
 int tmem_carveout_create(int idx, phys_addr_t heap_base, size_t heap_size)
 {
 	if (tmem_carveout_heap[idx] != NULL) {
-		pr_info("%s:%d: tmem_carveout_heap already created\n", __func__, __LINE__);
+		pr_debug("%s:%d: tmem_carveout_heap already created\n", __func__, __LINE__);
 		return TMEM_KPOOL_HEAP_ALREADY_CREATED;
 	}
 
@@ -141,7 +141,7 @@ int tmem_carveout_create(int idx, phys_addr_t heap_base, size_t heap_size)
 
 	tmem_carveout_heap[idx]->pool = gen_pool_create(PAGE_SHIFT, -1);
 	if (!tmem_carveout_heap[idx]->pool) {
-		pr_info("%s:%d: gen_pool_create() fail\n", __func__, __LINE__);
+		pr_debug("%s:%d: gen_pool_create() fail\n", __func__, __LINE__);
 		kfree(tmem_carveout_heap[idx]);
 		return -ENOMEM;
 	}
@@ -159,7 +159,7 @@ int tmem_carveout_destroy(int idx)
 	struct tmem_block *tmp;
 
 	if (tmem_carveout_heap[idx] == NULL) {
-		pr_info("%s:%d: tmem_carveout_heap is NULL\n", __func__, __LINE__);
+		pr_debug("%s:%d: tmem_carveout_heap is NULL\n", __func__, __LINE__);
 		return TMEM_KPOOL_HEAP_IS_NULL;
 	}
 
@@ -181,7 +181,7 @@ int tmem_carveout_destroy(int idx)
 
 int tmem_carveout_init(void)
 {
-	pr_info("%s:%d\n", __func__, __LINE__);
+	pr_debug("%s:%d\n", __func__, __LINE__);
 	spin_lock_init(&tmem_carveout_lock);
 
 	return TMEM_OK;

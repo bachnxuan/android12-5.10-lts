@@ -201,7 +201,7 @@ void scp_to_ap_ipi_handler(int id, void *data, unsigned int len)
 	int i;
 	unsigned char *data_p = data;
 
-	pr_info("%s %d, IPI_CHRE ->AP(len:%d)\n", __func__, __LINE__, len);
+	pr_debug("%s %d, IPI_CHRE ->AP(len:%d)\n", __func__, __LINE__, len);
 	for (i = 0; i < len; i++)
 		pr_debug("%02x ", data_p[i]);
 	pr_debug("\n");

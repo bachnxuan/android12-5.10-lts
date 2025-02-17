@@ -24,13 +24,13 @@ static int apumem_probe(struct platform_device *pdev)
 	uint64_t mask = 0;
 	struct device *dev = &pdev->dev;
 
-	pr_info("%s start, dev:%s\n", __func__, dev_name(&pdev->dev));
+	pr_debug("%s start, dev:%s\n", __func__, dev_name(&pdev->dev));
 
 	of_property_read_u64(pdev->dev.of_node, "mask", &mask);
 	of_property_read_u32(pdev->dev.of_node, "type", &type);
 
 
-	pr_info("%s mask 0x%llx type %u\n", __func__, mask, type);
+	pr_debug("%s mask 0x%llx type %u\n", __func__, mask, type);
 
 	ret = dma_set_mask_and_coherent(dev, mask);
 	if (ret) {
@@ -38,7 +38,7 @@ static int apumem_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	pr_info("%s dma_set_mask_and_coherent 0x%llx type %u\n", __func__, mask, type);
+	pr_debug("%s dma_set_mask_and_coherent 0x%llx type %u\n", __func__, mask, type);
 
 	ret = dma_set_mask(dev, mask);
 	if (ret) {
@@ -46,7 +46,7 @@ static int apumem_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	pr_info("%s dma_set_mask 0x%llx type %u\n", __func__, mask, type);
+	pr_debug("%s dma_set_mask 0x%llx type %u\n", __func__, mask, type);
 
 	if (!pdev->dev.dma_parms) {
 		pdev->dev.dma_parms =
@@ -60,7 +60,7 @@ static int apumem_probe(struct platform_device *pdev)
 
 	mdw_mem_rsc_register(&pdev->dev, type);
 
-	pr_info("%s done\n", __func__);
+	pr_debug("%s done\n", __func__);
 
 
 	return ret;
@@ -73,7 +73,7 @@ static int apumem_remove(struct platform_device *pdev)
 	of_property_read_u32(pdev->dev.of_node, "type", &type);
 	mdw_mem_rsc_unregister(type);
 
-	pr_info("%s done\n", __func__);
+	pr_debug("%s done\n", __func__);
 	return 0;
 }
 
@@ -103,11 +103,11 @@ int apumem_init(struct apusys_core_info *info)
 
 	ret =  platform_driver_register(&apumem_driver);
 	if (ret) {
-		pr_info("failed to register apu mdw driver\n");
+		pr_debug("failed to register apu mdw driver\n");
 		goto out;
 	}
 
-	pr_info("%s:%d\n", __func__, __LINE__);
+	pr_debug("%s:%d\n", __func__, __LINE__);
 
 	goto out;
 
@@ -117,7 +117,7 @@ out:
 
 void apumem_exit(void)
 {
-	pr_info("%s:%d\n", __func__, __LINE__);
+	pr_debug("%s:%d\n", __func__, __LINE__);
 	platform_driver_unregister(&apumem_driver);
 	mdw_mem_rsc_deinit();
 

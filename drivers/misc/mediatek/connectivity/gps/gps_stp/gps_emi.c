@@ -87,10 +87,10 @@ int gps_emi_mpu_region_param_ready;
  * Debug configuration
 ******************************************************************************/
 #define GPS_DBG_NONE(fmt, arg...)    do {} while (0)
-#define GPS_DBG pr_info
+#define GPS_DBG pr_debug
 #define GPS_TRC GPS_DBG_NONE
-#define GPS_VER pr_info
-#define GPS_ERR pr_info
+#define GPS_VER pr_debug
+#define GPS_ERR pr_debug
 /*******************************************************************************
 * structure & enumeration
 *******************************************************************************/
@@ -120,35 +120,35 @@ int gps_emi_get_reserved_memory(struct device *dev)
 
 	node = dev->of_node;
 	if (!node) {
-		pr_info("gps_emi_get_reserved_memory: unable to get gps node\n");
+		pr_debug("gps_emi_get_reserved_memory: unable to get gps node\n");
 		return -1;
 	}
 
 	if (of_property_read_u32(node, "emi-region", &gps_emi_mpu_region)) {
-		pr_info("gps_emi_get_reserved_memory: unable to get gps_emi_mpu_region\n");
+		pr_debug("gps_emi_get_reserved_memory: unable to get gps_emi_mpu_region\n");
 		return -1;
 	}
-	pr_info("gps_emi_get_reserved_memory gps_emi_mpu_region 0x%x\n", gps_emi_mpu_region);
+	pr_debug("gps_emi_get_reserved_memory gps_emi_mpu_region 0x%x\n", gps_emi_mpu_region);
 	if (of_property_read_u32(node, "emi-offset", &gps_emi_base_addr_offset)) {
-		pr_info("gps_emi_get_reserved_memory: unable to get gps_emi_base_addr_offset\n");
+		pr_debug("gps_emi_get_reserved_memory: unable to get gps_emi_base_addr_offset\n");
 		return -1;
 	}
-	pr_info("gps_emi_get_reserved_memory gps_emi_base_addr_offset 0x%x\n", gps_emi_base_addr_offset);
+	pr_debug("gps_emi_get_reserved_memory gps_emi_base_addr_offset 0x%x\n", gps_emi_base_addr_offset);
 	if (of_property_read_u32(node, "emi-size", &gps_emi_mpu_size)) {
-		pr_info("gps_emi_get_reserved_memory: unable to get gps_emi_mpu_size\n");
+		pr_debug("gps_emi_get_reserved_memory: unable to get gps_emi_mpu_size\n");
 		return -1;
 	}
-	pr_info("gps_emi_get_reserved_memory gps_emi_mpu_size 0x%x\n", gps_emi_mpu_size);
+	pr_debug("gps_emi_get_reserved_memory gps_emi_mpu_size 0x%x\n", gps_emi_mpu_size);
 	if (of_property_read_u32(node, "emi-domain-ap", &gps_emi_mpu_domain_ap)) {
-		pr_info("gps_emi_get_reserved_memory: unable to get gps_emi_mpu_domain_ap\n");
+		pr_debug("gps_emi_get_reserved_memory: unable to get gps_emi_mpu_domain_ap\n");
 		return -1;
 	}
-	pr_info("gps_emi_get_reserved_memory gps_emi_mpu_domain_ap 0x%x\n", gps_emi_mpu_domain_ap);
+	pr_debug("gps_emi_get_reserved_memory gps_emi_mpu_domain_ap 0x%x\n", gps_emi_mpu_domain_ap);
 	if (of_property_read_u32(node, "emi-domain-conn", &gps_emi_mpu_domain_conn)) {
-		pr_info("gps_emi_get_reserved_memory: unable to get gps_emi_mpu_domain_conn\n");
+		pr_debug("gps_emi_get_reserved_memory: unable to get gps_emi_mpu_domain_conn\n");
 		return -1;
 	}
-	pr_info("gps_emi_get_reserved_memory gps_emi_mpu_domain_conn 0x%x\n", gps_emi_mpu_domain_conn);
+	pr_debug("gps_emi_get_reserved_memory gps_emi_mpu_domain_conn 0x%x\n", gps_emi_mpu_domain_conn);
 
 #else
 
@@ -446,7 +446,7 @@ static ssize_t gps_emi_read(struct file *file, char __user *buf, size_t count, l
 		count = GPS_ADC_CAPTURE_BUFF_SIZE;
 	if (pGpsEmibaseaddr != NULL) {
 		if (copy_to_user(buf, (char *)pGpsEmibaseaddr, count))
-			pr_info("Copy to user failed\n");
+			pr_debug("Copy to user failed\n");
 	}
 	GPS_DBG("gps_emi_read finish\n");
 	return ret;

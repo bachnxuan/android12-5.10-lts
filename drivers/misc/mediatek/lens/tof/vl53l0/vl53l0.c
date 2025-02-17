@@ -14,7 +14,7 @@
 #define DRIVER_NAME "vl53l0"
 
 #define LOG_INF(format, args...)                                               \
-	pr_info(DRIVER_NAME " [%s] " format, __func__, ##args)
+	pr_debug(DRIVER_NAME " [%s] " format, __func__, ##args)
 
 #define VL53L0_NAME				"laser"
 

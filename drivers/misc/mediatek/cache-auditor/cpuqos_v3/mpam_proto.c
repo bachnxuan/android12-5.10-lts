@@ -472,7 +472,7 @@ int set_cpuqos_mode(int mode)
 #if IS_ENABLED(CONFIG_MTK_SLBC)
 	slbc_sram_write(CPUQOS_MODE, cpuqos_perf_mode);
 #else
-	pr_info("Set to SLBC fail: config is disable\n");
+	pr_debug("Set to SLBC fail: config is disable\n");
 #endif
 
 	/*
@@ -497,7 +497,7 @@ static ssize_t show_cpuqos_status(struct kobject *kobj,
 	sram_base_addr = ioremap(SLC_SYSRAM_BASE, SLC_SRAM_SIZE);
 
 	if (!sram_base_addr) {
-		pr_info("Remap SLC SYSRAM failed\n");
+		pr_debug("Remap SLC SYSRAM failed\n");
 		return -EIO;
 	}
 
@@ -524,7 +524,7 @@ static ssize_t set_cache_size(struct kobject *kobj,
 	sram_base_addr = ioremap(SLC_SYSRAM_BASE, SLC_SRAM_SIZE);
 
 	if (!sram_base_addr) {
-		pr_info("Remap SLC SYSRAM failed\n");
+		pr_debug("Remap SLC SYSRAM failed\n");
 		return -EIO;
 	}
 
@@ -547,7 +547,7 @@ static ssize_t show_cache_size(struct kobject *kobj,
 	sram_base_addr = ioremap(SLC_SYSRAM_BASE, SLC_SRAM_SIZE);
 
 	if (!sram_base_addr) {
-		pr_info("Remap SLC SYSRAM failed\n");
+		pr_debug("Remap SLC SYSRAM failed\n");
 		return -EIO;
 	}
 	data = ioread32(sram_base_addr + CPUQOS_L3CTL_M_OFS);
@@ -629,7 +629,7 @@ static void __init __map_css_partid(struct cgroup_subsys_state *css, char *tmp, 
 			else
 				WRITE_ONCE(mpam_css_partid_map[css->id], NCT_PARTID);
 
-			pr_info("group_id=%d, path=%s, mpam_path=%s, css_id=%d, group_css=%d, partid_map=%d\n",
+			pr_debug("group_id=%d, path=%s, mpam_path=%s, css_id=%d, group_css=%d, partid_map=%d\n",
 				i, tmp, mpam_path_partid_map[i], css->id, mpam_group_css_map[i],
 				mpam_css_partid_map[css->id]);
 		}
@@ -696,9 +696,9 @@ static int platform_cpuqos_v3_probe(struct platform_device *pdev)
 	if (!ret)
 		plat_enable = retval;
 	else
-		pr_info("%s unable to get plat_enable\n", __func__);
+		pr_debug("%s unable to get plat_enable\n", __func__);
 
-	pr_info("cpuqos_v3 plat_enable=%d\n", plat_enable);
+	pr_debug("cpuqos_v3 plat_enable=%d\n", plat_enable);
 
 	return 0;
 }
@@ -740,13 +740,13 @@ static int __init mpam_proto_init(void)
 
 	init_cpuqos_v3_platform();
 	if (!plat_enable) {
-		pr_info("cpuqos_v3 is disable at this platform\n");
+		pr_debug("cpuqos_v3 is disable at this platform\n");
 		goto out;
 	}
 
 	ret = init_cpuqos_common_sysfs();
 	if (ret) {
-		pr_info("init cpuqos sysfs failed\n");
+		pr_debug("init cpuqos sysfs failed\n");
 		goto out;
 	}
 
@@ -755,25 +755,25 @@ static int __init mpam_proto_init(void)
 
 	ret = mpam_init_cgroup_partid_map();
 	if (ret) {
-		pr_info("init cpuqos failed\n");
+		pr_debug("init cpuqos failed\n");
 		goto out;
 	}
 
 	ret = register_trace_android_vh_cgroup_attach(mpam_hook_attach, NULL);
 	if (ret) {
-		pr_info("register android_vh_cgroup_attach failed\n");
+		pr_debug("register android_vh_cgroup_attach failed\n");
 		goto out;
 	}
 
 	ret = register_trace_android_vh_is_fpsimd_save(mpam_hook_switch, NULL);
 	if (ret) {
-		pr_info("register android_vh_is_fpsimd_save failed\n");
+		pr_debug("register android_vh_is_fpsimd_save failed\n");
 		goto out_attach;
 	}
 
 	ret = register_trace_task_newtask(mpam_task_newtask, NULL);
 	if (ret) {
-		pr_info("register trace_task_newtask failed\n");
+		pr_debug("register trace_task_newtask failed\n");
 		goto out_attach;
 	}
 
@@ -781,10 +781,10 @@ static int __init mpam_proto_init(void)
 	 * Ensure the cpuqos mode/partid map update is visible
 	 * before kicking the CPUs.
 	 */
-	pr_info("init cpuqos mode = %d\n", cpuqos_perf_mode);
+	pr_debug("init cpuqos mode = %d\n", cpuqos_perf_mode);
 	ret = set_cpuqos_mode(cpuqos_perf_mode);
 	if (ret) {
-		pr_info("init set cpuqos mode failed\n");
+		pr_debug("init set cpuqos mode failed\n");
 		goto out_attach;
 	}
 

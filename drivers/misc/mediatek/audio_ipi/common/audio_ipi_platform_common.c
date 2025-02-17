@@ -193,7 +193,7 @@ bool is_audio_dsp_support(const uint32_t dsp_id)
 #endif
 		break;
 	default:
-		pr_info("dsp_id %u not support!!", dsp_id);
+		pr_debug("dsp_id %u not support!!", dsp_id);
 	}
 
 	return ret;

@@ -83,7 +83,7 @@ struct scp2gps_data_link scp2gps_data_received_test;
 void save_scp2gps_data_test(unsigned int msg_id, unsigned int *buf, unsigned int size)
 {
 	down(&ring_buf_mtx_test);
-	pr_info("save_scp2gps_data_test msg_write=%d , size=%d, msg_read =%d\n",
+	pr_debug("save_scp2gps_data_test msg_write=%d , size=%d, msg_read =%d\n",
 		scp2gps_data_received_test.msg_write, size, scp2gps_data_received_test.msg_read);
 	memset(&scp2gps_data_received_test.data_link[scp2gps_data_received_test.msg_write], 0,
 		sizeof(scp2gps_data_received_test.data_link[scp2gps_data_received_test.msg_write]));
@@ -92,7 +92,7 @@ void save_scp2gps_data_test(unsigned int msg_id, unsigned int *buf, unsigned int
 	else
 		memcpy(&scp2gps_data_received_test.data_link[scp2gps_data_received_test.msg_write].data[0],
 			buf, (SCP2GPS_BUFF_SIZE - 1));
-	pr_info("save_scp2gps_data_test msg_write=%d , size=%d, msg_read =%d\n",
+	pr_debug("save_scp2gps_data_test msg_write=%d , size=%d, msg_read =%d\n",
 		scp2gps_data_received_test.msg_write,
 		scp2gps_data_received_test.data_link[scp2gps_data_received_test.msg_write].size,
 		scp2gps_data_received_test.msg_read);
@@ -118,7 +118,7 @@ ssize_t read_scp2gps_data_test(char __user *buf,  size_t count)
 	int size;
 
 	down(&ring_buf_mtx_test);
-	pr_info("read_scp2gps_data_test msg_write=%d , size=%d, msg_read =%d\n",
+	pr_debug("read_scp2gps_data_test msg_write=%d , size=%d, msg_read =%d\n",
 		scp2gps_data_received_test.msg_write,
 		scp2gps_data_received_test.data_link[scp2gps_data_received_test.msg_read].size,
 		scp2gps_data_received_test.msg_read);
@@ -129,7 +129,7 @@ ssize_t read_scp2gps_data_test(char __user *buf,  size_t count)
 	if (msg_read != scp2gps_data_received_test.msg_write) {
 		/* we got something from STP driver */
 		if (copy_to_user(buf, scp2gps_data_received_test.data_link[msg_read].data, size)) {
-			pr_info("read_scp2gps_data failed,because copy_to_user error\n");
+			pr_debug("read_scp2gps_data failed,because copy_to_user error\n");
 			retval = -EFAULT;
 			up(&ring_buf_mtx_test);
 		} else {
@@ -138,7 +138,7 @@ ssize_t read_scp2gps_data_test(char __user *buf,  size_t count)
 			if (scp2gps_data_received_test.msg_read >= SCP2GPS_BUFF_NUM)
 				scp2gps_data_received_test.msg_read = 0;
 			up(&ring_buf_mtx_test);
-			pr_info("read_scp2gps_data_test msg_write=%d , size=%d, msg_read =%d\n",
+			pr_debug("read_scp2gps_data_test msg_write=%d , size=%d, msg_read =%d\n",
 				scp2gps_data_received_test.msg_write,
 				scp2gps_data_received_test.data_link[scp2gps_data_received_test.msg_write].size,
 				scp2gps_data_received_test.msg_read);
@@ -154,7 +154,7 @@ ssize_t read_scp2gps_data_test(char __user *buf,  size_t count)
 void save_scp2gps_data(unsigned int msg_id, unsigned int *buf, unsigned int size)
 {
 	down(&ring_buf_mtx);
-	pr_info("save_scp2gps_data msg_write=%d , size=%d, msg_read =%d\n",
+	pr_debug("save_scp2gps_data msg_write=%d , size=%d, msg_read =%d\n",
 		scp2gps_data_received.msg_write, size, scp2gps_data_received.msg_read);
 	memset(&scp2gps_data_received.data_link[scp2gps_data_received.msg_write], 0,
 		sizeof(scp2gps_data_received.data_link[scp2gps_data_received.msg_write]));
@@ -163,7 +163,7 @@ void save_scp2gps_data(unsigned int msg_id, unsigned int *buf, unsigned int size
 	else
 		memcpy(&scp2gps_data_received.data_link[scp2gps_data_received.msg_write].data[0],
 			buf, (SCP2GPS_BUFF_SIZE - 1));
-	pr_info("save_scp2gps_data msg_write=%d , size=%d, msg_read =%d\n",
+	pr_debug("save_scp2gps_data msg_write=%d , size=%d, msg_read =%d\n",
 		scp2gps_data_received.msg_write,
 		scp2gps_data_received.data_link[scp2gps_data_received.msg_write].size,
 		scp2gps_data_received.msg_read);
@@ -189,7 +189,7 @@ ssize_t read_scp2gps_data(char __user *buf,  size_t count)
 	int size;
 
 	down(&ring_buf_mtx);
-	pr_info("read_scp2gps_data msg_write=%d , size=%d, msg_read =%d\n",
+	pr_debug("read_scp2gps_data msg_write=%d , size=%d, msg_read =%d\n",
 		scp2gps_data_received.msg_write,
 		scp2gps_data_received.data_link[scp2gps_data_received.msg_read].size,
 		scp2gps_data_received.msg_read);
@@ -200,7 +200,7 @@ ssize_t read_scp2gps_data(char __user *buf,  size_t count)
 	if (msg_read != scp2gps_data_received.msg_write) {
 		/* we got something from STP driver */
 		if (copy_to_user(buf, scp2gps_data_received.data_link[msg_read].data, size)) {
-			pr_info("read_scp2gps_data failed,because copy_to_user error\n");
+			pr_debug("read_scp2gps_data failed,because copy_to_user error\n");
 			retval = -EFAULT;
 			up(&ring_buf_mtx);
 		} else {
@@ -209,7 +209,7 @@ ssize_t read_scp2gps_data(char __user *buf,  size_t count)
 			if (scp2gps_data_received.msg_read >= SCP2GPS_BUFF_NUM)
 				scp2gps_data_received.msg_read = 0;
 			up(&ring_buf_mtx);
-			pr_info("read_scp2gps_data msg_write=%d , size=%d, msg_read =%d\n",
+			pr_debug("read_scp2gps_data msg_write=%d , size=%d, msg_read =%d\n",
 				scp2gps_data_received.msg_write,
 				scp2gps_data_received.data_link[scp2gps_data_received.msg_write].size,
 				scp2gps_data_received.msg_read);
@@ -221,7 +221,7 @@ ssize_t read_scp2gps_data(char __user *buf,  size_t count)
 }
 void gps2scp_msg_cb(unsigned int msg_id, unsigned int *buf, unsigned int size)
 {
-	pr_info("gps2scp_msg_cb been called, msg_id=%d,*buf=0x%p,size=%d\n", msg_id, buf, size);
+	pr_debug("gps2scp_msg_cb been called, msg_id=%d,*buf=0x%p,size=%d\n", msg_id, buf, size);
 	if (msg_id == 0) {
 		save_scp2gps_data(msg_id, buf, size);
 		wake_up_interruptible(&GPS2SCP_wq);
@@ -236,7 +236,7 @@ void gps2scp_msg_cb(unsigned int msg_id, unsigned int *buf, unsigned int size)
 
 void gps2scp_state_notify_cb(int state)
 {
-	pr_info("gps2scp_msg_cb been called , state = %d\n", state);
+	pr_debug("gps2scp_msg_cb been called , state = %d\n", state);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -266,11 +266,11 @@ static int gps2scp_open(struct inode *inode, struct file *file)
 	}
 	conap_status = conap_scp_is_drv_ready(DRV_TYPE_GPS);
 	if (conap_status == 0)
-		pr_info("conap ready! conap_status = %d\n", conap_status);
+		pr_debug("conap ready! conap_status = %d\n", conap_status);
 	else
-		pr_info("conap not ready! conap_status = %d\n", conap_status);
+		pr_debug("conap not ready! conap_status = %d\n", conap_status);
 
-	pr_info("%s: gps2scp open major %d minor %d (pid %d)\n", __func__, imajor(inode), iminor(inode), current->pid);
+	pr_debug("%s: gps2scp open major %d minor %d (pid %d)\n", __func__, imajor(inode), iminor(inode), current->pid);
 	return 0;
 }
 
@@ -288,13 +288,13 @@ static int gps2scp_close(struct inode *inode, struct file *file)
 
 	conap_status = conap_scp_is_drv_ready(DRV_TYPE_GPS);
 	if (conap_status == 0)
-		pr_info("conap unregisetr fail! conap_status = %d\n", conap_status);
+		pr_debug("conap unregisetr fail! conap_status = %d\n", conap_status);
 	else
-		pr_info("conap unregisetr success! conap_status = %d\n", conap_status);
+		pr_debug("conap unregisetr success! conap_status = %d\n", conap_status);
 
 	memset(&scp2gps_data_received, 0, sizeof(scp2gps_data_received));
 
-	pr_info("%s: gps2scp close major %d minor %d (pid %d)\n", __func__, imajor(inode), iminor(inode), current->pid);
+	pr_debug("%s: gps2scp close major %d minor %d (pid %d)\n", __func__, imajor(inode), iminor(inode), current->pid);
 	return 0;
 }
 #ifdef GPS2SCP_TEST_ENABLE
@@ -311,11 +311,11 @@ static int gps2scp_open_test(struct inode *inode, struct file *file)
 	}
 	conap_status = conap_scp_is_drv_ready(DRV_TYPE_GPS);
 	if (conap_status == 0)
-		pr_info("conap ready! conap_status = %d\n", conap_status);
+		pr_debug("conap ready! conap_status = %d\n", conap_status);
 	else
-		pr_info("conap not ready! conap_status = %d\n", conap_status);
+		pr_debug("conap not ready! conap_status = %d\n", conap_status);
 
-	pr_info("%s: gps2scp open test major %d minor %d (pid %d)\n",
+	pr_debug("%s: gps2scp open test major %d minor %d (pid %d)\n",
 		__func__, imajor(inode), iminor(inode), current->pid);
 	return 0;
 }
@@ -334,14 +334,14 @@ static int gps2scp_close_test(struct inode *inode, struct file *file)
 
 	conap_status = conap_scp_is_drv_ready(DRV_TYPE_GPS);
 	if (conap_status == 0)
-		pr_info("conap unregisetr fail! conap_status = %d\n", conap_status);
+		pr_debug("conap unregisetr fail! conap_status = %d\n", conap_status);
 	else
-		pr_info("conap unregisetr success! conap_status = %d\n", conap_status);
+		pr_debug("conap unregisetr success! conap_status = %d\n", conap_status);
 
 
 	memset(&scp2gps_data_received_test, 0, sizeof(scp2gps_data_received));
 
-	pr_info("%s: gps2scp close test major %d minor %d (pid %d)\n",
+	pr_debug("%s: gps2scp close test major %d minor %d (pid %d)\n",
 		__func__, imajor(inode), iminor(inode), current->pid);
 	return 0;
 }
@@ -351,7 +351,7 @@ static ssize_t gps2scp_read_test(struct file *file, char __user *buf, size_t cou
 {
 	int retval;
 
-	pr_info("gps2scp read test\n");
+	pr_debug("gps2scp read test\n");
 	down(&rd_mtx_test);
 
 	if (count > SCP2GPS_BUFF_SIZE)
@@ -364,7 +364,7 @@ static ssize_t gps2scp_read_test(struct file *file, char __user *buf, size_t cou
 
 OUT:
 		up(&rd_mtx_test);
-	/*	pr_info("GPS_read(): retval = %d\n", retval);*/
+	/*	pr_debug("GPS_read(): retval = %d\n", retval);*/
 		return retval;
 
 }
@@ -373,7 +373,7 @@ static ssize_t gps2scp_read(struct file *file, char __user *buf, size_t count, l
 {
 	int retval;
 
-	pr_info("gps2scp read\n");
+	pr_debug("gps2scp read\n");
 	down(&rd_mtx);
 
 	if (count > SCP2GPS_BUFF_SIZE)
@@ -386,7 +386,7 @@ static ssize_t gps2scp_read(struct file *file, char __user *buf, size_t count, l
 
 OUT:
 		up(&rd_mtx);
-	/*	pr_info("GPS_read(): retval = %d\n", retval);*/
+	/*	pr_debug("GPS_read(): retval = %d\n", retval);*/
 		return retval;
 
 }
@@ -400,27 +400,27 @@ static ssize_t gps2scp_write_test(struct file *filp, const char __user *buf, siz
 	int copy_size = 0;
 
 	down(&wr_mtx_test);
-	pr_info("gps2scp write test\n");
+	pr_debug("gps2scp write test\n");
 	if (count > 0) {
 		copy_size = (count < SCP2GPS_BUFF_SIZE) ? count : SCP2GPS_BUFF_SIZE;
 		if (copy_from_user(&o_buf_test[0], &buf[0], copy_size)) {
 			retval = -EFAULT;
-			pr_info("gps2scp_write copy_from_user failed retval=%d\n", retval);
+			pr_debug("gps2scp_write copy_from_user failed retval=%d\n", retval);
 			goto out;
 		}
 	} else {
 		retval = -EFAULT;
-		pr_info("gps2scp_write target packet length:%zd is not allowed, retval = %d.\n", count, retval);
+		pr_debug("gps2scp_write target packet length:%zd is not allowed, retval = %d.\n", count, retval);
 	}
 
 	written = conap_scp_send_message(DRV_TYPE_GPS, msg_id, &o_buf_test[0], count);
 
 	if (written == 0) {
 		retval = copy_size;
-		pr_info("conap_scp_send_message success count= %zd\n", count);
+		pr_debug("conap_scp_send_message success count= %zd\n", count);
 	} else {
 		retval = -EFAULT;
-		pr_info("conap_scp_send_message failed retval=%d , written=%d\n", retval, written);
+		pr_debug("conap_scp_send_message failed retval=%d , written=%d\n", retval, written);
 	}
 
 out:
@@ -436,27 +436,27 @@ static ssize_t gps2scp_write(struct file *filp, const char __user *buf, size_t c
 	int copy_size = 0;
 
 	down(&wr_mtx);
-	pr_info("gps2scp write\n");
+	pr_debug("gps2scp write\n");
 	if (count > 0) {
 		copy_size = (count < SCP2GPS_BUFF_SIZE) ? count : SCP2GPS_BUFF_SIZE;
 		if (copy_from_user(&o_buf[0], &buf[0], copy_size)) {
 			retval = -EFAULT;
-			pr_info("gps2scp_write copy_from_user failed retval=%d\n", retval);
+			pr_debug("gps2scp_write copy_from_user failed retval=%d\n", retval);
 			goto out;
 		}
 	} else {
 		retval = -EFAULT;
-		pr_info("gps2scp_write target packet length:%zd is not allowed, retval = %d.\n", count, retval);
+		pr_debug("gps2scp_write target packet length:%zd is not allowed, retval = %d.\n", count, retval);
 	}
 
 	written = conap_scp_send_message(DRV_TYPE_GPS, msg_id, &o_buf[0], count);
 
 	if (written == 0) {
 		retval = copy_size;
-		pr_info("conap_scp_send_message success count= %zd\n", count);
+		pr_debug("conap_scp_send_message success count= %zd\n", count);
 	} else {
 		retval = -EFAULT;
-		pr_info("conap_scp_send_message failed retval=%d , written=%d\n", retval, written);
+		pr_debug("conap_scp_send_message failed retval=%d , written=%d\n", retval, written);
 	}
 
 out:
@@ -469,10 +469,10 @@ static unsigned int gps2scp_poll(struct file *file, poll_table *wait)
 	unsigned int mask;
 
 	mask = 0;
-	pr_info("gps2scp_poll has enter\n");
+	pr_debug("gps2scp_poll has enter\n");
 	if (scp2gps_data_received.msg_read != scp2gps_data_received.msg_write) {
 		mask = (POLLIN | POLLRDNORM);
-		pr_info("gps2scp_poll already have data\n");
+		pr_debug("gps2scp_poll already have data\n");
 		return mask;
 	}
 
@@ -480,7 +480,7 @@ static unsigned int gps2scp_poll(struct file *file, poll_table *wait)
 
 	if (scp2gps_data_received.msg_read != scp2gps_data_received.msg_write)
 		mask = (POLLIN | POLLRDNORM);
-	pr_info("gps2scp_poll been return , mask = %d\n", mask);
+	pr_debug("gps2scp_poll been return , mask = %d\n", mask);
 
 	return mask;
 }
@@ -490,10 +490,10 @@ static unsigned int gps2scp_test_poll(struct file *file, poll_table *wait)
 	unsigned int mask;
 
 	mask = 0;
-	pr_info("gps2scp_test_poll has enter\n");
+	pr_debug("gps2scp_test_poll has enter\n");
 	if (scp2gps_data_received_test.msg_read != scp2gps_data_received_test.msg_write) {
 		mask = (POLLIN | POLLRDNORM);
-		pr_info("gps2scp_test_poll already have data\n");
+		pr_debug("gps2scp_test_poll already have data\n");
 		return mask;
 	}
 
@@ -502,7 +502,7 @@ static unsigned int gps2scp_test_poll(struct file *file, poll_table *wait)
 	if (scp2gps_data_received_test.msg_read != scp2gps_data_received_test.msg_write)
 		mask = (POLLIN | POLLRDNORM);
 
-	pr_info("gps2scp_test_poll been return , mask = %d\n", mask);
+	pr_debug("gps2scp_test_poll been return , mask = %d\n", mask);
 
 	return mask;
 }
@@ -544,25 +544,25 @@ static int gps2scp_test_init(void)
 		goto err_out;
 	}
 
-	pr_info("Registering gps2scp test chardev\n");
+	pr_debug("Registering gps2scp test chardev\n");
 	ret = alloc_chrdev_region(&gps2scp_devobj_test->devno, 0, 1, GPS2SCP_DEVNAME_TEST);
 	if (ret) {
-		pr_info("alloc_chrdev_region fail: %d\n", ret);
+		pr_debug("alloc_chrdev_region fail: %d\n", ret);
 		err = -ENOMEM;
 		goto err_out;
 	} else {
-		pr_info("major: %d, minor: %d\n", MAJOR(gps2scp_devobj_test->devno), MINOR(gps2scp_devobj_test->devno));
+		pr_debug("major: %d, minor: %d\n", MAJOR(gps2scp_devobj_test->devno), MINOR(gps2scp_devobj_test->devno));
 	}
 	cdev_init(&gps2scp_devobj_test->chdev, &gps2scp_fops_test);
 	gps2scp_devobj_test->chdev.owner = THIS_MODULE;
 	err = cdev_add(&gps2scp_devobj_test->chdev, gps2scp_devobj_test->devno, 1);
 	if (err) {
-		pr_info("cdev_add fail: %d\n", err);
+		pr_debug("cdev_add fail: %d\n", err);
 		goto err_out;
 	}
 	gps2scp_devobj_test->cls = class_create(THIS_MODULE, "gps2scp_test");
 	if (IS_ERR(gps2scp_devobj_test->cls)) {
-		pr_info("Unable to create class, err = %d\n", (int)PTR_ERR(gps2scp_devobj_test->cls));
+		pr_debug("Unable to create class, err = %d\n", (int)PTR_ERR(gps2scp_devobj_test->cls));
 	goto err_out;
 	}
 	/* init_MUTEX(&wr_mtx); */
@@ -577,7 +577,7 @@ static int gps2scp_test_init(void)
 
 	gps2scp_devobj_test->dev = device_create(gps2scp_devobj_test->cls, NULL,
 		gps2scp_devobj_test->devno, gps2scp_devobj_test, "gps2scp_test");
-	pr_info("GPS2SCP test device init Done\n");
+	pr_debug("GPS2SCP test device init Done\n");
 	return 0;
 
 err_out:
@@ -604,25 +604,25 @@ static int gps2scp_init(void)
 		goto err_out;
 	}
 
-	pr_info("Registering gps2scp chardev\n");
+	pr_debug("Registering gps2scp chardev\n");
 	ret = alloc_chrdev_region(&gps2scp_devobj->devno, 0, 1, GPS2SCP_DEVNAME);
 	if (ret) {
-		pr_info("alloc_chrdev_region fail: %d\n", ret);
+		pr_debug("alloc_chrdev_region fail: %d\n", ret);
 		err = -ENOMEM;
 		goto err_out;
 	} else {
-		pr_info("major: %d, minor: %d\n", MAJOR(gps2scp_devobj->devno), MINOR(gps2scp_devobj->devno));
+		pr_debug("major: %d, minor: %d\n", MAJOR(gps2scp_devobj->devno), MINOR(gps2scp_devobj->devno));
 	}
 	cdev_init(&gps2scp_devobj->chdev, &gps2scp_fops);
 	gps2scp_devobj->chdev.owner = THIS_MODULE;
 	err = cdev_add(&gps2scp_devobj->chdev, gps2scp_devobj->devno, 1);
 	if (err) {
-		pr_info("cdev_add fail: %d\n", err);
+		pr_debug("cdev_add fail: %d\n", err);
 		goto err_out;
 	}
 	gps2scp_devobj->cls = class_create(THIS_MODULE, "gps2scp");
 	if (IS_ERR(gps2scp_devobj->cls)) {
-		pr_info("Unable to create class, err = %d\n", (int)PTR_ERR(gps2scp_devobj->cls));
+		pr_debug("Unable to create class, err = %d\n", (int)PTR_ERR(gps2scp_devobj->cls));
 	goto err_out;
 	}
 	/* init_MUTEX(&wr_mtx); */
@@ -637,7 +637,7 @@ static int gps2scp_init(void)
 
 	gps2scp_devobj->dev = device_create(gps2scp_devobj->cls,
 		NULL, gps2scp_devobj->devno, gps2scp_devobj, "gps2scp");
-	pr_info("GPS2SCP device init Done\n");
+	pr_debug("GPS2SCP device init Done\n");
 	return 0;
 
 err_out:
@@ -657,46 +657,46 @@ err_out:
 static void gps2scp_test_exit(void)
 {
 	if (!gps2scp_devobj_test) {
-		pr_info("null pointer: %p\n", gps2scp_devobj_test);
+		pr_debug("null pointer: %p\n", gps2scp_devobj_test);
 		return;
 	}
 
 	conap_scp_unregister_drv(DRV_TYPE_GPS);
 
-	pr_info("Unregistering gps2scp test chardev\n");
+	pr_debug("Unregistering gps2scp test chardev\n");
 	cdev_del(&gps2scp_devobj_test->chdev);
 	unregister_chrdev_region(gps2scp_devobj_test->devno, 1);
 	device_destroy(gps2scp_devobj_test->cls, gps2scp_devobj_test->devno);
 	class_destroy(gps2scp_devobj_test->cls);
 	kfree(gps2scp_devobj_test);
 	gps2scp_devobj_test = NULL;
-	pr_info("Done\n");
+	pr_debug("Done\n");
 }
 #endif
 static void gps2scp_exit(void)
 {
 	if (!gps2scp_devobj) {
-		pr_info("null pointer: %p\n", gps2scp_devobj);
+		pr_debug("null pointer: %p\n", gps2scp_devobj);
 		return;
 	}
 
 	conap_scp_unregister_drv(DRV_TYPE_GPS);
 
-	pr_info("Unregistering gps2scp chardev\n");
+	pr_debug("Unregistering gps2scp chardev\n");
 	cdev_del(&gps2scp_devobj->chdev);
 	unregister_chrdev_region(gps2scp_devobj->devno, 1);
 	device_destroy(gps2scp_devobj->cls, gps2scp_devobj->devno);
 	class_destroy(gps2scp_devobj->cls);
 	kfree(gps2scp_devobj);
 	gps2scp_devobj = NULL;
-	pr_info("Done\n");
+	pr_debug("Done\n");
 }
 
 int mtk_gps2scp_init(void)
 {
-	pr_info("gps2scp init begin");
+	pr_debug("gps2scp init begin");
 #ifdef GPS2SCP_TEST_ENABLE
-	pr_info("gps2scp_test init begin");
+	pr_debug("gps2scp_test init begin");
 	gps2scp_test_init();
 #endif
 	return gps2scp_init();
@@ -704,9 +704,9 @@ int mtk_gps2scp_init(void)
 
 void mtk_gps2scp_exit(void)
 {
-	pr_info("gps2scp exit begin");
+	pr_debug("gps2scp exit begin");
 #ifdef GPS2SCP_TEST_ENABLE
-	pr_info("gps2scp_test exit begin");
+	pr_debug("gps2scp_test exit begin");
 	gps2scp_exit();
 #endif
 	return gps2scp_exit();
@@ -714,13 +714,13 @@ void mtk_gps2scp_exit(void)
 #ifdef GPS2SCP_TEST_ENABLE
 int mtk_gps2scp_test_init(void)
 {
-	pr_info("gps2scp init begin");
+	pr_debug("gps2scp init begin");
 	return gps2scp_test_init();
 }
 
 void mtk_gps2scp_test_exit(void)
 {
-	pr_info("gps2scp exit begin");
+	pr_debug("gps2scp exit begin");
 	return gps2scp_test_exit();
 }
 #endif

@@ -112,7 +112,7 @@ static void aoltest_push_message(struct aoltest_core_rb *rb, unsigned int type, 
 		rb_data->type = type;
 		aoltest_core_rb_push_active(rb, rb_data);
 	} else {
-		pr_info("[%s] rb is NULL", __func__);
+		pr_debug("[%s] rb is NULL", __func__);
 	}
 
 	spin_unlock_irqrestore(&(rb->lock), flags);
@@ -137,7 +137,7 @@ static int is_scp_ready(void)
 
 	if (retry == 0) {
 		g_is_scp_ready = 0;
-		pr_info("SCP is not yet ready\n");
+		pr_debug("SCP is not yet ready\n");
 		return -1;
 	}
 
@@ -153,7 +153,7 @@ static int opfunc_scp_register(struct msg_op_data *op)
 	struct aoltest_core_ctx *ctx = &g_aoltest_ctx;
 
 	ret = conap_scp_register_drv(ctx->drv_type, &ctx->scp_test_cb);
-	pr_info("SCP register drv_type=[%d], ret=[%d]", ctx->drv_type, ret);
+	pr_debug("SCP register drv_type=[%d], ret=[%d]", ctx->drv_type, ret);
 
 	// Create ring buffer
 	aoltest_core_rb_init(&g_rb);
@@ -167,7 +167,7 @@ static int opfunc_scp_unregister(struct msg_op_data *op)
 	struct aoltest_core_ctx *ctx = &g_aoltest_ctx;
 
 	ret = conap_scp_unregister_drv(ctx->drv_type);
-	pr_info("SCP unregister drv_type=[%d], ret=[%d]", ctx->drv_type, ret);
+	pr_debug("SCP unregister drv_type=[%d], ret=[%d]", ctx->drv_type, ret);
 
 	// Destroy ring buffer
 	aoltest_core_rb_deinit(&g_rb);
@@ -183,25 +183,25 @@ static int opfunc_send_msg(struct msg_op_data *op)
 
 	if (!g_is_scp_ready) {
 		ret = is_scp_ready();
-		pr_info("[%s] is ready=[%d] ret=[%d]", __func__, g_is_scp_ready, ret);
+		pr_debug("[%s] is ready=[%d] ret=[%d]", __func__, g_is_scp_ready, ret);
 
 		if (ret <= 0)
 			return -1;
 	}
 
-	pr_info("[%s] is ready=[%d] ret=[%d]", __func__, g_is_scp_ready, ret);
+	pr_debug("[%s] is ready=[%d] ret=[%d]", __func__, g_is_scp_ready, ret);
 
 	cmd = (unsigned int)op->op_data[0];
-	pr_info("[%s] cmd=[%d]", __func__, cmd);
+	pr_debug("[%s] cmd=[%d]", __func__, cmd);
 
 	if (cmd == AOLTEST_CMD_START_TEST) {
-		pr_info("[%s] start_test enabled=[%d][%d][%d]", __func__,
+		pr_debug("[%s] start_test enabled=[%d][%d][%d]", __func__,
 					g_test_info.wifi_enabled, g_test_info.bt_enabled,
 					g_test_info.gps_enabled);
 		g_is_test_started = true;
 		ret = conap_scp_send_message(ctx->drv_type, cmd,
 						(unsigned char *)&g_test_info, sizeof(g_test_info));
-		pr_info("[%s] cmd is AOLTEST_CMD_START_TEST and call scp, ret=%d",
+		pr_debug("[%s] cmd is AOLTEST_CMD_START_TEST and call scp, ret=%d",
 					__func__, ret);
 	} else {
 		if (cmd == AOLTEST_CMD_STOP_TEST)
@@ -214,7 +214,7 @@ static int opfunc_send_msg(struct msg_op_data *op)
 		ret = conap_scp_send_message(ctx->drv_type, cmd, NULL, 0);
 	}
 
-	pr_info("Send drv_type=[%d], cmd=[%d], ret=[%d]\n", ctx->drv_type, cmd, ret);
+	pr_debug("Send drv_type=[%d], cmd=[%d], ret=[%d]\n", ctx->drv_type, cmd, ret);
 	return ret;
 }
 
@@ -237,7 +237,7 @@ static int opfunc_recv_msg(struct msg_op_data *op)
 		return -1;
 
 	type = rb_data->type;
-	pr_info("[%s] msg_id=[%d], type=[%d]\n", __func__, msg_id, type);
+	pr_debug("[%s] msg_id=[%d], type=[%d]\n", __func__, msg_id, type);
 
 	if (type == AOLTEST_MSG_ID_WIFI) {
 		ptr = (char *)&(rb_data->raw_data.wifi_raw);
@@ -258,7 +258,7 @@ static int opfunc_recv_msg(struct msg_op_data *op)
 	aoltest_core_rb_push_free(&g_rb, rb_data);
 	spin_unlock_irqrestore(&(g_rb.lock), flags);
 
-	pr_info("Send to netlink client, sz=[%d]\n", sz);
+	pr_debug("Send to netlink client, sz=[%d]\n", sz);
 	aoltest_netlink_send_to_native("[AOLTEST]", msg_id, g_buf, sz);
 
 	return ret;
@@ -273,9 +273,9 @@ void aoltest_core_msg_notify(unsigned int msg_id, unsigned int *buf, unsigned in
 	struct aoltest_core_ctx *ctx = &g_aoltest_ctx;
 	unsigned int expect_size = 0;
 
-	pr_info("[%s] msg_id=[%d]\n", __func__, msg_id);
+	pr_debug("[%s] msg_id=[%d]\n", __func__, msg_id);
 	if (ctx->status == AOLTEST_INACTIVE) {
-		pr_info("EM test ctx is inactive\n");
+		pr_debug("EM test ctx is inactive\n");
 		return;
 	}
 
@@ -287,7 +287,7 @@ void aoltest_core_msg_notify(unsigned int msg_id, unsigned int *buf, unsigned in
 		expect_size = sizeof(struct aoltest_gps_raw_data);
 
 	if (expect_size != size) {
-		pr_info("[%s] Buf size is unexpected, msg_id=[%u], expect size=[%u], recv size=[%u]\n",
+		pr_debug("[%s] Buf size is unexpected, msg_id=[%u], expect size=[%u], recv size=[%u]\n",
 			__func__, msg_id, expect_size, size);
 		return;
 	}
@@ -297,7 +297,7 @@ void aoltest_core_msg_notify(unsigned int msg_id, unsigned int *buf, unsigned in
 	ret = msg_thread_send_1(&ctx->msg_ctx, AOLTEST_OPID_RECV_MSG, msg_id);
 
 	if (ret)
-		pr_info("[%s] Notify recv msg fail, ret=[%d]\n", __func__, ret);
+		pr_debug("[%s] Notify recv msg fail, ret=[%d]\n", __func__, ret);
 }
 
 void aoltest_core_state_change(int state)
@@ -305,10 +305,10 @@ void aoltest_core_state_change(int state)
 	int ret = 0;
 	struct aoltest_core_ctx *ctx = &g_aoltest_ctx;
 
-	pr_info("[%s] reason=[%d]", __func__, state);
+	pr_debug("[%s] reason=[%d]", __func__, state);
 
 	if (ctx->status == AOLTEST_INACTIVE) {
-		pr_info("EM test ctx is inactive\n");
+		pr_debug("EM test ctx is inactive\n");
 		return;
 	}
 
@@ -338,10 +338,10 @@ static int aoltest_core_handler(int cmd, void *data)
 	int ret = 0;
 	struct aoltest_core_ctx *ctx = &g_aoltest_ctx;
 
-	pr_info("[%s] Get cmd: %d\n", __func__, cmd);
+	pr_debug("[%s] Get cmd: %d\n", __func__, cmd);
 
 	if (ctx->status == AOLTEST_INACTIVE) {
-		pr_info("EM test ctx is inactive\n");
+		pr_debug("EM test ctx is inactive\n");
 		return -1;
 	}
 
@@ -351,7 +351,7 @@ static int aoltest_core_handler(int cmd, void *data)
 	ret = msg_thread_send_1(&ctx->msg_ctx, AOLTEST_OPID_SEND_MSG, cmd);
 
 	if (ret)
-		pr_info("[%s] Send to msg thread fail, ret=[%d]\n", __func__, ret);
+		pr_debug("[%s] Send to msg thread fail, ret=[%d]\n", __func__, ret);
 
 	return ret;
 }
@@ -368,7 +368,7 @@ static int aoltest_core_bind(void)
 					aoltest_core_opfunc, AOLTEST_OPID_MAX);
 
 	if (ret) {
-		pr_info("EM test thread init fail, ret=[%d]\n", ret);
+		pr_debug("EM test thread init fail, ret=[%d]\n", ret);
 		return -1;
 	}
 
@@ -380,7 +380,7 @@ static int aoltest_core_bind(void)
 	ret = msg_thread_send(&ctx->msg_ctx, AOLTEST_OPID_SCP_REGISTER);
 
 	if (ret)
-		pr_info("[%s] Send to msg thread fail, ret=[%d]\n", __func__, ret);
+		pr_debug("[%s] Send to msg thread fail, ret=[%d]\n", __func__, ret);
 
 	return ret;
 }
@@ -403,6 +403,6 @@ int aoltest_core_init(void)
 
 void aoltest_core_deinit(void)
 {
-	pr_info("[%s]\n", __func__);
+	pr_debug("[%s]\n", __func__);
 	aoltest_netlink_deinit();
 }

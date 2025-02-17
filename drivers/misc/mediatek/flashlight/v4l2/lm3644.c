@@ -163,7 +163,7 @@ static int lm3644_pinctrl_init(struct lm3644_flash *flash)
 	/* get pinctrl */
 	flash->lm3644_hwen_pinctrl = devm_pinctrl_get(flash->dev);
 	if (IS_ERR(flash->lm3644_hwen_pinctrl)) {
-		pr_info("Failed to get flashlight pinctrl.\n");
+		pr_debug("Failed to get flashlight pinctrl.\n");
 		ret = PTR_ERR(flash->lm3644_hwen_pinctrl);
 		return ret;
 	}
@@ -173,7 +173,7 @@ static int lm3644_pinctrl_init(struct lm3644_flash *flash)
 			flash->lm3644_hwen_pinctrl,
 			LM3644_PINCTRL_STATE_HWEN_HIGH);
 	if (IS_ERR(flash->lm3644_hwen_high)) {
-		pr_info("Failed to init (%s)\n",
+		pr_debug("Failed to init (%s)\n",
 			LM3644_PINCTRL_STATE_HWEN_HIGH);
 		ret = PTR_ERR(flash->lm3644_hwen_high);
 	}
@@ -181,7 +181,7 @@ static int lm3644_pinctrl_init(struct lm3644_flash *flash)
 			flash->lm3644_hwen_pinctrl,
 			LM3644_PINCTRL_STATE_HWEN_LOW);
 	if (IS_ERR(flash->lm3644_hwen_low)) {
-		pr_info("Failed to init (%s)\n", LM3644_PINCTRL_STATE_HWEN_LOW);
+		pr_debug("Failed to init (%s)\n", LM3644_PINCTRL_STATE_HWEN_LOW);
 		ret = PTR_ERR(flash->lm3644_hwen_low);
 	}
 
@@ -191,10 +191,10 @@ static int lm3644_pinctrl_init(struct lm3644_flash *flash)
 static int lm3644_pinctrl_set(struct lm3644_flash *flash, int pin, int state)
 {
 	int ret = 0;
-	pr_info("%s", __func__);
+	pr_debug("%s", __func__);
 
 	if (IS_ERR(flash->lm3644_hwen_pinctrl)) {
-		pr_info("pinctrl is not available\n");
+		pr_debug("pinctrl is not available\n");
 		return -1;
 	}
 
@@ -209,10 +209,10 @@ static int lm3644_pinctrl_set(struct lm3644_flash *flash, int pin, int state)
 			pinctrl_select_state(flash->lm3644_hwen_pinctrl,
 					flash->lm3644_hwen_high);
 		else
-			pr_info("set err, pin(%d) state(%d)\n", pin, state);
+			pr_debug("set err, pin(%d) state(%d)\n", pin, state);
 		break;
 	default:
-		pr_info("set err, pin(%d) state(%d)\n", pin, state);
+		pr_debug("set err, pin(%d) state(%d)\n", pin, state);
 		break;
 	}
 
@@ -224,7 +224,7 @@ static int lm3644_mode_ctrl(struct lm3644_flash *flash)
 {
 	int rval = -EINVAL;
 
-	pr_info("%s mode:%d", __func__, flash->led_mode);
+	pr_debug("%s mode:%d", __func__, flash->led_mode);
 	switch (flash->led_mode) {
 	case V4L2_FLASH_LED_MODE_NONE:
 		rval = regmap_update_bits(flash->regmap,
@@ -248,11 +248,11 @@ static int lm3644_enable_ctrl(struct lm3644_flash *flash,
 {
 	int rval;
 
-	pr_info("%s led:%d enable:%d", __func__, led_no, on);
+	pr_debug("%s led:%d enable:%d", __func__, led_no, on);
 
 	flashlight_kicker_pbm(on);
 	if (flashlight_pt_is_low()) {
-		pr_info("pt is low\n");
+		pr_debug("pt is low\n");
 		return 0;
 	}
 
@@ -272,11 +272,11 @@ static int lm3644_single_enable_ctrl(struct lm3644_flash *flash,
 {
 	int rval;
 
-	pr_info("%s led:%d enable:%d", __func__, led_no, on);
+	pr_debug("%s led:%d enable:%d", __func__, led_no, on);
 
 	flashlight_kicker_pbm(on);
 	if (flashlight_pt_is_low()) {
-		pr_info("pt is low\n");
+		pr_debug("pt is low\n");
 		return 0;
 	}
 	if (led_no == LM3644_LED0) {
@@ -305,7 +305,7 @@ static int lm3644_torch_brt_ctrl(struct lm3644_flash *flash,
 	int rval;
 	u8 br_bits;
 	int torch_cur_avg = 0;
-	pr_info("%s %d brt:%u\n", __func__, led_no, brt);
+	pr_debug("%s %d brt:%u\n", __func__, led_no, brt);
 	torch_cur_avg = brt / 2;
 
 	if (flash->need_cooler == 0) {
@@ -313,12 +313,12 @@ static int lm3644_torch_brt_ctrl(struct lm3644_flash *flash,
 	} else {
 		if (brt > flash->target_current) {
 			brt = flash->target_current;
-			pr_info("thermal limit current:%d\n", brt);
+			pr_debug("thermal limit current:%d\n", brt);
 		}
 	}
 
 	br_bits = LM3644_TORCH_BRT_uA_TO_REG(torch_cur_avg);
-	pr_info("%s avg_brt:%u brt_bit :%x", __func__, torch_cur_avg ,br_bits);
+	pr_debug("%s avg_brt:%u brt_bit :%x", __func__, torch_cur_avg ,br_bits);
 
 	rval = regmap_update_bits(flash->regmap,
 				  REG_LED0_TORCH_BR, 0x7f, br_bits);
@@ -337,7 +337,7 @@ static int lm3644_single_torch_brt_ctrl(struct lm3644_flash *flash,
 	int rval;
 	u8 br_bits;
 	int torch_cur_avg = 0;
-	pr_info("%s %d brt:%u\n", __func__, led_no, brt);
+	pr_debug("%s %d brt:%u\n", __func__, led_no, brt);
 	torch_cur_avg = brt;
 
 	if (flash->need_cooler == 0) {
@@ -345,12 +345,12 @@ static int lm3644_single_torch_brt_ctrl(struct lm3644_flash *flash,
 	} else {
 		if (brt > flash->target_current) {
 			brt = flash->target_current;
-			pr_info("thermal limit current:%d\n", brt);
+			pr_debug("thermal limit current:%d\n", brt);
 		}
 	}
 
 	br_bits = LM3644_TORCH_BRT_uA_TO_REG(torch_cur_avg);
-	pr_info("%s avg_brt:%u brt_bit :%x", __func__, torch_cur_avg ,br_bits);
+	pr_debug("%s avg_brt:%u brt_bit :%x", __func__, torch_cur_avg ,br_bits);
 	if(led_no == LM3644_LED0)
 		rval = regmap_update_bits(flash->regmap,
 					  REG_LED0_TORCH_BR, 0x7f, br_bits);
@@ -370,16 +370,16 @@ static int lm3644_flash_brt_ctrl(struct lm3644_flash *flash,
 	u8 br_bits;
 	int flash_cur_avg = 0;
 
-	pr_info("%s %d brt:%u", __func__, led_no, brt);
+	pr_debug("%s %d brt:%u", __func__, led_no, brt);
 	flash_cur_avg = brt / 2;
 
 	if (flash->need_cooler == 1 && brt > flash->target_current) {
 		brt = flash->target_current;
-		pr_info("thermal limit current:%d\n", brt);
+		pr_debug("thermal limit current:%d\n", brt);
 	}
 
 	br_bits = LM3644_FLASH_BRT_uA_TO_REG(flash_cur_avg);
-	pr_info("%s avg_brt:%u brt_bit :%x", __func__, flash_cur_avg ,br_bits);
+	pr_debug("%s avg_brt:%u brt_bit :%x", __func__, flash_cur_avg ,br_bits);
 
 	rval = regmap_update_bits(flash->regmap,
 				  REG_LED0_FLASH_BR, 0x7f, br_bits);
@@ -398,16 +398,16 @@ static int lm3644_single_flash_brt_ctrl(struct lm3644_flash *flash,
 	u8 br_bits;
 	int flash_cur_avg = 0;
 
-	pr_info("%s %d brt:%u", __func__, led_no, brt);
+	pr_debug("%s %d brt:%u", __func__, led_no, brt);
 	flash_cur_avg = brt;
 
 	if (flash->need_cooler == 1 && brt > flash->target_current) {
 		brt = flash->target_current;
-		pr_info("thermal limit current:%d\n", brt);
+		pr_debug("thermal limit current:%d\n", brt);
 	}
 
 	br_bits = LM3644_FLASH_BRT_uA_TO_REG(flash_cur_avg);
-	pr_info("%s avg_brt:%u brt_bit :%x", __func__, flash_cur_avg ,br_bits);
+	pr_debug("%s avg_brt:%u brt_bit :%x", __func__, flash_cur_avg ,br_bits);
 
 	if(led_no == LM3644_LED0)
 		rval = regmap_update_bits(flash->regmap,
@@ -427,10 +427,10 @@ static int lm3644_flash_tout_ctrl(struct lm3644_flash *flash,
 	int rval;
 	u8 tout_bits;
 
-	pr_info("%s flash tout:%d", __func__, tout);
+	pr_debug("%s flash tout:%d", __func__, tout);
 
 	if (tout < 10 || tout > 400) {
-			pr_info("Error arguments tout(%d)\n", tout);
+			pr_debug("Error arguments tout(%d)\n", tout);
 			return -1;
 	}
 
@@ -481,7 +481,7 @@ static int lm3644_set_ctrl(struct v4l2_ctrl *ctrl, enum lm3644_led_id led_no)
 	struct lm3644_flash *flash = to_lm3644_flash(ctrl, led_no);
 	int rval = -EINVAL;
 
-	pr_info("%s led:%d ID:%d", __func__, led_no, ctrl->id);
+	pr_debug("%s led:%d ID:%d", __func__, led_no, ctrl->id);
 	mutex_lock(&flash->lock);
 
 	switch (ctrl->id) {
@@ -499,11 +499,11 @@ static int lm3644_set_ctrl(struct v4l2_ctrl *ctrl, enum lm3644_led_id led_no)
 
 	case V4L2_CID_FLASH_STROBE_SOURCE:
 		if (ctrl->val == V4L2_FLASH_STROBE_SOURCE_SOFTWARE) {
-			pr_info("sw ctrl\n");
+			pr_debug("sw ctrl\n");
 			rval = regmap_update_bits(flash->regmap,
 					REG_ENABLE, 0x2C, 0x00);
 		} else if (ctrl->val == V4L2_FLASH_STROBE_SOURCE_EXTERNAL) {
-			pr_info("hw trigger\n");
+			pr_debug("hw trigger\n");
 			rval = regmap_update_bits(flash->regmap,
 					REG_ENABLE, 0x2C, 0x24);
 			rval = lm3644_enable_ctrl(flash, led_no, true);
@@ -674,7 +674,7 @@ static int lm3644_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
 	int ret;
 
-	pr_info("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	ret = pm_runtime_get_sync(sd->dev);
 	if (ret < 0) {
@@ -687,7 +687,7 @@ static int lm3644_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 
 static int lm3644_close(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
-	pr_info("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	pm_runtime_put(sd->dev);
 
@@ -707,7 +707,7 @@ static int lm3644_subdev_init(struct lm3644_flash *flash,
 	const char *fled_name = "flash";
 	int rval;
 
-	// pr_info("%s %d", __func__, led_no);
+	// pr_debug("%s %d", __func__, led_no);
 
 	lm3644_v4l2_i2c_subdev_init(&flash->subdev_led[led_no],
 				client, &lm3644_ops);
@@ -786,7 +786,7 @@ static int lm3644_init(struct lm3644_flash *flash)
 /* flashlight uninit */
 static int lm3644_uninit(struct lm3644_flash *flash)
 {
-	pr_info("%s", __func__);
+	pr_debug("%s", __func__);
 	lm3644_pinctrl_set(flash,
 			LM3644_PINCTRL_PIN_HWEN, LM3644_PINCTRL_PINSTATE_LOW);
 	use_count = 0;
@@ -813,7 +813,7 @@ static int lm3644_ioctl(unsigned int cmd, unsigned long arg)
 
 	switch (cmd) {
 	case FLASH_IOC_SET_ONOFF:
-		pr_info("FLASH_IOC_SET_ONOFF(%d): %d\n",
+		pr_debug("FLASH_IOC_SET_ONOFF(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		if ((int)fl_arg->arg) {
 			lm3644_torch_brt_ctrl(lm3644_flash_data, channel, 25000);
@@ -829,7 +829,7 @@ static int lm3644_ioctl(unsigned int cmd, unsigned long arg)
 		}
 		break;
 	case XIAOMI_IOC_SET_ONOFF:
-		pr_info("XIAOMI_IOC_SET_ONOFF(%d): %d\n",
+		pr_debug("XIAOMI_IOC_SET_ONOFF(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		if ((int)fl_arg->arg) {
 			lm3644_enable_ctrl(lm3644_flash_data, channel, true);
@@ -838,7 +838,7 @@ static int lm3644_ioctl(unsigned int cmd, unsigned long arg)
 		}
 		break;
 	case XIAOMI_IOC_SET_SINGLE_ONOFF:
-		pr_info("XIAOMI_IOC_SET_SINGLE_ONOFF(%d): %d\n",
+		pr_debug("XIAOMI_IOC_SET_SINGLE_ONOFF(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		if ((int)fl_arg->arg) {
 			lm3644_single_enable_ctrl(lm3644_flash_data, channel, true);
@@ -847,38 +847,38 @@ static int lm3644_ioctl(unsigned int cmd, unsigned long arg)
 		}
 		break;
 	case XIAOMI_IOC_SET_FLASH_CUR:
-		pr_info("XIAOMI_IOC_SET_FLASH_CUR(%d): %d\n",
+		pr_debug("XIAOMI_IOC_SET_FLASH_CUR(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		lm3644_flash_brt_ctrl(lm3644_flash_data, channel, fl_arg->arg);
 		break;
 	case XIAOMI_IOC_SET_SINGLE_FLASH_CUR:
-		pr_info("XIAOMI_IOC_SET_SINGLE_FLASH_CUR(%d): %d\n",
+		pr_debug("XIAOMI_IOC_SET_SINGLE_FLASH_CUR(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		lm3644_single_flash_brt_ctrl(lm3644_flash_data, channel, fl_arg->arg);
 		break;
 	case XIAOMI_IOC_SET_TORCH_CUR:
-		pr_info("XIAOMI_IOC_SET_TORCH_CUR(%d): %d\n",
+		pr_debug("XIAOMI_IOC_SET_TORCH_CUR(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		lm3644_torch_brt_ctrl(lm3644_flash_data, channel, fl_arg->arg);
 		break;
 	case XIAOMI_IOC_SET_SINGLE_TORCH_CUR:
-		pr_info("XIAOMI_IOC_SET_SINGLE_TORCH_CUR(%d): %d\n",
+		pr_debug("XIAOMI_IOC_SET_SINGLE_TORCH_CUR(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		lm3644_single_torch_brt_ctrl(lm3644_flash_data, channel, fl_arg->arg);
 		break;
 	case XIAOMI_IOC_SET_MODE:
-		pr_info("XIAOMI_IOC_SET_MODE(%d): %d\n",
+		pr_debug("XIAOMI_IOC_SET_MODE(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		lm3644_flash_data->led_mode = fl_arg->arg;
 		lm3644_mode_ctrl(lm3644_flash_data);
 		break;
 	case XIAOMI_IOC_SET_HW_TIMEOUT:
-		pr_info("XIAOMI_IOC_SET_HW_TIMEOUT(%d): %d\n",
+		pr_debug("XIAOMI_IOC_SET_HW_TIMEOUT(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		lm3644_flash_tout_ctrl(lm3644_flash_data, fl_arg->arg);
 		break;
 	default:
-		pr_info("No such command and arg(%d): (%d, %d)\n",
+		pr_debug("No such command and arg(%d): (%d, %d)\n",
 				channel, _IOC_NR(cmd), (int)fl_arg->arg);
 		return -ENOTTY;
 	}
@@ -965,7 +965,7 @@ static int lm3644_cooling_set_cur_state(struct thermal_cooling_device *cdev,
 		return 0;
 
 	flash->target_state = state;
-	pr_info("set thermal current:%d\n", flash->target_state);
+	pr_debug("set thermal current:%d\n", flash->target_state);
 
 	if (flash->target_state == 0) {
 		flash->need_cooler = 0;
@@ -1026,7 +1026,7 @@ static int lm3644_parse_dt(struct lm3644_flash *flash)
 		flash->flash_dev_id[i].channel = i;
 		flash->flash_dev_id[i].decouple = decouple;
 
-		pr_info("Parse dt (type,ct,part,name,channel,decouple)=(%d,%d,%d,%s,%d,%d).\n",
+		pr_debug("Parse dt (type,ct,part,name,channel,decouple)=(%d,%d,%d,%s,%d,%d).\n",
 				flash->flash_dev_id[i].type,
 				flash->flash_dev_id[i].ct,
 				flash->flash_dev_id[i].part,
@@ -1053,7 +1053,7 @@ static int lm3644_probe(struct i2c_client *client,
 	struct lm3644_platform_data *pdata = dev_get_platdata(&client->dev);
 	int rval;
 
-	pr_info("%s:%d", __func__, __LINE__);
+	pr_debug("%s:%d", __func__, __LINE__);
 
 	flash = devm_kzalloc(&client->dev, sizeof(*flash), GFP_KERNEL);
 	if (flash == NULL)
@@ -1109,9 +1109,9 @@ static int lm3644_probe(struct i2c_client *client,
 	flash->cdev = thermal_of_cooling_device_register(client->dev.of_node,
 			"flashlight_cooler", flash, &lm3644_cooling_ops);
 	if (IS_ERR(flash->cdev))
-		pr_info("register thermal failed\n");
+		pr_debug("register thermal failed\n");
 
-	pr_info("%s:%d", __func__, __LINE__);
+	pr_debug("%s:%d", __func__, __LINE__);
 	return 0;
 }
 
@@ -1138,7 +1138,7 @@ static int __maybe_unused lm3644_suspend(struct device *dev)
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm3644_flash *flash = i2c_get_clientdata(client);
 
-	pr_info("%s %d", __func__, __LINE__);
+	pr_debug("%s %d", __func__, __LINE__);
 
 	return lm3644_uninit(flash);
 }
@@ -1148,7 +1148,7 @@ static int __maybe_unused lm3644_resume(struct device *dev)
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm3644_flash *flash = i2c_get_clientdata(client);
 
-	pr_info("%s %d", __func__, __LINE__);
+	pr_debug("%s %d", __func__, __LINE__);
 
 	return lm3644_init(flash);
 }

@@ -245,7 +245,7 @@ int  lpm_dbg_common_fs_init(void)
 	/* wakeup source init for suspend enable and disable */
 	mtk_suspend_lock = wakeup_source_register(NULL, "mtk_suspend_wakelock");
 	if (!mtk_suspend_lock) {
-		pr_info("%s %d: init wakeup source fail!", __func__, __LINE__);
+		pr_debug("%s %d: init wakeup source fail!", __func__, __LINE__);
 		return -1;
 	}
 	/* backup and disable suspend console (enable log print) */

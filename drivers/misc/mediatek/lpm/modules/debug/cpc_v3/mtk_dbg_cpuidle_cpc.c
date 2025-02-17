@@ -100,7 +100,7 @@ static ssize_t mtk_cpuidle_cpc_write(char *FromUserBuf,
 		break;
 
 	default:
-		pr_info("unknown command\n");
+		pr_debug("unknown command\n");
 		break;
 	}
 

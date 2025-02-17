@@ -91,11 +91,11 @@ void conap_scp_test_em_msg_notify_cb(unsigned int msg_id, unsigned int *buf, uns
 
 	out_data = (struct wlan_out_data *)buf;
 
-	pr_info("[%s] result=[%x][%x][%x]", __func__, out_data->result,
+	pr_debug("[%s] result=[%x][%x][%x]", __func__, out_data->result,
 				out_data->timestamp, out_data->size);
 	for (i = 0; i < 12; i++) {
 		frame = &(out_data->frame[i]);
-		pr_info("[%s] [%x] [%x-%x-%x-%x-%x-%x]", __func__, frame->ucRcpiValue,
+		pr_debug("[%s] [%x] [%x-%x-%x-%x-%x-%x]", __func__, frame->ucRcpiValue,
 					frame->aucBSSID[0], frame->aucBSSID[1], frame->aucBSSID[2],
 					frame->aucBSSID[3], frame->aucBSSID[4], frame->aucBSSID[5]);
 	}
@@ -103,7 +103,7 @@ void conap_scp_test_em_msg_notify_cb(unsigned int msg_id, unsigned int *buf, uns
 
 void conap_scp_test_em_state_change(int state)
 {
-	pr_info("[%s] reason=[%d]", __func__, state);
+	pr_debug("[%s] reason=[%d]", __func__, state);
 }
 
 #define EM_MSG_START_TEST 1
@@ -113,7 +113,7 @@ int test_case_func_3(struct conap_scp_test_ctx *ctx)
 	int i;
 
 	ret = conap_scp_is_drv_ready(ctx->drv_type);
-	pr_info("[%s][Test-3] drv=[%d] EM ready =[%d]", __func__, ctx->drv_type, ret);
+	pr_debug("[%s][Test-3] drv=[%d] EM ready =[%d]", __func__, ctx->drv_type, ret);
 
 	memset(&g_wlan_out_data, 0, sizeof(struct wlan_out_data));
 
@@ -126,7 +126,7 @@ int test_case_func_3(struct conap_scp_test_ctx *ctx)
 
 	ret = conap_scp_send_message(ctx->drv_type, EM_MSG_START_TEST,
 				(unsigned char *)&g_wlan_out_data, sizeof(struct wlan_out_data));
-	pr_info("[%s] send msg [%d]", ctx->thread_name, ret);
+	pr_debug("[%s] send msg [%d]", ctx->thread_name, ret);
 	return 0;
 }
 
@@ -137,14 +137,14 @@ static int conap_scp_test_thread(void *pvData)
 
 	WARN_ON(ctx == NULL);
 
-	pr_info("[%s] init drv=[%d]", ctx->thread_name, ctx->drv_type);
+	pr_debug("[%s] init drv=[%d]", ctx->thread_name, ctx->drv_type);
 	ret = conap_scp_register_drv(ctx->drv_type, &ctx->scp_test_cb);
-	pr_info("[%s] scp register [%d] [%d]", ctx->thread_name, ret, ctx->drv_type);
+	pr_debug("[%s] scp register [%d] [%d]", ctx->thread_name, ret, ctx->drv_type);
 
 	while (1) {
 		if (kthread_should_stop())
 			break;
-		pr_info("[test_thread] loop =%d=", loop);
+		pr_debug("[test_thread] loop =%d=", loop);
 		msleep(1000);
 		test_case_func_3(ctx);
 		msleep(1000);
@@ -153,7 +153,7 @@ static int conap_scp_test_thread(void *pvData)
 		loop++;
 	}
 
-	pr_info("[%s] thread stop!!", ctx->thread_name);
+	pr_debug("[%s] thread stop!!", ctx->thread_name);
 	return 0;
 }
 
@@ -203,9 +203,9 @@ ssize_t conap_dev_write(struct file *filp, const char __user *buffer, size_t cou
 	long res = 0;
 	//static int test_enabled = -1;
 
-	pr_info("write parameter len = %d\n\r", (int) len);
+	pr_debug("write parameter len = %d\n\r", (int) len);
 	if (len >= sizeof(buf)) {
-		pr_info("input handling fail!\n");
+		pr_debug("input handling fail!\n");
 		len = sizeof(buf) - 1;
 		return -1;
 	}
@@ -214,7 +214,7 @@ ssize_t conap_dev_write(struct file *filp, const char __user *buffer, size_t cou
 		return -EFAULT;
 
 	buf[len] = '\0';
-	pr_info("write parameter data = %s\n\r", buf);
+	pr_debug("write parameter data = %s\n\r", buf);
 
 	pBuf = buf;
 	pToken = strsep(&pBuf, pDelimiter);
@@ -229,7 +229,7 @@ ssize_t conap_dev_write(struct file *filp, const char __user *buffer, size_t cou
 	if (pToken != NULL) {
 		kstrtol(pToken, 16, &res);
 		y = (int)res;
-		pr_info("y = 0x%08x\n\r", y);
+		pr_debug("y = 0x%08x\n\r", y);
 	}
 
 	pToken = strsep(&pBuf, "\t\n ");
@@ -238,13 +238,13 @@ ssize_t conap_dev_write(struct file *filp, const char __user *buffer, size_t cou
 		z = (int)res;
 	}
 
-	pr_info("x(0x%08x), y(0x%08x), z(0x%08x)\n\r", x, y, z);
+	pr_debug("x(0x%08x), y(0x%08x), z(0x%08x)\n\r", x, y, z);
 
 	if (ARRAY_SIZE(conap_test_func) > x &&
 		conap_test_func[x] != NULL)
 		(*conap_test_func[x]) (x, y, z);
 	else
-		pr_info("no handler defined for command id(0x%08x)\n\r", x);
+		pr_debug("no handler defined for command id(0x%08x)\n\r", x);
 
 	return len;
 }
@@ -258,7 +258,7 @@ int conap_scp_test_init(void)
 	ret = register_chrdev_region(dev_id, CONAP_DEV_NUM,
 						CONAP_DRVIER_NAME);
 	if (ret) {
-		pr_info("fail to register chrdev.(%d)\n", ret);
+		pr_debug("fail to register chrdev.(%d)\n", ret);
 		return -1;
 	}
 
@@ -267,13 +267,13 @@ int conap_scp_test_init(void)
 
 	ret = cdev_add(&g_conap_dev, dev_id, CONAP_DEV_NUM);
 	if (ret) {
-		pr_info("cdev_add() fails (%d)\n", ret);
+		pr_debug("cdev_add() fails (%d)\n", ret);
 		goto err1;
 	}
 
 	p_conap_class = class_create(THIS_MODULE, CONAP_DEVICE_NAME);
 	if (IS_ERR(p_conap_class)) {
-		pr_info("class create fail, error code(%ld)\n",
+		pr_debug("class create fail, error code(%ld)\n",
 						PTR_ERR(p_conap_class));
 		goto err2;
 	}
@@ -281,7 +281,7 @@ int conap_scp_test_init(void)
 	p_conap_dev = device_create(p_conap_class, NULL, dev_id,
 						NULL, CONAP_DEVICE_NAME);
 	if (IS_ERR(p_conap_dev)) {
-		pr_info("device create fail, error code(%ld)\n",
+		pr_debug("device create fail, error code(%ld)\n",
 						PTR_ERR(p_conap_dev));
 		goto err3;
 	}
@@ -289,17 +289,17 @@ int conap_scp_test_init(void)
 	return 0;
 err3:
 
-	pr_info("[%s] err3", __func__);
+	pr_debug("[%s] err3", __func__);
 	if (p_conap_class) {
 		class_destroy(p_conap_class);
 		p_conap_class = NULL;
 	}
 err2:
-	pr_info("[%s] err2", __func__);
+	pr_debug("[%s] err2", __func__);
 	cdev_del(&g_conap_dev);
 
 err1:
-	pr_info("[%s] err1", __func__);
+	pr_debug("[%s] err1", __func__);
 	unregister_chrdev_region(dev_id, CONAP_DEV_NUM);
 
 	return -1;

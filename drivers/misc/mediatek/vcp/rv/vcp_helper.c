@@ -154,11 +154,11 @@ static unsigned int vcp_timeout_times;
 		aee_kernel_warning_api(__FILE__, __LINE__, \
 			DB_OPT_MMPROFILE_BUFFER | DB_OPT_NE_JBT_TRACES, \
 			vcp_name, "[VCP] error:"string, ##args); \
-		pr_info("[VCP] error:"string, ##args);  \
+		pr_debug("[VCP] error:"string, ##args);  \
 	} while (0)
 #else
 #define vcp_aee_print(string, args...) \
-	pr_info("[VCP] error:"string, ##args)
+	pr_debug("[VCP] error:"string, ##args)
 
 #endif
 
@@ -204,7 +204,7 @@ struct vcp_status_fp vcp_helper_fp = {
 #undef pr_debug
 #define pr_debug(fmt, arg...) do { \
 		if (vcp_dbg_log) \
-			pr_info(fmt, ##arg); \
+			pr_debug(fmt, ##arg); \
 	} while (0)
 
 static void vcp_enable_dapc(void)
@@ -268,7 +268,7 @@ static int vcp_ipi_dbg_resume_noirq(struct device *dev)
 			IRQCHIP_STATE_PENDING, &state);
 		if (!ret && state) {
 			if (i < 2)
-				pr_info("[VCP] ipc%d wakeup\n", i);
+				pr_debug("[VCP] ipc%d wakeup\n", i);
 			else
 				mt_print_vcp_ipi_id(i - 2);
 			break;
@@ -680,13 +680,13 @@ uint32_t vcp_wait_ready_sync(enum feature_id id)
 			vcp_dump_last_regs(1);
 			for (j = 0; j < NUM_FEATURE_ID; j++)
 				if (feature_table[j].enable)
-					pr_info("[VCP] Active feature id %d cnt\n",
+					pr_debug("[VCP] Active feature id %d cnt\n",
 						j, feature_table[j].enable);
 			mtk_smi_dbg_hang_detect("VCP");
 			if (vcp_ee_enable)
 				vcp_aee_print("wait ready timeout id %d\n", id);
 			else
-				pr_info("wait ready timeout id %d\n", id);
+				pr_debug("wait ready timeout id %d\n", id);
 			break;
 		}
 	}
@@ -778,7 +778,7 @@ void vcp_disable_pm_clk(enum feature_id id)
 		del_timer(&vcp_ready_timer[VCP_A_ID].tl);
 #endif
 		vcp_wait_core_stop_timeout(1);
-		pr_info("[VCP][Debug] bus_dbg_out[0x%x]: 0x%x, waitCnt=%u\n", VCP_BUS_DEBUG_OUT,
+		pr_debug("[VCP][Debug] bus_dbg_out[0x%x]: 0x%x, waitCnt=%u\n", VCP_BUS_DEBUG_OUT,
 			readl(VCP_BUS_DEBUG_OUT), waitCnt);
 
 		vcp_disable_dapc();
@@ -795,7 +795,7 @@ void vcp_disable_pm_clk(enum feature_id id)
 	}
 	if (pwclkcnt < 0) {
 		for (i = 0; i < NUM_FEATURE_ID; i++)
-			pr_info("[VCP][Warning] %s Check feature id %d enable cnt %d\n",
+			pr_debug("[VCP][Warning] %s Check feature id %d enable cnt %d\n",
 				__func__, feature_table[i].feature, feature_table[i].enable);
 		pwclkcnt = 0;
 	}
@@ -1213,7 +1213,7 @@ static inline ssize_t vcp_ipi_test_store(struct device *kobj
 		ipi_monitor_dump(&vcp_ipidev);
 		break;
 	default:
-		pr_info("cmd '%d' is not supported.\n", opt);
+		pr_debug("cmd '%d' is not supported.\n", opt);
 		break;
 	}
 
@@ -1529,20 +1529,20 @@ static int vcp_reserve_memory_ioremap(struct platform_device *pdev)
 	ret = of_property_read_string(pdev->dev.of_node, "vcp_mem_key",
 			&mem_key);
 	if (ret) {
-		pr_info("[VCP] cannot find property\n");
+		pr_debug("[VCP] cannot find property\n");
 		return -EINVAL;
 	}
 
 	rmem_node = of_find_compatible_node(NULL, NULL, mem_key);
 
 	if (!rmem_node) {
-		pr_info("[VCP] no node for reserved memory\n");
+		pr_debug("[VCP] no node for reserved memory\n");
 		return -EINVAL;
 	}
 
 	rmem = of_reserved_mem_lookup(rmem_node);
 	if (!rmem) {
-		pr_info("[VCP] cannot lookup reserved memory\n");
+		pr_debug("[VCP] cannot lookup reserved memory\n");
 		return -EINVAL;
 	}
 
@@ -1723,7 +1723,7 @@ void vcp_deregister_feature(enum feature_id id)
 	for (i = 0; i < NUM_FEATURE_ID; i++) {
 		if (feature_table[i].feature == id) {
 			if (feature_table[i].enable == 0) {
-				pr_info("[VCP][Warning] %s unbalanced feature id %d enable cnt %d\n",
+				pr_debug("[VCP][Warning] %s unbalanced feature id %d enable cnt %d\n",
 					__func__, id, feature_table[i].enable);
 				mutex_unlock(&vcp_feature_mutex);
 				return;
@@ -2187,7 +2187,7 @@ static int vcp_io_device_probe(struct platform_device *pdev)
 	of_property_read_u32(pdev->dev.of_node, "vcp-support",
 		 &vcp_support);
 	if (vcp_support == 0 || vcp_support == 1) {
-		pr_info("Bypass the VCP driver probe\n");
+		pr_debug("Bypass the VCP driver probe\n");
 		return -1;
 	}
 	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
@@ -2234,7 +2234,7 @@ static int vcp_device_probe(struct platform_device *pdev)
 	of_property_read_u32(pdev->dev.of_node, "vcp-support",
 		 &vcp_support);
 	if (vcp_support == 0) {
-		pr_info("Bypass VCP driver probe\n");
+		pr_debug("Bypass VCP driver probe\n");
 		return 0;
 	} else {
 		// VCP iommu devices
@@ -2408,14 +2408,14 @@ static int vcp_device_probe(struct platform_device *pdev)
 		node = of_find_compatible_node(NULL, NULL,
 					      vcp_ipi_irqs[i].name);
 		if (!node) {
-			pr_info("[VCP] find '%s' node failed\n",
+			pr_debug("[VCP] find '%s' node failed\n",
 				vcp_ipi_irqs[i].name);
 			continue;
 		}
 		vcp_ipi_irqs[i].irq_no =
 			irq_of_parse_and_map(node, vcp_ipi_irqs[i].order);
 		if (!vcp_ipi_irqs[i].irq_no)
-			pr_info("[VCP] get '%s' fail\n", vcp_ipi_irqs[i].name);
+			pr_debug("[VCP] get '%s' fail\n", vcp_ipi_irqs[i].name);
 	}
 
 	ret = mtk_ipi_device_register(&vcp_ipidev, pdev, &vcp_mboxdev,
@@ -2438,7 +2438,7 @@ static int vcp_device_probe(struct platform_device *pdev)
 	if (psmi_com_dev) {
 		link = device_link_add(dev, &psmi_com_dev->dev,
 				DL_FLAG_STATELESS | DL_FLAG_PM_RUNTIME);
-		pr_info("[VCP] device link to %s\n", dev_name(&psmi_com_dev->dev));
+		pr_debug("[VCP] device link to %s\n", dev_name(&psmi_com_dev->dev));
 		if (!link) {
 			dev_info(dev, "Unable to link Dram %s.\n",
 				dev_name(&psmi_com_dev->dev));
@@ -2453,7 +2453,7 @@ static int vcp_device_probe(struct platform_device *pdev)
 	if (psmi_com_dev) {
 		link = device_link_add(dev, &psmi_com_dev->dev,
 				DL_FLAG_STATELESS | DL_FLAG_PM_RUNTIME);
-		pr_info("[VCP] device link to %s\n", dev_name(&psmi_com_dev->dev));
+		pr_debug("[VCP] device link to %s\n", dev_name(&psmi_com_dev->dev));
 		if (!link) {
 			dev_info(dev, "Unable to link SLB/Infra %s.\n",
 				dev_name(&psmi_com_dev->dev));
@@ -2466,7 +2466,7 @@ static int vcp_device_probe(struct platform_device *pdev)
 				pdev->dev.of_node, "clock-names", 0, &clk_name);
 	vcpsel = devm_clk_get(&pdev->dev, clk_name);
 	if (IS_ERR(vcpsel)) {
-		pr_info("[VCP] Unable to devm_clk_get id: %d, name: %s\n",
+		pr_debug("[VCP] Unable to devm_clk_get id: %d, name: %s\n",
 			0, clk_name);
 		return PTR_ERR(vcpsel);
 	}
@@ -2474,7 +2474,7 @@ static int vcp_device_probe(struct platform_device *pdev)
 				pdev->dev.of_node, "clock-names", 1, &clk_name);
 	vcpclk = devm_clk_get(&pdev->dev, clk_name);
 	if (IS_ERR(vcpclk)) {
-		pr_info("[VCP] Unable to devm_clk_get id: %d, name: %s\n",
+		pr_debug("[VCP] Unable to devm_clk_get id: %d, name: %s\n",
 			1, clk_name);
 		return PTR_ERR(vcpclk);
 	}
@@ -2482,12 +2482,12 @@ static int vcp_device_probe(struct platform_device *pdev)
 				pdev->dev.of_node, "clock-names", 2, &clk_name);
 	vcp26m = devm_clk_get(&pdev->dev, clk_name);
 	if (IS_ERR(vcp26m)) {
-		pr_info("[VCP] Unable to devm_clk_get id: %d, name: %s\n",
+		pr_debug("[VCP] Unable to devm_clk_get id: %d, name: %s\n",
 			2, clk_name);
 		return PTR_ERR(vcp26m);
 	}
 
-	pr_info("[VCP] %s done\n", __func__);
+	pr_debug("[VCP] %s done\n", __func__);
 
 	return ret;
 }
@@ -2634,7 +2634,7 @@ static int __init vcp_init(void)
 	vcp_timeout_times = 0;
 #endif
 	/* vcp platform initialise */
-	pr_info("[VCP] %s begins\n", __func__);
+	pr_debug("[VCP] %s begins\n", __func__);
 
 	/* vcp ready static flag initialise */
 	for (i = 0; i < VCP_CORE_TOTAL ; i++) {
@@ -2651,28 +2651,28 @@ static int __init vcp_init(void)
 	vcp_set_fp(&vcp_helper_fp);
 
 	if (platform_driver_register(&mtk_vcp_device)) {
-		pr_info("[VCP] vcp probe fail\n");
+		pr_debug("[VCP] vcp probe fail\n");
 		goto err_vcp;
 	}
 
 	if (platform_driver_register(&mtk_vcp_io_ube_lat)) {
-		pr_info("[VCP] mtk_vcp_io_ube_lat  not exist\n");
+		pr_debug("[VCP] mtk_vcp_io_ube_lat  not exist\n");
 		goto err_io_ube_lat;
 	}
 	if (platform_driver_register(&mtk_vcp_io_ube_core)) {
-		pr_info("[VCP] mtk_vcp_io_ube_core not exist\n");
+		pr_debug("[VCP] mtk_vcp_io_ube_core not exist\n");
 		goto err_io_ube_core;
 	}
 	if (platform_driver_register(&mtk_vcp_io_vdec)) {
-		pr_info("[VCP] mtk_vcp_io_vdec probe fail\n");
+		pr_debug("[VCP] mtk_vcp_io_vdec probe fail\n");
 		goto err_io_vdec;
 	}
 	if (platform_driver_register(&mtk_vcp_io_venc)) {
-		pr_info("[VCP] mtk_vcp_io_venc probe fail\n");
+		pr_debug("[VCP] mtk_vcp_io_venc probe fail\n");
 		goto err_io_venc;
 	}
 	if (platform_driver_register(&mtk_vcp_io_work)) {
-		pr_info("[VCP] mtk_vcp_io_work probe fail\n");
+		pr_debug("[VCP] mtk_vcp_io_work probe fail\n");
 		goto err_io_work;
 	}
 

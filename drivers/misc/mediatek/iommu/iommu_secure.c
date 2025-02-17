@@ -158,7 +158,7 @@ int mtk_iommu_sec_bk_irq_en_by_atf(uint32_t type, uint32_t id,
 			SECURE_BANK_IRQ_EN);
 
 	if (en != 0 && en != 1) {
-		pr_info("%s fail, enable is invalid, en:%lu\n", __func__, en);
+		pr_debug("%s fail, enable is invalid, en:%lu\n", __func__, en);
 		return SMC_IOMMU_FAIL;
 	}
 
@@ -212,7 +212,7 @@ int ao_secure_dbg_switch_by_atf(uint32_t type,
 	unsigned long cmd = IOMMU_ATF_SET_CMD(type, id, BANK_IGNORE, SECURITY_DBG_SWITCH);
 
 	if (en != 0 && en != 1) {
-		pr_info("%s fail, enable is invalid, en:%lu\n", __func__, en);
+		pr_debug("%s fail, enable is invalid, en:%lu\n", __func__, en);
 		return SMC_IOMMU_FAIL;
 	}
 
@@ -388,7 +388,7 @@ static int mtk_iommu_sec_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 
-	pr_info("%s done, dev:%s\n", __func__, dev_name(dev));
+	pr_debug("%s done, dev:%s\n", __func__, dev_name(dev));
 	return 0;
 }
 
@@ -686,7 +686,7 @@ static int __init mtk_iommu_sec_init(void)
 	int ret;
 	int i;
 
-	pr_info("%s+\n", __func__);
+	pr_debug("%s+\n", __func__);
 	for (i = 0; i < ARRAY_SIZE(mtk_iommu_bk_drivers); i++) {
 		ret = platform_driver_register(mtk_iommu_bk_drivers[i]);
 		if (ret < 0) {
@@ -695,7 +695,7 @@ static int __init mtk_iommu_sec_init(void)
 			goto err;
 		}
 	}
-	pr_info("%s-\n", __func__);
+	pr_debug("%s-\n", __func__);
 
 	return 0;
 

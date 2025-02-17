@@ -7,9 +7,9 @@
 void do_async_setting(void *param)
 {
 	struct setting_work *setting_work = (struct setting_work *)param;
-	pr_info("do_async_setting : %d-%s + \n", setting_work->type, setting_work->name);
+	pr_debug("do_async_setting : %d-%s + \n", setting_work->type, setting_work->name);
 	setting_work->write_setting(setting_work->ctx, setting_work->setting, setting_work->len);
-	pr_info("do_async_setting : %d-%s - \n", setting_work->type, setting_work->name);
+	pr_debug("do_async_setting : %d-%s - \n", setting_work->type, setting_work->name);
 
 	mutex_lock(&setting_work->setting_workqueue->mutex);
 	setting_work->setting_workqueue->count--;
@@ -17,7 +17,7 @@ void do_async_setting(void *param)
 
 	if (setting_work->setting_workqueue->count == 0) {
 		wake_up(&setting_work->setting_workqueue->wq);
-		pr_info("wake up!");
+		pr_debug("wake up!");
 	}
 	kfree(setting_work);
 }

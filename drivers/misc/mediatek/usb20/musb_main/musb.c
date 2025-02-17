@@ -42,7 +42,7 @@ static int musb_probe(struct platform_device *pdev)
 	if (usb_disabled())
 		return 0;
 
-	pr_info("%s: version " MUSB_VERSION ", ?dma?, otg (peripheral+host)\n"
+	pr_debug("%s: version " MUSB_VERSION ", ?dma?, otg (peripheral+host)\n"
 		, musb_driver_names);
 
 	iomem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
@@ -59,7 +59,7 @@ static int musb_probe(struct platform_device *pdev)
 	if (irq <= 0)
 		return -ENODEV;
 
-	pr_info("%s mac=0x%lx, phy=0x%lx, irq=%d\n"
+	pr_debug("%s mac=0x%lx, phy=0x%lx, irq=%d\n"
 		, __func__, (unsigned long)base, (unsigned long)pbase, irq);
 	status = musb_init_controller(dev, irq, base, pbase);
 

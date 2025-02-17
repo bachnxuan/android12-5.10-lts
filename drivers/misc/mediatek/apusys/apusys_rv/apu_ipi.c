@@ -548,7 +548,7 @@ static void apu_ipi_dbg_set_params(int cmd, unsigned int *args,
 		apu_keep_awake = args[0];
 		break;
 	default:
-		pr_info("%s: unknown cmd %d\n", __func__, cmd);
+		pr_debug("%s: unknown cmd %d\n", __func__, cmd);
 	}
 }
 
@@ -567,7 +567,7 @@ static ssize_t apu_ipi_dbg_write(struct file *flip, const char __user *buffer,
 
 	ret = copy_from_user(tmp, buffer, count);
 	if (ret) {
-		pr_info("%s: failed to copy user data, ret=%d\n",
+		pr_debug("%s: failed to copy user data, ret=%d\n",
 			__func__, ret);
 		goto out;
 	}
@@ -580,14 +580,14 @@ static ssize_t apu_ipi_dbg_write(struct file *flip, const char __user *buffer,
 		cmd = CMD_KEEP_AWAKE;
 	} else {
 		ret = -EINVAL;
-		pr_info("%s: unknown ipi dbg cmd: %s\n", __func__, token);
+		pr_debug("%s: unknown ipi dbg cmd: %s\n", __func__, token);
 		goto out;
 	}
 
 	for (i = 0; i < IPI_DBG_MAX_ARGS && (token = strsep(&ptr, " ")); i++) {
 		ret = kstrtoint(token, 10, &args[i]);
 		if (ret) {
-			pr_info("%s: invalid parameter i=%d, p=%s\n",
+			pr_debug("%s: invalid parameter i=%d, p=%s\n",
 				__func__, i, token);
 			goto out;
 		}
@@ -614,7 +614,7 @@ static int apu_ipi_dbg_init(void)
 {
 	ipi_dbg_root = debugfs_create_dir(APU_IPI_DNAME, NULL);
 	if (IS_ERR_OR_NULL(ipi_dbg_root)) {
-		pr_info("%s: failed to create debug dir %s\n",
+		pr_debug("%s: failed to create debug dir %s\n",
 			__func__, APU_IPI_DNAME);
 		return -EINVAL;
 	}
@@ -622,7 +622,7 @@ static int apu_ipi_dbg_init(void)
 	ipi_dbg_file = debugfs_create_file(APU_IPI_FNAME, (0644), ipi_dbg_root,
 					   NULL, &apu_ipi_dbg_fops);
 	if (IS_ERR_OR_NULL(ipi_dbg_file)) {
-		pr_info("%s: failed to create debug file %s\n",
+		pr_debug("%s: failed to create debug file %s\n",
 			__func__, APU_IPI_FNAME);
 		debugfs_remove_recursive(ipi_dbg_root);
 		return -EINVAL;

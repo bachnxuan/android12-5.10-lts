@@ -31,7 +31,7 @@ do { \
 		++((prb)->write); \
 	} \
 	else { \
-		pr_info("RB FULL!!"); \
+		pr_debug("RB FULL!!"); \
 	} \
 } while (0)
 
@@ -46,7 +46,7 @@ do { \
 	} \
 	else { \
 		value = NULL; \
-		pr_info("RB EMPTY!!"); \
+		pr_debug("RB EMPTY!!"); \
 	} \
 } while (0)
 
@@ -74,7 +74,7 @@ struct aoltest_rb_data *aoltest_core_rb_pop_free(struct aoltest_core_rb *rb)
 
 	spin_lock_irqsave(&rb->freeQ.lock, flags);
 	RB_GET(&rb->freeQ, data);
-	pr_info("[%s] r=[%d] w=[%d]", __func__, rb->freeQ.read, rb->freeQ.write);
+	pr_debug("[%s] r=[%d] w=[%d]", __func__, rb->freeQ.read, rb->freeQ.write);
 	spin_unlock_irqrestore(&rb->freeQ.lock, flags);
 
 	return data;
@@ -88,9 +88,9 @@ void aoltest_core_rb_push_free(struct aoltest_core_rb *rb, struct aoltest_rb_dat
 	if (!RB_FULL(&rb->freeQ))
 		RB_PUT(&rb->freeQ, data);
 	else
-		pr_info("[%s] freeQ RB full ", __func__);
+		pr_debug("[%s] freeQ RB full ", __func__);
 
-	pr_info("[%s] r=[%d] w=[%d]", __func__, rb->freeQ.read, rb->freeQ.write);
+	pr_debug("[%s] r=[%d] w=[%d]", __func__, rb->freeQ.read, rb->freeQ.write);
 	spin_unlock_irqrestore(&rb->freeQ.lock, flags);
 }
 
@@ -102,9 +102,9 @@ void aoltest_core_rb_push_active(struct aoltest_core_rb *rb, struct aoltest_rb_d
 	if (!RB_FULL(&rb->activeQ))
 		RB_PUT(&rb->activeQ, data);
 	else
-		pr_info("[%s] freeQ RB full", __func__);
+		pr_debug("[%s] freeQ RB full", __func__);
 
-	pr_info("[%s] r=[%d] w=[%d]", __func__, rb->activeQ.read, rb->activeQ.write);
+	pr_debug("[%s] r=[%d] w=[%d]", __func__, rb->activeQ.read, rb->activeQ.write);
 	spin_unlock_irqrestore(&rb->activeQ.lock, flags);
 }
 
@@ -115,7 +115,7 @@ struct aoltest_rb_data *aoltest_core_rb_pop_active(struct aoltest_core_rb *rb)
 
 	spin_lock_irqsave(&rb->activeQ.lock, flags);
 	RB_GET(&rb->activeQ, data);
-	pr_info("[%s] r=[%d] w=[%d]", __func__, rb->activeQ.read, rb->activeQ.write);
+	pr_debug("[%s] r=[%d] w=[%d]", __func__, rb->activeQ.read, rb->activeQ.write);
 	spin_unlock_irqrestore(&rb->activeQ.lock, flags);
 
 	return data;

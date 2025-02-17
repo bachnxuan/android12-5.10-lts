@@ -153,7 +153,7 @@ int32_t kalBoostCpu(IN struct ADAPTER *prAdapter,
 
 	if (u4TarPerfLevel >= u4BoostCpuTh) {
 		if (fgRequested == ENUM_CPU_BOOST_STATUS_STOP) {
-			pr_info("kalBoostCpu start (%d>=%d)\n",
+			pr_debug("kalBoostCpu start (%d>=%d)\n",
 				u4TarPerfLevel, u4BoostCpuTh);
 			fgRequested = ENUM_CPU_BOOST_STATUS_START;
 
@@ -165,7 +165,7 @@ int32_t kalBoostCpu(IN struct ADAPTER *prAdapter,
 				u4ClusterNum, freq_to_set);
 
 			KAL_ACQUIRE_MUTEX(prAdapter, MUTEX_BOOST_CPU);
-			pr_info("Max Dram Freq start\n");
+			pr_debug("Max Dram Freq start\n");
 			pm_qos_add_request(&wifi_qos_request,
 					   PM_QOS_DDR_OPP,
 					   DDR_OPP_0);
@@ -174,7 +174,7 @@ int32_t kalBoostCpu(IN struct ADAPTER *prAdapter,
 		}
 	} else {
 		if (fgRequested == ENUM_CPU_BOOST_STATUS_START) {
-			pr_info("kalBoostCpu stop (%d<%d)\n",
+			pr_debug("kalBoostCpu stop (%d<%d)\n",
 				u4TarPerfLevel, u4BoostCpuTh);
 			fgRequested = ENUM_CPU_BOOST_STATUS_STOP;
 
@@ -186,7 +186,7 @@ int32_t kalBoostCpu(IN struct ADAPTER *prAdapter,
 				u4ClusterNum, freq_to_set);
 
 			KAL_ACQUIRE_MUTEX(prAdapter, MUTEX_BOOST_CPU);
-			pr_info("Max Dram Freq end\n");
+			pr_debug("Max Dram Freq end\n");
 			pm_qos_update_request(&wifi_qos_request, DDR_OPP_UNREQ);
 			pm_qos_remove_request(&wifi_qos_request);
 			KAL_RELEASE_MUTEX(prAdapter, MUTEX_BOOST_CPU);

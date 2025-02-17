@@ -298,7 +298,7 @@ void lpm_cpuidle_state_init(void)
 
 	ret = lpm_topology_init();
 	if (ret) {
-		pr_info("[name:mtk_lpm][P] - lpm_topology_init error (%s:%d)\n",
+		pr_debug("[name:mtk_lpm][P] - lpm_topology_init error (%s:%d)\n",
 		__func__, __LINE__);
 		return;
 	}

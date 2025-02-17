@@ -28,7 +28,7 @@ static int do_task(void *data)
 		}
 	}
 
-	pr_info("exit task-queue thread!\n");
+	pr_debug("exit task-queue thread!\n");
 	return 0;
 }
 

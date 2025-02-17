@@ -136,18 +136,18 @@ static void emi_mng_get_gps_emi(struct platform_device *pdev)
 	}
 
 	if (of_property_read_u32(node, "emi-addr", &phy_addr)) {
-		pr_info("%s: unable to get emi_addr\n", __func__);
+		pr_debug("%s: unable to get emi_addr\n", __func__);
 		return;
 	}
 
 	if (of_property_read_u32(node, "emi-size", &phy_size)) {
-		pr_info("%s: unable to get emi_size\n", __func__);
+		pr_debug("%s: unable to get emi_size\n", __func__);
 		return;
 	}
 
 	connsys_emi_addr_info.gps_emi_phy_addr = phy_addr;
 	connsys_emi_addr_info.gps_emi_size = phy_size;
-	pr_info("%s emi_addr %x, emi_size %x\n", __func__, phy_addr, phy_size);
+	pr_debug("%s emi_addr %x, emi_size %x\n", __func__, phy_addr, phy_size);
 }
 
 #ifdef ALLOCATE_CONNSYS_EMI_FROM_DTS
@@ -158,7 +158,7 @@ static int emi_mng_allocate_connsys_emi(struct platform_device *pdev)
 
 	np = of_parse_phandle(pdev->dev.of_node, "memory-region", 0);
 	if (!np) {
-		pr_info("no memory-region, np is NULL\n");
+		pr_debug("no memory-region, np is NULL\n");
 		return -1;
 	}
 
@@ -166,7 +166,7 @@ static int emi_mng_allocate_connsys_emi(struct platform_device *pdev)
 	of_node_put(np);
 
 	if (!rmem) {
-		pr_info("no memory-region\n");
+		pr_debug("no memory-region\n");
 		return -1;
 	}
 
@@ -184,21 +184,21 @@ static int emi_mng_get_emi_allocated_by_lk2(struct platform_device *pdev)
 
 	node = pdev->dev.of_node;
 	if (!node) {
-		pr_info("%s: unable to get consys node\n", __func__);
+		pr_debug("%s: unable to get consys node\n", __func__);
 		return -1;
 	}
 
 	if (of_property_read_u64(node, "emi-addr", &phy_addr)) {
-		pr_info("%s: unable to get emi_addr\n", __func__);
+		pr_debug("%s: unable to get emi_addr\n", __func__);
 		return -1;
 	}
 
 	if (of_property_read_u32(node, "emi-size", &phy_size)) {
-		pr_info("%s: unable to get emi_size\n", __func__);
+		pr_debug("%s: unable to get emi_size\n", __func__);
 		return -1;
 	}
 
-	pr_info("%s emi_addr %llx, emi_size %x\n", __func__, phy_addr, phy_size);
+	pr_debug("%s emi_addr %llx, emi_size %x\n", __func__, phy_addr, phy_size);
 	gConEmiPhyBase = phy_addr;
 	gConEmiSize = phy_size;
 
@@ -216,7 +216,7 @@ int emi_mng_init(struct platform_device *pdev, const struct conninfra_plat_data*
 	if (consys_platform_emi_ops == NULL)
 		consys_platform_emi_ops = (const struct consys_platform_emi_ops*)plat_data->platform_emi_ops;
 
-	pr_info("[emi_mng_init] gConEmiPhyBase = [0x%llx] size = [%llx] ops=[%p]",
+	pr_debug("[emi_mng_init] gConEmiPhyBase = [0x%llx] size = [%llx] ops=[%p]",
 			gConEmiPhyBase, gConEmiSize, consys_platform_emi_ops);
 
 	if (gConEmiPhyBase) {

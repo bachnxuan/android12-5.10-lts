@@ -48,43 +48,43 @@ MODULE_LICENSE("Dual BSD/GPL");
 #define ICS_DBG(fmt, arg...)	\
 	do { \
 		if (icsDbgLevel >= ICS_FW_LOG_DBG) \
-			pr_info(PFX "%s[D]: " fmt, __func__, ##arg); \
+			pr_debug(PFX "%s[D]: " fmt, __func__, ##arg); \
 	} while (0)
 #define ICS_DBG_LIMITED(fmt, arg...)	\
 	do { \
 		if (icsDbgLevel >= ICS_FW_LOG_DBG) \
-			pr_info_ratelimited(PFX "%s[D]: " fmt, __func__, \
+			pr_debug_ratelimited(PFX "%s[D]: " fmt, __func__, \
 				##arg); \
 	} while (0)
 #define ICS_INFO(fmt, arg...)	\
 	do { \
 		if (icsDbgLevel >= ICS_FW_LOG_INFO) \
-			pr_info(PFX "%s[I]: " fmt, __func__, ##arg); \
+			pr_debug(PFX "%s[I]: " fmt, __func__, ##arg); \
 	} while (0)
 #define ICS_INFO_LIMITED(fmt, arg...)	\
 	do { \
 		if (icsDbgLevel >= ICS_FW_LOG_INFO) \
-			pr_info_ratelimited(PFX "%s[L]: " fmt, __func__, \
+			pr_debug_ratelimited(PFX "%s[L]: " fmt, __func__, \
 				##arg); \
 	} while (0)
 #define ICS_WARN(fmt, arg...)	\
 	do { \
 		if (icsDbgLevel >= ICS_FW_LOG_WARN) \
-			pr_info(PFX "%s[W]: " fmt, __func__, ##arg); \
+			pr_debug(PFX "%s[W]: " fmt, __func__, ##arg); \
 	} while (0)
 #define ICS_WARN_LIMITED(fmt, arg...)	\
 	do { \
 		if (icsDbgLevel >= ICS_FW_LOG_WARN) \
-			pr_info_ratelimited(PFX "%s[W]: " fmt, __func__, \
+			pr_debug_ratelimited(PFX "%s[W]: " fmt, __func__, \
 				##arg); \
 	} while (0)
 #define ICS_ERR(fmt, arg...)	\
 	do { \
-		pr_info(PFX "%s[E]: " fmt, __func__, ##arg); \
+		pr_debug(PFX "%s[E]: " fmt, __func__, ##arg); \
 	} while (0)
 #define ICS_ERR_LIMITED(fmt, arg...)	\
 	do { \
-		pr_info_ratelimited(PFX "%s[E]: " fmt, __func__, \
+		pr_debug_ratelimited(PFX "%s[E]: " fmt, __func__, \
 			##arg); \
 	} while (0)
 

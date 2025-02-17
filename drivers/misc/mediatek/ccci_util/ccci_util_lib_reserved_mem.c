@@ -89,7 +89,7 @@ int free_reserved_memory(phys_addr_t start_phys,
 		free_reserved_page(phys_to_page(pos));
 
 	if (pages)
-		pr_info("Freeing reserved memory: %ldK from phys %llx\n",
+		pr_debug("Freeing reserved memory: %ldK from phys %llx\n",
 			pages << (PAGE_SHIFT - 10),
 			(unsigned long long)start_phys);
 

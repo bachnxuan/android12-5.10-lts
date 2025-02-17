@@ -335,7 +335,7 @@ int tee_mem_reg_add(u64 pa, u32 size, void *tee_data, void *dev_desc)
 		}
 	}
 
-	pr_info("[%d] TEE append reg mem PASS: PA=0x%lx, size=0x%lx\n",
+	pr_debug("[%d] TEE append reg mem PASS: PA=0x%lx, size=0x%lx\n",
 				tee_dev_desc->kern_tmem_type, pa, size);
 
 	return TMEM_OK;
@@ -428,6 +428,6 @@ static struct trusted_driver_operations tee_gp_peer_ops = {
 
 void get_tee_peer_ops(struct trusted_driver_operations **ops)
 {
-	pr_info("TEE_OPS set\n");
+	pr_debug("TEE_OPS set\n");
 	*ops = &tee_gp_peer_ops;
 }

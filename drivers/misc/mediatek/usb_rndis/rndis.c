@@ -668,7 +668,7 @@ static int rndis_set_response(struct rndis_params *params,
 
 	r = rndis_add_response(params, sizeof(rndis_set_cmplt_type));
 	if (!r) {
-		pr_info("rndis_set_response, rndis_add_response return NULL\n");
+		pr_debug("rndis_set_response, rndis_add_response return NULL\n");
 		return -ENOMEM;
 	}
 	resp = (rndis_set_cmplt_type *)r->buf;
@@ -764,7 +764,7 @@ static int rndis_indicate_status_msg(struct rndis_params *params, u32 status)
 	rndis_indicate_status_msg_type *resp;
 	rndis_resp_t *r;
 
-	pr_info("%s - params->state:%d\n", __func__, params->state);
+	pr_debug("%s - params->state:%d\n", __func__, params->state);
 	if (params->state == RNDIS_UNINITIALIZED)
 		return -ENOTSUPP;
 
@@ -850,13 +850,13 @@ int mtk_rndis_msg_parser(struct rndis_params *params, u8 *buf)
 	/* For USB: responses may take up to 10 seconds */
 	switch (MsgType) {
 	case RNDIS_MSG_INIT:
-		pr_info("%s: RNDIS_MSG_INIT\n",
+		pr_debug("%s: RNDIS_MSG_INIT\n",
 			__func__);
 		params->state = RNDIS_INITIALIZED;
 		return rndis_init_response(params, (rndis_init_msg_type *)buf);
 
 	case RNDIS_MSG_HALT:
-		pr_info("%s: RNDIS_MSG_HALT\n",
+		pr_debug("%s: RNDIS_MSG_HALT\n",
 			__func__);
 
 		params->state = RNDIS_UNINITIALIZED;
@@ -874,7 +874,7 @@ int mtk_rndis_msg_parser(struct rndis_params *params, u8 *buf)
 		return rndis_set_response(params, (rndis_set_msg_type *)buf);
 
 	case RNDIS_MSG_RESET:
-		pr_info("%s: RNDIS_MSG_RESET\n",
+		pr_debug("%s: RNDIS_MSG_RESET\n",
 			__func__);
 
 		return rndis_reset_response(params,
@@ -1163,7 +1163,7 @@ int mtk_rndis_rm_hdr(struct gether *port,
 		}
 
 		if (skb->len < sizeof(*hdr)) {
-			pr_info("invalid rndis pkt: skblen:%u hdr_len:%zu",
+			pr_debug("invalid rndis pkt: skblen:%u hdr_len:%zu",
 					skb->len, sizeof(*hdr));
 		dev_kfree_skb_any(skb);
 		return -EINVAL;
@@ -1176,7 +1176,7 @@ int mtk_rndis_rm_hdr(struct gether *port,
 
 		if (skb->len < msg_len ||
 				((data_offset + data_len + 8) > msg_len)) {
-			pr_info("invalid rndis message: %d/%d/%d/%d, len:%d\n",
+			pr_debug("invalid rndis message: %d/%d/%d/%d, len:%d\n",
 					le32_to_cpu(hdr->MessageType),
 					msg_len, data_offset,
 					data_len, skb->len);
@@ -1184,7 +1184,7 @@ int mtk_rndis_rm_hdr(struct gether *port,
 			return -EOVERFLOW;
 		}
 		if (le32_to_cpu(hdr->MessageType) != RNDIS_MSG_PACKET) {
-			pr_info("invalid rndis message: %d/%d/%d/%d, len:%d\n",
+			pr_debug("invalid rndis message: %d/%d/%d/%d, len:%d\n",
 					le32_to_cpu(hdr->MessageType),
 					msg_len, data_offset, data_len,
 					skb->len);
@@ -1201,7 +1201,7 @@ int mtk_rndis_rm_hdr(struct gether *port,
 
 		skb2 = skb_clone(skb, GFP_ATOMIC);
 		if (!skb2) {
-			pr_info("%s:skb clone failed\n", __func__);
+			pr_debug("%s:skb clone failed\n", __func__);
 			dev_kfree_skb_any(skb);
 			return -ENOMEM;
 		}

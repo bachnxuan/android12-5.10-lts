@@ -130,25 +130,25 @@ static void ssmr_zone_offline(void)
 	int res = 0;
 
 	if (!ssheap_dev->cma_area) {
-		pr_info("%s: no cma_area", __func__);
+		pr_debug("%s: no cma_area", __func__);
 		return;
 	}
 
 	if (cma_page) {
-		pr_info("%s: already offline", __func__);
+		pr_debug("%s: already offline", __func__);
 		return;
 	}
 retry:
 	/* get start time */
 	start = sched_clock();
-	pr_info("%s: cma_alloc size=%llx\n", __func__, ssheap_phys_size);
+	pr_debug("%s: cma_alloc size=%llx\n", __func__, ssheap_phys_size);
 
 	cma_page = cma_alloc(ssheap_dev->cma_area, ssheap_phys_size >> PAGE_SHIFT,
 			 get_order(SZ_2M), GFP_KERNEL);
 
 	/* get end time */
 	end = sched_clock();
-	pr_info("%s: duration: %d ns (%d ms)\n", __func__, end - start, (end - start) / 1000000);
+	pr_debug("%s: duration: %d ns (%d ms)\n", __func__, end - start, (end - start) / 1000000);
 
 	if (cma_page == NULL) {
 		pr_warn("%s: cma_alloc failed retry:%d\n", __func__, retry);
@@ -164,7 +164,7 @@ retry:
 	}
 
 	/* enable cma */
-	pr_info("%s: enable cma\n", __func__);
+	pr_debug("%s: enable cma\n", __func__);
 	res = hyp_pmm_enable_cma();
 	if (res) {
 		pr_err("%s: enable cma failed %d\n", __func__, res);
@@ -173,7 +173,7 @@ retry:
 		return;
 	}
 
-	pr_info("%s: cma_alloc success, cma_page=%llx pa=%llx, size=%llx\n", __func__,
+	pr_debug("%s: cma_alloc success, cma_page=%llx pa=%llx, size=%llx\n", __func__,
 		(u64)cma_page, page_to_phys(cma_page), ssheap_phys_size);
 	size = (uint64_t)ssheap_phys_size;
 	kaddr = page_address(cma_page);
@@ -189,23 +189,23 @@ retry:
 		size -= SZ_2M;
 		kaddr += SZ_2M;
 	} while (size);
-	pr_info("%s: ssmr page base enable: %d\n", __func__, res);
+	pr_debug("%s: ssmr page base enable: %d\n", __func__, res);
 	spin_unlock_irqrestore(&cache_lock, flags);
 }
 
 static void ssmr_zone_online(void)
 {
 	if (!ssheap_dev->cma_area) {
-		pr_info("%s: no cma_area", __func__);
+		pr_debug("%s: no cma_area", __func__);
 		return;
 	}
 
 	if (!cma_page) {
-		pr_info("%s: already online\n", __func__);
+		pr_debug("%s: already online\n", __func__);
 		return;
 	}
 
-	pr_info("%s: free %llx cma_page=%llx\n", __func__, ssheap_phys_size, (u64)cma_page);
+	pr_debug("%s: free %llx cma_page=%llx\n", __func__, ssheap_phys_size, (u64)cma_page);
 	if (hyp_pmm_disable_cma() == 0) {
 		cma_release(ssheap_dev->cma_area, cma_page, ssheap_phys_size >> PAGE_SHIFT);
 		cma_page = NULL;
@@ -337,7 +337,7 @@ int ssheap_free_non_contig(struct ssheap_buf_info *info)
 
 	/* Free cache pages if size is 0 */
 	if (atomic64_sub_return(freed_size, &total_alloced_size) == 0x0) {
-		pr_info("free all pooling pages");
+		pr_debug("free all pooling pages");
 		while (!list_empty(&cache_list)) {
 			s_page = list_first_entry(&cache_list, struct ssheap_page, entry);
 			list_del(&s_page->entry);
@@ -594,11 +594,11 @@ void ssheap_dump_mem_info(void)
 {
 	long long total_allocated_size;
 
-	pr_info("%s: ssheap base=%pa, size=%pa\n", __func__, &ssheap_phys_base,
+	pr_debug("%s: ssheap base=%pa, size=%pa\n", __func__, &ssheap_phys_base,
 		&ssheap_phys_size);
 
 	total_allocated_size = atomic64_read(&total_alloced_size);
-	pr_info("%s: total_alloced_size: 0x%x free: 0x%x\n", __func__,
+	pr_debug("%s: total_alloced_size: 0x%x free: 0x%x\n", __func__,
 		total_allocated_size, ssheap_phys_size - total_allocated_size);
 }
 
@@ -609,7 +609,7 @@ long long ssheap_get_used_size(void)
 
 void ssheap_enable_buddy_system(bool enable)
 {
-	pr_info("enable buddy system allocation\n");
+	pr_debug("enable buddy system allocation\n");
 	use_buddy_system = enable;
 }
 
@@ -617,7 +617,7 @@ void ssheap_set_cma_region(phys_addr_t base, phys_addr_t size)
 {
 	struct arm_smccc_res smc_res;
 
-	pr_info("use cma base=%pa size=%pa\n", &base, &size);
+	pr_debug("use cma base=%pa size=%pa\n", &base, &size);
 	use_cma = true;
 	ssheap_phys_base = base;
 	ssheap_phys_size = size;

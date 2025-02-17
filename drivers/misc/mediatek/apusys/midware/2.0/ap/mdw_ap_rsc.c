@@ -1181,7 +1181,7 @@ int mdw_rsc_register_device(struct apusys_device *dev)
 	int ret = 0;
 
 	if (!dev || rsc_mgr.is_inited != true) {
-		pr_info("apusys mdw not init\n");
+		pr_debug("apusys mdw not init\n");
 		return -ENODEV;
 	}
 
@@ -1199,7 +1199,7 @@ int mdw_rsc_unregister_device(struct apusys_device *dev)
 	struct mdw_dev_info *d = NULL;
 
 	if (!dev || rsc_mgr.is_inited != true) {
-		pr_info("apusys mdw not init\n");
+		pr_debug("apusys mdw not init\n");
 		return -ENODEV;
 	}
 

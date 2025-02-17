@@ -1241,7 +1241,7 @@ mtk_stp_split(struct btmtk_dev *bdev, const unsigned char *data, int count,
 	/* Filling pad until all STP info is obtained */
 	while (bdev->stp_cursor < 6 && count > 0) {
 		bdev->stp_pad[bdev->stp_cursor] = *data;
-		pr_info("fill stp format (%02x, %d, %d)\n",
+		pr_debug("fill stp format (%02x, %d, %d)\n",
 		   bdev->stp_pad[bdev->stp_cursor], bdev->stp_cursor, count);
 		bdev->stp_cursor++;
 		data++;
@@ -1252,7 +1252,7 @@ mtk_stp_split(struct btmtk_dev *bdev, const unsigned char *data, int count,
 	if (!bdev->stp_dlen && bdev->stp_cursor >= 6) {
 		shdr = (struct mtk_stp_hdr *)&bdev->stp_pad[2];
 		bdev->stp_dlen = be16_to_cpu(shdr->dlen) & 0x0fff;
-		pr_info("stp format (%02x, %02x)",
+		pr_debug("stp format (%02x, %02x)",
 			   shdr->prefix, bdev->stp_dlen);
 
 		/* Resync STP when unexpected data is being read */

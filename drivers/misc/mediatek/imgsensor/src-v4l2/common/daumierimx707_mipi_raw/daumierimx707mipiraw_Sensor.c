@@ -30,8 +30,8 @@
 #define daumierimx707_table_write_cmos_sensor(...) subdrv_i2c_wr_regs_u8(__VA_ARGS__)
 #define daumierimx707_burst_write_cmos_sensor(...) subdrv_i2c_wr_regs_u8_burst(__VA_ARGS__)
 #define LOG_TAG "[daumierimx707]"
-#define IMX707_LOG_INF(format, args...) pr_info(LOG_TAG "[%s] " format, __func__, ##args)
-#define IMX707_LOG_DBG(format, args...) pr_info(LOG_TAG "[%s] " format, __func__, ##args)
+#define IMX707_LOG_INF(format, args...) pr_debug(LOG_TAG "[%s] " format, __func__, ##args)
+#define IMX707_LOG_DBG(format, args...) pr_debug(LOG_TAG "[%s] " format, __func__, ##args)
 
 #define GROUP_HOLD_ADDR 0x0104
 #undef VENDOR_EDIT

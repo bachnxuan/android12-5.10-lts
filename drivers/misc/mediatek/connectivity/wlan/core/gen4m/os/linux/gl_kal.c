@@ -9864,7 +9864,7 @@ void kalPrintLog(const char *fmt, ...)
 	} else if (get_wifi_standalone_log_mode() == 1) {
 		kalPrintTrace(buffer, strlen(buffer));
 	} else {
-		pr_info("%s%s", WLAN_TAG, buffer);
+		pr_debug("%s%s", WLAN_TAG, buffer);
 	}
 
 	va_end(args);

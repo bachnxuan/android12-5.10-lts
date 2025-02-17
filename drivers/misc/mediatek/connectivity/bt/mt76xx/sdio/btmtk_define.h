@@ -46,16 +46,16 @@ extern u8 btmtk_log_lvl;
 
 #define BTMTK_ERR(fmt, ...)     \
 	do {if (btmtk_log_lvl >= BTMTK_LOG_LEVEL_ERROR)		\
-		pr_info("[btmtk_err] %s: "fmt"\n", __func__, ##__VA_ARGS__); } while (0)
+		pr_debug("[btmtk_err] %s: "fmt"\n", __func__, ##__VA_ARGS__); } while (0)
 #define BTMTK_WARN(fmt, ...)    \
 	do {if (btmtk_log_lvl >= BTMTK_LOG_LEVEL_WARNING)	\
-		pr_info("[btmtk_warn] %s: "fmt"\n", __func__, ##__VA_ARGS__); } while (0)
+		pr_debug("[btmtk_warn] %s: "fmt"\n", __func__, ##__VA_ARGS__); } while (0)
 #define BTMTK_INFO(fmt, ...)    \
 	do {if (btmtk_log_lvl >= BTMTK_LOG_LEVEL_INFO)		\
-		pr_info("[btmtk_info] %s: "fmt"\n", __func__, ##__VA_ARGS__); } while (0)
+		pr_debug("[btmtk_info] %s: "fmt"\n", __func__, ##__VA_ARGS__); } while (0)
 #define BTMTK_DBG(fmt, ...)     \
 	do {if (btmtk_log_lvl >= BTMTK_LOG_LEVEL_DEBUG)		\
-		pr_info("[btmtk_debug] %s: "fmt"\n", __func__, ##__VA_ARGS__); } while (0)
+		pr_debug("[btmtk_debug] %s: "fmt"\n", __func__, ##__VA_ARGS__); } while (0)
 
 #define BTMTK_WARN_LIMITTED(fmt, ...)     \
 	do {												\
@@ -75,8 +75,8 @@ do {												\
 		for (raw_count = 0; raw_count < MIN(l, BTMTK_MAX_LOG_LEN); ++raw_count)		\
 			p_str += sprintf(p_str, " %02X", ptr[raw_count]);			\
 		*p_str = '\0';									\
-		pr_info("[btmtk_info]"fmt"\n", ##__VA_ARGS__);					\
-		pr_info(" %s:%d - Length(%d): %s\n", __func__, __LINE__, l, str);		\
+		pr_debug("[btmtk_info]"fmt"\n", ##__VA_ARGS__);					\
+		pr_debug(" %s:%d - Length(%d): %s\n", __func__, __LINE__, l, str);		\
 	}											\
 } while (0)
 
@@ -90,8 +90,8 @@ do {												\
 		for (raw_count = 0; raw_count < MIN(l, BTMTK_MAX_LOG_LEN); ++raw_count)		\
 			p_str += sprintf(p_str, " %02X", ptr[raw_count]);			\
 		*p_str = '\0';									\
-		pr_info("[btmtk_debug]"fmt"\n", ##__VA_ARGS__);					\
-		pr_info(" %s:%d - Length(%d): %s\n", __func__, __LINE__, l, str);		\
+		pr_debug("[btmtk_debug]"fmt"\n", ##__VA_ARGS__);					\
+		pr_debug(" %s:%d - Length(%d): %s\n", __func__, __LINE__, l, str);		\
 	}											\
 } while (0)
 

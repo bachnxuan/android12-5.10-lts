@@ -89,6 +89,6 @@ int connsys_scp_platform_data_init(unsigned int chip_info, phys_addr_t emi_phy_a
 
 #endif
 
-	pr_info("[%s] chip=[%x] not support", __func__, chip_info);
+	pr_debug("[%s] chip=[%x] not support", __func__, chip_info);
 	return -1;
 }

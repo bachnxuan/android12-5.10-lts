@@ -239,7 +239,7 @@ static void _status_dump(void)
 			buf_len += str_len;
 		}
 	}
-	pr_info("Connsys status: %s", buf);
+	pr_debug("Connsys status: %s", buf);
 }
 
 static void opfunc_vcn_control_internal(unsigned int drv_type, bool on)
@@ -321,7 +321,7 @@ static int opfunc_power_on_internal(unsigned int drv_type)
 	/* VCNx enable */
 	opfunc_vcn_control_internal(drv_type, true);
 
-	pr_info("[Conninfra Pwr On] BT=[%d] FM=[%d] GPS=[%d] WF=[%d]",
+	pr_debug("[Conninfra Pwr On] BT=[%d] FM=[%d] GPS=[%d] WF=[%d]",
 			infra_ctx->drv_inst[CONNDRV_TYPE_BT].drv_status,
 			infra_ctx->drv_inst[CONNDRV_TYPE_FM].drv_status,
 			infra_ctx->drv_inst[CONNDRV_TYPE_GPS].drv_status,
@@ -425,7 +425,7 @@ static int opfunc_power_off_internal(unsigned int drv_type)
 	if (try_power_off)
 		g_conninfra_ctx.infra_drv_status = DRV_STS_POWER_OFF;
 
-	pr_info("[Conninfra Pwr Off] Conninfra=[%d] BT=[%d] FM=[%d] GPS=[%d] WF=[%d]",
+	pr_debug("[Conninfra Pwr Off] Conninfra=[%d] BT=[%d] FM=[%d] GPS=[%d] WF=[%d]",
 			infra_ctx->infra_drv_status,
 			infra_ctx->drv_inst[CONNDRV_TYPE_BT].drv_status,
 			infra_ctx->drv_inst[CONNDRV_TYPE_FM].drv_status,
@@ -453,7 +453,7 @@ static int opfunc_chip_rst(struct msg_op_data *op)
 	struct timespec64 pre_begin, pre_end, reset_end, done_end;
 
 	if (g_conninfra_ctx.infra_drv_status == DRV_STS_POWER_OFF) {
-		pr_info("No subsys on, just return");
+		pr_debug("No subsys on, just return");
 		_conninfra_core_update_rst_status(CHIP_RST_NONE);
 		return 0;
 	}
@@ -469,22 +469,22 @@ static int opfunc_chip_rst(struct msg_op_data *op)
 	for (i = 0; i < CONNDRV_TYPE_MAX; i++) {
 		drv_inst = &g_conninfra_ctx.drv_inst[i];
 		drv_pwr_state[i] = drv_inst->drv_status;
-		pr_info("subsys %d is %d", i, drv_inst->drv_status);
+		pr_debug("subsys %d is %d", i, drv_inst->drv_status);
 		ret = msg_thread_send_1(&drv_inst->msg_ctx,
 				INFRA_SUBDRV_OPID_PRE_RESET, i);
 	}
 
-	pr_info("[chip_rst] pre vvvvvvvvvvvvv");
+	pr_debug("[chip_rst] pre vvvvvvvvvvvvv");
 	while (atomic_read(&g_conninfra_ctx.rst_state) != subdrv_all_done) {
 		ret = down_timeout(&g_conninfra_ctx.rst_sema, msecs_to_jiffies(CONNINFRA_RESET_TIMEOUT));
-		pr_info("sema ret=[%d]", ret);
+		pr_debug("sema ret=[%d]", ret);
 		if (ret == 0)
 			continue;
 		cur_rst_state = atomic_read(&g_conninfra_ctx.rst_state);
-		pr_info("cur_rst state =[%d]", cur_rst_state);
+		pr_debug("cur_rst state =[%d]", cur_rst_state);
 		for (i = 0; i < CONNDRV_TYPE_MAX; i++) {
 			if ((cur_rst_state & (0x1 << i)) == 0) {
-				pr_info("[chip_rst] [%s] pre-callback is not back", drv_thread_name[i]);
+				pr_debug("[chip_rst] [%s] pre-callback is not back", drv_thread_name[i]);
 				drv_inst = &g_conninfra_ctx.drv_inst[i];
 				osal_thread_show_stack(&drv_inst->msg_ctx.thread);
 			}
@@ -495,26 +495,26 @@ static int opfunc_chip_rst(struct msg_op_data *op)
 
 	osal_gettimeofday(&pre_end);
 
-	pr_info("[chip_rst] reset ++++++++++++");
+	pr_debug("[chip_rst] reset ++++++++++++");
 	/*******************************************************/
 	/* reset */
 	/* call consys_hw */
 	/*******************************************************/
 	/* Special power-off function, turn off connsys directly */
 	ret = opfunc_power_off_internal(CONNDRV_TYPE_CONNINFRA);
-	pr_info("Force conninfra power off, ret=%d\n", ret);
-	pr_info("conninfra status should be power off. Status=%d", g_conninfra_ctx.infra_drv_status);
+	pr_debug("Force conninfra power off, ret=%d\n", ret);
+	pr_debug("conninfra status should be power off. Status=%d", g_conninfra_ctx.infra_drv_status);
 
 	/* Turn on subsys */
 	for (i = 0; i < CONNDRV_TYPE_MAX; i++) {
 		if (drv_pwr_state[i]) {
 			ret = opfunc_power_on_internal(i);
-			pr_info("Call subsys(%d) power on ret=%d", i, ret);
+			pr_debug("Call subsys(%d) power on ret=%d", i, ret);
 		}
 	}
-	pr_info("conninfra status should be power on. Status=%d", g_conninfra_ctx.infra_drv_status);
+	pr_debug("conninfra status should be power on. Status=%d", g_conninfra_ctx.infra_drv_status);
 
-	pr_info("[chip_rst] reset --------------");
+	pr_debug("[chip_rst] reset --------------");
 
 	_conninfra_core_update_rst_status(CHIP_RST_POST_CB);
 
@@ -536,20 +536,20 @@ static int opfunc_chip_rst(struct msg_op_data *op)
 		cur_rst_state = atomic_read(&g_conninfra_ctx.rst_state);
 		for (i = 0; i < CONNDRV_TYPE_MAX; i++) {
 			if ((cur_rst_state & (0x1 << i)) == 0) {
-				pr_info("[chip_rst] [%s] post-callback is not back", drv_thread_name[i]);
+				pr_debug("[chip_rst] [%s] post-callback is not back", drv_thread_name[i]);
 				drv_inst = &g_conninfra_ctx.drv_inst[i];
 				osal_thread_show_stack(&drv_inst->msg_ctx.thread);
 			}
 		}
 	}
-	pr_info("[chip_rst] post ^^^^^^^^^^^^^^");
+	pr_debug("[chip_rst] post ^^^^^^^^^^^^^^");
 
 	reset_chip_rst_trg_data();
 	//_conninfra_core_update_rst_status(CHIP_RST_DONE);
 	_conninfra_core_update_rst_status(CHIP_RST_NONE);
 	osal_gettimeofday(&done_end);
 
-	pr_info("[chip_rst] summary pre=[%lu] reset=[%lu] post=[%lu]",
+	pr_debug("[chip_rst] summary pre=[%lu] reset=[%lu] post=[%lu]",
 				timespec64_to_ms(&pre_begin, &pre_end),
 				timespec64_to_ms(&pre_end, &reset_end),
 				timespec64_to_ms(&reset_end, &done_end));
@@ -588,7 +588,7 @@ static int opfunc_pre_cal(struct msg_op_data *op)
 	/* Clean pre-cal backup data */
 	ret = conninfra_core_pre_cal_clean_data();
 	if (ret)
-		pr_info("[pre_cal] clean data fail, ret = %d", ret);
+		pr_debug("[pre_cal] clean data fail, ret = %d", ret);
 
 	ret = conninfra_core_power_on(CONNDRV_TYPE_BT);
 	if (ret) {
@@ -621,19 +621,19 @@ static int opfunc_pre_cal(struct msg_op_data *op)
 		if (ret == 0)
 			continue;
 		cur_state = atomic_read(&g_conninfra_ctx.pre_cal_state);
-		pr_info("[pre_cal] cur state =[%d]", cur_state);
+		pr_debug("[pre_cal] cur state =[%d]", cur_state);
 		if ((cur_state & (0x1 << CONNDRV_TYPE_BT)) == 0) {
-			pr_info("[pre_cal] BT pwr_on callback is not back");
+			pr_debug("[pre_cal] BT pwr_on callback is not back");
 			drv_inst = &g_conninfra_ctx.drv_inst[CONNDRV_TYPE_BT];
 			osal_thread_show_stack(&drv_inst->msg_ctx.thread);
 		}
 		if ((cur_state & (0x1 << CONNDRV_TYPE_WIFI)) == 0) {
-			pr_info("[pre_cal] WIFI pwr_on callback is not back");
+			pr_debug("[pre_cal] WIFI pwr_on callback is not back");
 			drv_inst = &g_conninfra_ctx.drv_inst[CONNDRV_TYPE_WIFI];
 			osal_thread_show_stack(&drv_inst->msg_ctx.thread);
 		}
 	}
-	pr_info("[pre_cal] >>>>>>> power on DONE!!");
+	pr_debug("[pre_cal] >>>>>>> power on DONE!!");
 
 	osal_gettimeofday(&bt_cal_begin);
 
@@ -642,7 +642,7 @@ static int opfunc_pre_cal(struct msg_op_data *op)
 	bt_cal_ret = msg_thread_send_wait_1(&drv_inst->msg_ctx,
 			INFRA_SUBDRV_OPID_CAL_DO_CAL, 0, CONNDRV_TYPE_BT);
 
-	pr_info("[pre_cal] driver [%s] calibration %s, ret=[%d]\n", drv_name[CONNDRV_TYPE_BT],
+	pr_debug("[pre_cal] driver [%s] calibration %s, ret=[%d]\n", drv_name[CONNDRV_TYPE_BT],
 			(bt_cal_ret == CONNINFRA_CB_RET_CAL_FAIL_POWER_OFF ||
 			bt_cal_ret == CONNINFRA_CB_RET_CAL_FAIL_POWER_ON) ? "fail" : "success",
 			bt_cal_ret);
@@ -651,7 +651,7 @@ static int opfunc_pre_cal(struct msg_op_data *op)
 		bt_cal_ret == CONNINFRA_CB_RET_CAL_FAIL_POWER_OFF)
 		conninfra_core_power_off(CONNDRV_TYPE_BT);
 
-	pr_info("[pre_cal] >>>>>>>> BT do cal done");
+	pr_debug("[pre_cal] >>>>>>>> BT do cal done");
 
 	osal_gettimeofday(&wf_cal_begin);
 
@@ -659,7 +659,7 @@ static int opfunc_pre_cal(struct msg_op_data *op)
 	wf_cal_ret = msg_thread_send_wait_1(&drv_inst->msg_ctx,
 			INFRA_SUBDRV_OPID_CAL_DO_CAL, 0, CONNDRV_TYPE_WIFI);
 
-	pr_info("[pre_cal] driver [%s] calibration %s, ret=[%d]\n", drv_name[CONNDRV_TYPE_WIFI],
+	pr_debug("[pre_cal] driver [%s] calibration %s, ret=[%d]\n", drv_name[CONNDRV_TYPE_WIFI],
 			(wf_cal_ret == CONNINFRA_CB_RET_CAL_FAIL_POWER_OFF ||
 			wf_cal_ret == CONNINFRA_CB_RET_CAL_FAIL_POWER_ON) ? "fail" : "success",
 			wf_cal_ret);
@@ -668,7 +668,7 @@ static int opfunc_pre_cal(struct msg_op_data *op)
 		wf_cal_ret == CONNINFRA_CB_RET_CAL_FAIL_POWER_OFF)
 		conninfra_core_power_off(CONNDRV_TYPE_WIFI);
 
-	pr_info(">>>>>>>> WF do cal done");
+	pr_debug(">>>>>>>> WF do cal done");
 	osal_gettimeofday(&end);
 
 	/* Backup WIFI calibration data */
@@ -682,15 +682,15 @@ static int opfunc_pre_cal(struct msg_op_data *op)
 			if (ret)
 				pr_err("[pre_cal] backup error: %d", ret);
 		} else {
-			pr_info("[pre_cal] get_cal_ret=%d, cal_result_size=%d, cal_result_offset=0x%08x",
+			pr_debug("[pre_cal] get_cal_ret=%d, cal_result_size=%d, cal_result_offset=0x%08x",
 				get_cal_ret, cal_result_size, cal_result_offset);
 		}
 	} else
-		pr_info("[pre_cal] WIFI not support get_cal_result_cb");
+		pr_debug("[pre_cal] WIFI not support get_cal_result_cb");
 
 	osal_gettimeofday(&backup_end);
 
-	pr_info("[pre_cal] summary pwr=[%lu] bt_cal=[%d][%lu] wf_cal=[%d][%lu] backup=[%lu]",
+	pr_debug("[pre_cal] summary pwr=[%lu] bt_cal=[%d][%lu] wf_cal=[%d][%lu] backup=[%lu]",
 			timespec64_to_ms(&begin, &bt_cal_begin),
 			bt_cal_ret, timespec64_to_ms(&bt_cal_begin, &wf_cal_begin),
 			wf_cal_ret, timespec64_to_ms(&wf_cal_begin, &end),
@@ -729,7 +729,7 @@ static int opfunc_subdrv_get_cal_result(struct msg_op_data *op)
 	unsigned int *offset = (unsigned int*)op->op_data[1];
 	unsigned int *size = (unsigned int*)op->op_data[2];
 
-	pr_info("[%s] drv=[%s]", __func__, drv_thread_name[drv_type]);
+	pr_debug("[%s] drv=[%s]", __func__, drv_thread_name[drv_type]);
 	drv_inst = &g_conninfra_ctx.drv_inst[drv_type];
 	if (drv_inst->ops_cb.pre_cal_cb.get_cal_result_cb) {
 		ret = drv_inst->ops_cb.pre_cal_cb.get_cal_result_cb(offset, size);
@@ -737,7 +737,7 @@ static int opfunc_subdrv_get_cal_result(struct msg_op_data *op)
 			pr_warn("[%s] fail [%d]", __func__, ret);
 	}
 
-	pr_info("[pre_cal][%s] [%s] DONE", __func__, drv_thread_name[drv_type]);
+	pr_debug("[pre_cal][%s] [%s] DONE", __func__, drv_thread_name[drv_type]);
 	return ret;
 }
 
@@ -762,7 +762,7 @@ static void conninfra_detect_time_change(void) {
 		soc_time_diff_ms = (unsigned long)(curr_soc_time - prev_soc_time);
 		soc_utc_diff_ms = max(soc_time_diff_ms, utc_diff) - min(soc_time_diff_ms, utc_diff);
 		if (soc_utc_diff_ms >= 5000) {
-			pr_info("[%s] detect time change, send sync command\n", __func__);
+			pr_debug("[%s] detect time change, send sync command\n", __func__);
 			time_changed = true;
 		}
 	}
@@ -1003,7 +1003,7 @@ static int opfunc_pre_cal_prepare(struct msg_op_data *op)
 
 	if (bt_drv->ops_cb.pre_cal_cb.do_cal_cb == NULL ||
 		wifi_drv->ops_cb.pre_cal_cb.do_cal_cb == NULL) {
-		pr_info("[%s] [pre_cal] [%p][%p]", __func__,
+		pr_debug("[%s] [pre_cal] [%p][%p]", __func__,
 			bt_drv->ops_cb.pre_cal_cb.do_cal_cb,
 			wifi_drv->ops_cb.pre_cal_cb.do_cal_cb);
 		spin_unlock_irqrestore(&g_conninfra_ctx.infra_lock, flag);
@@ -1016,7 +1016,7 @@ static int opfunc_pre_cal_prepare(struct msg_op_data *op)
 	spin_unlock_irqrestore(&g_conninfra_ctx.rst_lock, flag);
 
 	if (rst_status > CHIP_RST_NONE) {
-		pr_info("rst is ongoing, skip pre_cal");
+		pr_debug("rst is ongoing, skip pre_cal");
 		return 0;
 	}
 
@@ -1045,11 +1045,11 @@ static int opfunc_pre_cal_prepare(struct msg_op_data *op)
 			wifi_drv->drv_status == DRV_STS_POWER_OFF) {
 			cal_info->status = PRE_CAL_SCHEDULED;
 			cal_info->caller = op->op_data[0];
-			pr_info("[pre_cal] BT&WIFI is off, schedule pre-cal from status=[%d] to new status[%d]\n",
+			pr_debug("[pre_cal] BT&WIFI is off, schedule pre-cal from status=[%d] to new status[%d]\n",
 				cur_status, cal_info->status);
 			schedule_work(&cal_info->pre_cal_work);
 		} else {
-			pr_info("[%s] [pre_cal] bt=[%d] wf=[%d] status=[%d]", __func__,
+			pr_debug("[%s] [pre_cal] bt=[%d] wf=[%d] status=[%d]", __func__,
 				bt_drv->drv_status, wifi_drv->drv_status, cur_status);
 		}
 		osal_unlock_sleepable_lock(&cal_info->pre_cal_lock);
@@ -1071,13 +1071,13 @@ static int opfunc_pre_cal_check(struct msg_op_data *op)
 	if (ret) {
 		cur_status = cal_info->status;
 
-		pr_info("[%s] [pre_cal] bt=[%d] wf=[%d] status=[%d]", __func__,
+		pr_debug("[%s] [pre_cal] bt=[%d] wf=[%d] status=[%d]", __func__,
 			bt_drv->drv_status, wifi_drv->drv_status,
 			cur_status);
 		if (cur_status == PRE_CAL_DONE &&
 			bt_drv->drv_status == DRV_STS_POWER_OFF &&
 			wifi_drv->drv_status == DRV_STS_POWER_OFF) {
-			pr_info("[pre_cal] reset pre-cal");
+			pr_debug("[pre_cal] reset pre-cal");
 			cal_info->status = PRE_CAL_NEED_RESCHEDULE;
 		}
 		osal_unlock_sleepable_lock(&cal_info->pre_cal_lock);
@@ -1147,7 +1147,7 @@ static int opfunc_dump_power_state(struct msg_op_data *op)
 
 	/* check if dump state is enable */
 	if (atomic_read(&g_conninfra_ctx.power_dump_enable) == 0) {
-		pr_info("[%s] power dump is not enable", __func__);
+		pr_debug("[%s] power dump is not enable", __func__);
 		return 0;
 	}
 
@@ -1182,7 +1182,7 @@ static int opfunc_subdrv_pre_reset(struct msg_op_data *op)
 	atomic_add(0x1 << drv_type, &g_conninfra_ctx.rst_state);
 	cur_rst_state = atomic_read(&g_conninfra_ctx.rst_state);
 
-	pr_info("[%s] rst_state=[%d]", drv_thread_name[drv_type], cur_rst_state);
+	pr_debug("[%s] rst_state=[%d]", drv_thread_name[drv_type], cur_rst_state);
 
 	up(&g_conninfra_ctx.rst_sema);
 	return 0;
@@ -1214,7 +1214,7 @@ static int opfunc_subdrv_cal_pwr_on(struct msg_op_data *op)
 	unsigned int drv_type = op->op_data[0];
 	struct subsys_drv_inst *drv_inst;
 
-	pr_info("[%s] drv=[%s]", __func__, drv_thread_name[drv_type]);
+	pr_debug("[%s] drv=[%s]", __func__, drv_thread_name[drv_type]);
 
 	/* TODO: should be locked, to avoid cb was reset */
 	drv_inst = &g_conninfra_ctx.drv_inst[drv_type];
@@ -1228,7 +1228,7 @@ static int opfunc_subdrv_cal_pwr_on(struct msg_op_data *op)
 	atomic_add(0x1 << drv_type, &g_conninfra_ctx.pre_cal_state);
 	up(&g_conninfra_ctx.pre_cal_sema);
 
-	pr_info("[pre_cal][%s] [%s] DONE", __func__, drv_thread_name[drv_type]);
+	pr_debug("[pre_cal][%s] [%s] DONE", __func__, drv_thread_name[drv_type]);
 	return 0;
 }
 
@@ -1238,7 +1238,7 @@ static int opfunc_subdrv_cal_do_cal(struct msg_op_data *op)
 	unsigned int drv_type = op->op_data[0];
 	struct subsys_drv_inst *drv_inst;
 
-	pr_info("[%s] drv=[%s]", __func__, drv_thread_name[drv_type]);
+	pr_debug("[%s] drv=[%s]", __func__, drv_thread_name[drv_type]);
 
 	drv_inst = &g_conninfra_ctx.drv_inst[drv_type];
 	if (/*drv_inst->drv_status == DRV_ST_POWER_ON &&*/
@@ -1248,7 +1248,7 @@ static int opfunc_subdrv_cal_do_cal(struct msg_op_data *op)
 			pr_warn("[%s] fail [%d]", __func__, ret);
 	}
 
-	pr_info("[pre_cal][%s] [%s] DONE", __func__, drv_thread_name[drv_type]);
+	pr_debug("[pre_cal][%s] [%s] DONE", __func__, drv_thread_name[drv_type]);
 	return ret;
 }
 
@@ -1264,7 +1264,7 @@ static int opfunc_subdrv_time_change(struct msg_op_data *op)
 
 	drv_inst = &g_conninfra_ctx.drv_inst[drv_type];
 	if (drv_inst->ops_cb.time_change_notify) {
-		pr_info("[%s] drv=[%s]", __func__, drv_thread_name[drv_type]);
+		pr_debug("[%s] drv=[%s]", __func__, drv_thread_name[drv_type]);
 		drv_inst->ops_cb.time_change_notify();
 	}
 	return 0;
@@ -1321,13 +1321,13 @@ int conninfra_core_pre_cal_start(void)
 	/* Handle different pre_cal_mode */
 	switch (g_pre_cal_mode) {
 		case PRE_CAL_ALL_DISABLED:
-			pr_info("[%s] [pre_cal] Skip all pre-cal, caller = %u", __func__, caller);
+			pr_debug("[%s] [pre_cal] Skip all pre-cal, caller = %u", __func__, caller);
 			skip = true;
 			cal_info->status = PRE_CAL_DONE;
 			break;
 		case PRE_CAL_PWR_ON_DISABLED:
 			if (caller == PRE_CAL_BY_SUBDRV_REGISTER) {
-				pr_info("[%s] [pre_cal] Skip pre-cal triggered by subdrv register, "
+				pr_debug("[%s] [pre_cal] Skip pre-cal triggered by subdrv register, "
 					"caller = %u", __func__, caller);
 				skip = true;
 				cal_info->status = PRE_CAL_NOT_INIT;
@@ -1335,20 +1335,20 @@ int conninfra_core_pre_cal_start(void)
 			break;
 		case PRE_CAL_SCREEN_ON_DISABLED:
 			if (caller == PRE_CAL_BY_SCREEN_ON) {
-				pr_info("[%s] [pre_cal] Skip pre-cal triggered by screen on, "
+				pr_debug("[%s] [pre_cal] Skip pre-cal triggered by screen on, "
 					"caller = %u", __func__, caller);
 				skip = true;
 				cal_info->status = PRE_CAL_DONE;
 			}
 			break;
 		default:
-			pr_info("[%s] [pre_cal] Begin pre-cal, g_pre_cal_mode: %u, caller = %u",
+			pr_debug("[%s] [pre_cal] Begin pre-cal, g_pre_cal_mode: %u, caller = %u",
 				__func__, g_pre_cal_mode, caller);
 			break;
 	}
 
 	if (skip) {
-		pr_info("[%s] [pre_cal] Reset status to %d", __func__, cal_info->status);
+		pr_debug("[%s] [pre_cal] Reset status to %d", __func__, cal_info->status);
 		osal_unlock_sleepable_lock(&cal_info->pre_cal_lock);
 		return -2;
 	}
@@ -1401,7 +1401,7 @@ int conninfra_core_screen_on(void)
 	spin_unlock_irqrestore(&infra_ctx->rst_lock, flag);
 
 	if (rst_status > CHIP_RST_NONE) {
-		pr_info("rst is ongoing, skip pre_cal");
+		pr_debug("rst is ongoing, skip pre_cal");
 		return 0;
 	}
 
@@ -1532,7 +1532,7 @@ int conninfra_core_conn_bus_dump(void)
 	spin_unlock_irqrestore(&g_conninfra_ctx.rst_lock, flag);
 	if (rst_status >= CHIP_RST_RESET &&
 		rst_status < CHIP_RST_POST_CB) {
-		pr_info("[%s] rst is ongoing", __func__);
+		pr_debug("[%s] rst is ongoing", __func__);
 		return 0;
 	}
 	/* Dump directly. */
@@ -1563,9 +1563,9 @@ int conninfra_core_reg_read(unsigned long address, unsigned int *value, unsigned
 		else if (consys_hw_reg_readable())
 			ret = consys_reg_mng_reg_read(address, value, mask);
 		else
-			pr_info("CR (%lx) is not readable\n", address);
+			pr_debug("CR (%lx) is not readable\n", address);
 	} else
-		pr_info("CR (%lx) cannot read. conninfra is off\n", address);
+		pr_debug("CR (%lx) cannot read. conninfra is off\n", address);
 
 	osal_unlock_sleepable_lock(&infra_ctx->core_lock);
 	return ret;
@@ -1588,9 +1588,9 @@ int conninfra_core_reg_write(unsigned long address, unsigned int value, unsigned
 		else if (consys_hw_reg_readable())
 			ret = consys_reg_mng_reg_write(address, value, mask);
 		else
-			pr_info("CR (%p) is not readable\n", (void*)address);
+			pr_debug("CR (%p) is not readable\n", (void*)address);
 	} else
-		pr_info("CR (%p) cannot read. conninfra is off\n", (void*)address);
+		pr_debug("CR (%p) cannot read. conninfra is off\n", (void*)address);
 
 	osal_unlock_sleepable_lock(&infra_ctx->core_lock);
 	return ret;
@@ -1614,7 +1614,7 @@ int conninfra_core_lock_rst(void)
 	}
 	spin_unlock_irqrestore(&infra_ctx->rst_lock, flag);
 
-	pr_info("[%s] ret=[%d]", __func__, ret);
+	pr_debug("[%s] ret=[%d]", __func__, ret);
 	return ret;
 }
 
@@ -1643,7 +1643,7 @@ int conninfra_core_trg_chip_rst(enum consys_drv_type drv, char *reason)
 		pr_err("[%s] send msg fail, ret = %d", __func__, ret);
 		return -1;
 	}
-	pr_info("trg_reset DONE!");
+	pr_debug("trg_reset DONE!");
 	return 0;
 }
 
@@ -1661,13 +1661,13 @@ int conninfra_core_thermal_query(int *temp_val)
 		CONNINFRA_OPID_THERM_CTRL, 0,
 		(size_t) temp_val);
 	if (ret) {
-		pr_info("thermal query fail ret=%d\n", ret);
+		pr_debug("thermal query fail ret=%d\n", ret);
 		return ret;
 	}
 
 	ratelimit_set_flags(&_rs, RATELIMIT_MSG_ON_RELEASE);
 	if (__ratelimit(&_rs) || *temp_val > PRINT_TEMP_THRESHOLD)
-		pr_info("ret=[%d] temp=[%d]\n", ret, *temp_val);
+		pr_debug("ret=[%d] temp=[%d]\n", ret, *temp_val);
 
 	if (*temp_val >= CONNINFRA_MAX_TEMP)
 		conninfra_trigger_whole_chip_rst(CONNDRV_TYPE_CONNINFRA, "thermal is too high");
@@ -1847,12 +1847,12 @@ int conninfra_core_subsys_ops_reg(enum consys_drv_type type,
 	memcpy(&g_conninfra_ctx.drv_inst[type].ops_cb, cb,
 					sizeof(struct sub_drv_ops_cb));
 
-	pr_info("[%s] [pre_cal] type=[%s] cb rst=[%p][%p] pre_cal=[%p][%p], therm=[%p]",
+	pr_debug("[%s] [pre_cal] type=[%s] cb rst=[%p][%p] pre_cal=[%p][%p], therm=[%p]",
 			__func__, drv_name[type],
 			cb->rst_cb.pre_whole_chip_rst, cb->rst_cb.post_whole_chip_rst,
 			cb->pre_cal_cb.pwr_on_cb, cb->pre_cal_cb.do_cal_cb, cb->thermal_qry);
 
-	pr_info("[%s] [pre_cal] type=[%d] bt=[%p] wf=[%p]", __func__, type,
+	pr_debug("[%s] [pre_cal] type=[%d] bt=[%p] wf=[%p]", __func__, type,
 			infra_ctx->drv_inst[CONNDRV_TYPE_BT].ops_cb.pre_cal_cb.pwr_on_cb,
 			infra_ctx->drv_inst[CONNDRV_TYPE_WIFI].ops_cb.pre_cal_cb.pwr_on_cb);
 
@@ -1864,7 +1864,7 @@ int conninfra_core_subsys_ops_reg(enum consys_drv_type type,
 	spin_unlock_irqrestore(&g_conninfra_ctx.infra_lock, flag);
 
 	if (trigger_pre_cal) {
-		pr_info("[%s] [pre_cal] trigger pre-cal BT/WF are registered", __func__);
+		pr_debug("[%s] [pre_cal] trigger pre-cal BT/WF are registered", __func__);
 		ret = msg_thread_send_1(&infra_ctx->msg_ctx,
 				CONNINFRA_OPID_PRE_CAL_PREPARE, PRE_CAL_BY_SUBDRV_REGISTER);
 		if (ret)
@@ -1936,7 +1936,7 @@ void conninfra_core_pre_cal_blocking(void)
 	static bool ever_pre_cal = false;
 
 	if (g_pre_cal_mode == PRE_CAL_ALL_DISABLED) {
-		pr_info("g_pre_cal_mode == PRE_CAL_ALL_DISABLED\n");
+		pr_debug("g_pre_cal_mode == PRE_CAL_ALL_DISABLED\n");
 		return;
 	}
 
@@ -1954,13 +1954,13 @@ void conninfra_core_pre_cal_blocking(void)
 			ret = msg_thread_send_1(&infra_ctx->msg_ctx,
 					CONNINFRA_OPID_PRE_CAL_PREPARE, PRE_CAL_BY_SUBDRV_PWR_ON);
 			ever_pre_cal = true;
-			pr_info("[%s] [pre_cal] Triggered by subdrv power on and set ever_pre_cal to true, result: %d", __func__, ret);
+			pr_debug("[%s] [pre_cal] Triggered by subdrv power on and set ever_pre_cal to true, result: %d", __func__, ret);
 		}
 
 		ret = osal_trylock_sleepable_lock(&cal_info->pre_cal_lock);
 		if (ret) {
 			if (cal_info->status == PRE_CAL_NOT_INIT || cal_info->status == PRE_CAL_SCHEDULED) {
-				pr_info("[%s] [pre_cal] ret=[%d] status=[%d]", __func__, ret, cal_info->status);
+				pr_debug("[%s] [pre_cal] ret=[%d] status=[%d]", __func__, ret, cal_info->status);
 				osal_unlock_sleepable_lock(&cal_info->pre_cal_lock);
 				if (conninfra_is_pre_cal_timeout_by_cb_not_registered(&start) == 1)
 					break;
@@ -1970,7 +1970,7 @@ void conninfra_core_pre_cal_blocking(void)
 			osal_unlock_sleepable_lock(&cal_info->pre_cal_lock);
 			break;
 		} else {
-			pr_info("[%s] [pre_cal] ret=[%d] status=[%d]", __func__, ret, cal_info->status);
+			pr_debug("[%s] [pre_cal] ret=[%d] status=[%d]", __func__, ret, cal_info->status);
 			osal_sleep_ms(100);
 		}
 	}
@@ -1978,7 +1978,7 @@ void conninfra_core_pre_cal_blocking(void)
 
 	diff = timespec64_to_ms(&start, &end);
 	if (diff > BLOCKING_CHECK_MONITOR_THREAD)
-		pr_info("blocking spent [%lu]", diff);
+		pr_debug("blocking spent [%lu]", diff);
 }
 #endif
 
@@ -2013,7 +2013,7 @@ static void conninfra_core_pre_cal_work_handler(struct work_struct *work)
 
 	/* if fail, do we need re-try? */
 	ret = conninfra_core_pre_cal_start();
-	pr_info("[%s] [pre_cal][ret=%d] -----------", __func__, ret);
+	pr_debug("[%s] [pre_cal][ret=%d] -----------", __func__, ret);
 }
 
 int conninfra_core_reset_power_state(void)
@@ -2126,7 +2126,7 @@ int conninfra_core_bus_clock_ctrl(enum consys_drv_type drv_type, unsigned int bu
 static void conninfra_core_wake_lock_get(void)
 {
 	osal_wake_lock(&conninfra_wake_lock);
-	pr_info("[%s] after wake_lock(%d)\n", __func__, osal_wake_lock_count(&conninfra_wake_lock));
+	pr_debug("[%s] after wake_lock(%d)\n", __func__, osal_wake_lock_count(&conninfra_wake_lock));
 }
 
 static void conninfra_core_wake_lock_put(void)
@@ -2152,7 +2152,7 @@ int conninfra_core_init(void)
 	if (conf != NULL) {
 		g_pre_cal_mode = conf->pre_cal_mode;
 	}
-	pr_info("[%s] [pre_cal] Init g_pre_cal_mode = %u", __func__, g_pre_cal_mode);
+	pr_debug("[%s] [pre_cal] Init g_pre_cal_mode = %u", __func__, g_pre_cal_mode);
 
 	osal_memset(&g_conninfra_ctx, 0, sizeof(g_conninfra_ctx));
 

@@ -28,9 +28,9 @@
 #include "unittest.h"
 
 //#define KREE_DEBUG(fmt...) pr_debug("[Chmem UT]" fmt)
-#define KREE_DEBUG(fmt...) pr_info("[Chmem UT]" fmt)
-#define KREE_INFO(fmt...) pr_info("[Chmem UT]" fmt)
-#define KREE_ERR(fmt...) pr_info("[Chmem UT][ERR]" fmt)
+#define KREE_DEBUG(fmt...) pr_debug("[Chmem UT]" fmt)
+#define KREE_INFO(fmt...) pr_debug("[Chmem UT]" fmt)
+#define KREE_ERR(fmt...) pr_debug("[Chmem UT][ERR]" fmt)
 
 #include "memory_ssmr.h"
 #include "mtee_regions.h"

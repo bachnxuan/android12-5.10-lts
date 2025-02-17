@@ -304,7 +304,7 @@ static int mt6336_enable(void)
 					0x01);
 		} else {
 			/*  failed in OTG mode */
-			pr_info("Failed to turn on flash mode since in OTG mode.\n");
+			pr_debug("Failed to turn on flash mode since in OTG mode.\n");
 		}
 
 	} else {
@@ -404,7 +404,7 @@ static int mt6336_set_level(int channel, int level)
 	else if (channel == MT6336_CHANNEL_CH2)
 		mt6336_set_level_ch2(level);
 	else {
-		pr_info("Error channel\n");
+		pr_debug("Error channel\n");
 		return -1;
 	}
 
@@ -529,7 +529,7 @@ static int mt6336_timer_start(int channel, ktime_t ktime)
 	else if (channel == MT6336_CHANNEL_CH2)
 		hrtimer_start(&mt6336_timer_ch2, ktime, HRTIMER_MODE_REL);
 	else {
-		pr_info("Error channel\n");
+		pr_debug("Error channel\n");
 		return -1;
 	}
 
@@ -543,7 +543,7 @@ static int mt6336_timer_cancel(int channel)
 	else if (channel == MT6336_CHANNEL_CH2)
 		hrtimer_cancel(&mt6336_timer_ch2);
 	else {
-		pr_info("Error channel\n");
+		pr_debug("Error channel\n");
 		return -1;
 	}
 
@@ -571,7 +571,7 @@ static int mt6336_operate(int channel, int enable)
 			if (mt6336_is_torch(mt6336_level_ch2))
 				mt6336_en_ch2 = MT6336_ENABLE_FLASH;
 	} else {
-		pr_info("Error channel\n");
+		pr_debug("Error channel\n");
 		return -1;
 	}
 
@@ -631,7 +631,7 @@ static int mt6336_ioctl(unsigned int cmd, unsigned long arg)
 
 	/* verify channel */
 	if (channel < 0 || channel >= MT6336_CHANNEL_NUM) {
-		pr_info("Failed with error channel\n");
+		pr_debug("Failed with error channel\n");
 		return -EINVAL;
 	}
 
@@ -683,7 +683,7 @@ static int mt6336_ioctl(unsigned int cmd, unsigned long arg)
 		break;
 
 	default:
-		pr_info("No such command and arg(%d): (%d, %d)\n",
+		pr_debug("No such command and arg(%d): (%d, %d)\n",
 				channel, _IOC_NR(cmd), (int)fl_arg->arg);
 		return -ENOTTY;
 	}
@@ -772,13 +772,13 @@ static int mt6336_parse_dt(struct device *dev,
 
 	pdata->channel_num = of_get_child_count(np);
 	if (!pdata->channel_num) {
-		pr_info("Parse no dt, node.\n");
+		pr_debug("Parse no dt, node.\n");
 		return 0;
 	}
-	pr_info("Channel number(%d).\n", pdata->channel_num);
+	pr_debug("Channel number(%d).\n", pdata->channel_num);
 
 	if (of_property_read_u32(np, "decouple", &decouple))
-		pr_info("Parse no dt, decouple.\n");
+		pr_debug("Parse no dt, decouple.\n");
 
 	pdata->dev_id = devm_kzalloc(dev,
 			pdata->channel_num *
@@ -799,7 +799,7 @@ static int mt6336_parse_dt(struct device *dev,
 		pdata->dev_id[i].channel = i;
 		pdata->dev_id[i].decouple = decouple;
 
-		pr_info("Parse dt (type,ct,part,name,channel,decouple)=(%d,%d,%d,%s,%d,%d).\n",
+		pr_debug("Parse dt (type,ct,part,name,channel,decouple)=(%d,%d,%d,%s,%d,%d).\n",
 				pdata->dev_id[i].type, pdata->dev_id[i].ct,
 				pdata->dev_id[i].part, pdata->dev_id[i].name,
 				pdata->dev_id[i].channel,
@@ -956,14 +956,14 @@ static int __init flashlight_mt6336_init(void)
 #ifndef CONFIG_OF
 	ret = platform_device_register(&mt6336_platform_device);
 	if (ret) {
-		pr_info("Failed to register platform device\n");
+		pr_debug("Failed to register platform device\n");
 		return ret;
 	}
 #endif
 
 	ret = platform_driver_register(&mt6336_platform_driver);
 	if (ret) {
-		pr_info("Failed to register platform driver\n");
+		pr_debug("Failed to register platform driver\n");
 		return ret;
 	}
 

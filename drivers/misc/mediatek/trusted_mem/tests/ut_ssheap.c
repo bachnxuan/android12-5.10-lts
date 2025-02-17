@@ -47,14 +47,14 @@ static const match_table_t opt_tokens = { { UT_OPT_CMD, "cmd=%d" },
 static int ssheap_open(__always_unused struct inode *inode,
 		       __always_unused struct file *file)
 {
-	pr_info("%s:%d\n", __func__, __LINE__);
+	pr_debug("%s:%d\n", __func__, __LINE__);
 	return 0;
 }
 
 static int ssheap_release(__always_unused struct inode *ino,
 			  __always_unused struct file *file)
 {
-	pr_info("%s:%d\n", __func__, __LINE__);
+	pr_debug("%s:%d\n", __func__, __LINE__);
 	return 0;
 }
 
@@ -64,19 +64,19 @@ static void dump_buf_info(struct ssheap_buf_info *info)
 	struct scatterlist *sg;
 	uint64_t dma_addr;
 
-	pr_info("%s: info:%p", __func__, info);
-	pr_info("%s: table=%p", __func__, info->table);
-	pr_info("%s: alignment: 0x%lx", __func__, info->alignment);
-	pr_info("%s: req_size: 0x%lx", __func__, info->req_size);
-	pr_info("%s: aligned_req_size: 0x%lx", __func__,
+	pr_debug("%s: info:%p", __func__, info);
+	pr_debug("%s: table=%p", __func__, info->table);
+	pr_debug("%s: alignment: 0x%lx", __func__, info->alignment);
+	pr_debug("%s: req_size: 0x%lx", __func__, info->req_size);
+	pr_debug("%s: aligned_req_size: 0x%lx", __func__,
 		info->aligned_req_size);
-	pr_info("%s: allocated_size: 0x%lx", __func__, info->allocated_size);
-	pr_info("%s: elemts: %ld", __func__, info->elems);
+	pr_debug("%s: allocated_size: 0x%lx", __func__, info->allocated_size);
+	pr_debug("%s: elemts: %ld", __func__, info->elems);
 
 	if (info->table) {
 		for_each_sg(info->table->sgl, sg, info->table->nents, i) {
 			dma_addr = sg_dma_address(sg);
-			pr_info("%s: sg idx:%d dma_addr=%llx size=%x\n",
+			pr_debug("%s: sg idx:%d dma_addr=%llx size=%x\n",
 				__func__, i, dma_addr, sg->length);
 		}
 	}
@@ -100,7 +100,7 @@ static void ssheap_ut(const char *buf)
 	while ((p = strsep(&o, " \t\n")) != NULL) {
 		if (!*p)
 			continue;
-		pr_info("args: %s\n", p);
+		pr_debug("args: %s\n", p);
 		token = match_token(p, opt_tokens, args);
 		switch (token) {
 		case UT_OPT_CMD:
@@ -128,11 +128,11 @@ static void ssheap_ut(const char *buf)
 		}
 	}
 
-	pr_info("cmd=%d size=%#x align=%#x\n", ut_cmd, ut_size, ut_align);
+	pr_debug("cmd=%d size=%#x align=%#x\n", ut_cmd, ut_size, ut_align);
 	if (ut_cmd == 1) {
 		info = ssheap_alloc_non_contig(ut_size, ut_align, 0x9);
 		if (info == NULL) {
-			pr_info("cmd=%d FAILED\n", ut_cmd);
+			pr_debug("cmd=%d FAILED\n", ut_cmd);
 		} else {
 			smc_ret = mtee_assign_buffer(info, 0x9);
 			pr_debug("secure buffer ret:%d (0x%x)\n", smc_ret,
@@ -143,39 +143,39 @@ static void ssheap_ut(const char *buf)
 			if (ut_dump)
 				dump_buf_info(info);
 			ssheap_free_non_contig(info);
-			pr_info("cmd=%d PASSED\n", ut_cmd);
+			pr_debug("cmd=%d PASSED\n", ut_cmd);
 		}
 	}
 	if (ut_cmd == 11) {
 		if (last_info) {
-			pr_info("cmd=%d FAILED (last_info should be NULL)\n",
+			pr_debug("cmd=%d FAILED (last_info should be NULL)\n",
 				ut_cmd);
 			goto out;
 		}
 		last_info = ssheap_alloc_non_contig(ut_size, ut_align, 0xff);
 		if (last_info == NULL) {
-			pr_info("cmd=%d FAILED\n", ut_cmd);
+			pr_debug("cmd=%d FAILED\n", ut_cmd);
 		} else {
 			smc_ret = mtee_assign_buffer(last_info, 0xff);
-			pr_info("secure buffer ret:%d (0x%x)\n", smc_ret,
+			pr_debug("secure buffer ret:%d (0x%x)\n", smc_ret,
 				smc_ret);
 			if (ut_dump)
 				dump_buf_info(last_info);
-			pr_info("cmd=%d PASSED\n", ut_cmd);
+			pr_debug("cmd=%d PASSED\n", ut_cmd);
 		}
 	}
 	if (ut_cmd == 12) {
 		if (last_info == NULL) {
-			pr_info("last_info is NULL\n");
-			pr_info("cmd=%d FAILED\n", ut_cmd);
+			pr_debug("last_info is NULL\n");
+			pr_debug("cmd=%d FAILED\n", ut_cmd);
 			goto out;
 		}
 		smc_ret = mtee_unassign_buffer(last_info, 0xff);
-		pr_info("unsecure buffer ret:%d (0x%x)\n", smc_ret, smc_ret);
+		pr_debug("unsecure buffer ret:%d (0x%x)\n", smc_ret, smc_ret);
 
 		ssheap_free_non_contig(last_info);
 		last_info = NULL;
-		pr_info("cmd=%d PASSED\n", ut_cmd);
+		pr_debug("cmd=%d PASSED\n", ut_cmd);
 	}
 
 out:
@@ -192,7 +192,7 @@ static ssize_t ssheap_write(struct file *file, const char __user *buffer,
 
 	if (copy_from_user(desc, buffer, count))
 		return 0;
-	pr_info("write count:%d\n", count);
+	pr_debug("write count:%d\n", count);
 	ssheap_ut(desc);
 	return count;
 }

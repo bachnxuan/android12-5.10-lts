@@ -36,7 +36,7 @@
 #define PCM_32K_TICKS_PER_SEC		(32768)
 #define PCM_TICK_TO_SEC(TICK)	(TICK / PCM_32K_TICKS_PER_SEC)
 
-#define aee_sram_printk pr_info
+#define aee_sram_printk pr_debug
 
 #define TO_UPPERCASE(Str) ({ \
 	char buf_##Cnt[sizeof(Str)+4]; \
@@ -88,7 +88,7 @@ static void lpm_check_cg_pll(void)
 	if (block != 0) {
 		for (i = 0 ; i < spm_cond.pll_cnt ; i++) {
 			if (block & 1 << (16+i))
-				pr_info("suspend warning: pll: %s not closed\n"
+				pr_debug("suspend warning: pll: %s not closed\n"
 					, spm_cond.pll_str[i]);
 		}
 	}
@@ -103,7 +103,7 @@ static void lpm_check_cg_pll(void)
 	for (i = 1 ; i < spm_cond.cg_cnt ; i++) {
 		blkcg = lpm_smc_spm_dbg(MT_SPM_DBG_SMC_UID_BLOCK_DETAIL, MT_LPM_SMC_ACT_GET, 0, i);
 		if (blkcg != 0)
-			pr_info("suspend warning: CG: %6s = 0x%08x\n"
+			pr_debug("suspend warning: CG: %6s = 0x%08x\n"
 				, spm_cond.cg_str[i], blkcg);
 	}
 
@@ -194,7 +194,7 @@ static int lpm_log_timer_func(unsigned long long dur, void *priv)
 		issuer.log(LPM_ISSUER_CPUIDLE,
 			info->state_name[info->fired_index], (void *)&issuer);
 	} else {
-		pr_info("[name:spm&][SPM] %s didn't enter low power scenario\n",
+		pr_debug("[name:spm&][SPM] %s didn't enter low power scenario\n",
 			info->state_name && info->state_name[info->fired_index] ?
 			info->state_name[info->fired_index] :
 			"LPM");
@@ -304,7 +304,7 @@ int lpm_logger_init(void)
 	if (lpm_spm_base)
 		lpm_issuer_register(&issuer);
 	else
-		pr_info("[name:mtk_lpm][P] - Don't register the issue by error! (%s:%d)\n",
+		pr_debug("[name:mtk_lpm][P] - Don't register the issue by error! (%s:%d)\n",
 			__func__, __LINE__);
 
 	if (_lpm_dbg_plat_ops.lpm_get_spm_wakesrc_irq)
@@ -336,7 +336,7 @@ int lpm_logger_init(void)
 		for (idx = 0; idx < drv->state_count; idx++) {
 
 			if (!state_cnt) {
-				pr_info("[%s:%d] no logger-enable-states\n",
+				pr_debug("[%s:%d] no logger-enable-states\n",
 						__func__, __LINE__);
 				break;
 			}
@@ -384,7 +384,7 @@ int lpm_logger_init(void)
 
 	ret = spm_cond_init();
 	if (ret)
-		pr_info("[%s:%d] - spm_cond_init failed\n",
+		pr_debug("[%s:%d] - spm_cond_init failed\n",
 			__func__, __LINE__);
 
 	register_syscore_ops(&lpm_suspend_save_sleep_info_syscore_ops);

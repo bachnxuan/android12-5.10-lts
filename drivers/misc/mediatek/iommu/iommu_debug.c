@@ -3254,7 +3254,7 @@ static const struct mau_config_info mau_config_default[] = {
 		if (file)\
 			seq_printf(file, fmt, ##args);\
 		else\
-			pr_info(fmt, ##args);\
+			pr_debug(fmt, ##args);\
 	} while (0)
 
 enum IOMMU_PROFILE_TYPE {
@@ -3399,7 +3399,7 @@ void mtk_iova_unmap(int tab_id, u64 iova, size_t size)
 	}
 	end_t = sched_clock();
 	if ((end_t - start_t) > 5000000) //5ms
-		pr_info("%s time:%llu\n", __func__, (end_t - start_t));
+		pr_debug("%s time:%llu\n", __func__, (end_t - start_t));
 	spin_unlock_irqrestore(&map_list.lock, flags);
 
 	mtk_iommu_iova_trace(IOMMU_UNMAP, iova, size, tab_id, NULL);
@@ -3508,7 +3508,7 @@ static int mtk_iommu_get_tf_port_idx(int tf_id, enum mtk_iommu_type type, int id
 	int (*mm_tf_is_gce_videoup)(u32 port_tf, u32 vld_tf);
 
 	if (type < MM_IOMMU || type >= TYPE_NUM) {
-		pr_info("%s fail, invalid type %d\n", __func__, type);
+		pr_debug("%s fail, invalid type %d\n", __func__, type);
 		return m4u_data->plat_data->port_nr[MM_IOMMU];
 	}
 
@@ -3517,7 +3517,7 @@ static int mtk_iommu_get_tf_port_idx(int tf_id, enum mtk_iommu_type type, int id
 	else
 		vld_id = tf_id & F_MMU_INT_TF_MSK;
 
-	pr_info("get vld tf_id:0x%x\n", vld_id);
+	pr_debug("get vld tf_id:0x%x\n", vld_id);
 	port_nr =  m4u_data->plat_data->port_nr[type];
 	port_list = m4u_data->plat_data->port_list[type];
 	/* check (larb | port) for smi_larb or apu_bus */
@@ -3553,7 +3553,7 @@ static int mtk_iommu_port_idx(int id, enum mtk_iommu_type type)
 	const struct mtk_iommu_port *port_list;
 
 	if (type < MM_IOMMU || type >= TYPE_NUM) {
-		pr_info("%s fail, invalid type %d\n", __func__, type);
+		pr_debug("%s fail, invalid type %d\n", __func__, type);
 		return m4u_data->plat_data->port_nr[MM_IOMMU];
 	}
 
@@ -3576,11 +3576,11 @@ void report_custom_iommu_fault(
 	const struct mtk_iommu_port *port_list;
 
 	if (type < MM_IOMMU || type >= TYPE_NUM) {
-		pr_info("%s fail, invalid type %d\n", __func__, type);
+		pr_debug("%s fail, invalid type %d\n", __func__, type);
 		return;
 	}
 
-	pr_info("error, tf report start fault_id:0x%x\n", fault_id);
+	pr_debug("error, tf report start fault_id:0x%x\n", fault_id);
 	port_nr = m4u_data->plat_data->port_nr[type];
 	port_list = m4u_data->plat_data->port_list[type];
 	idx = mtk_iommu_get_tf_port_idx(fault_id, type, id);
@@ -3592,7 +3592,7 @@ void report_custom_iommu_fault(
 
 	/* Only MM_IOMMU support fault callback */
 	if (type == MM_IOMMU) {
-		pr_info("error, tf report larb-port:(%u--%u), idx:%d\n",
+		pr_debug("error, tf report larb-port:(%u--%u), idx:%d\n",
 			port_list[idx].larb_id,
 			port_list[idx].port_id, idx);
 
@@ -3626,7 +3626,7 @@ int mtk_iommu_register_fault_callback(int port,
 	int idx = mtk_iommu_port_idx(port, type);
 
 	if (idx >= m4u_data->plat_data->port_nr[type]) {
-		pr_info("%s fail, port=%d\n", __func__, port);
+		pr_debug("%s fail, port=%d\n", __func__, port);
 		return -1;
 	}
 	if (is_vpu)
@@ -3645,7 +3645,7 @@ int mtk_iommu_unregister_fault_callback(int port, bool is_vpu)
 	int idx = mtk_iommu_port_idx(port, type);
 
 	if (idx >= m4u_data->plat_data->port_nr[type]) {
-		pr_info("%s fail, port=%d\n", __func__, port);
+		pr_debug("%s fail, port=%d\n", __func__, port);
 		return -1;
 	}
 	if (is_vpu)
@@ -3826,14 +3826,14 @@ char *peri_tf_analyse(enum peri_iommu iommu_id, u32 fault_id)
 	if (m4u_data->plat_data->peri_tf_analyse)
 		return m4u_data->plat_data->peri_tf_analyse(iommu_id, fault_id);
 
-	pr_info("%s is not support\n", __func__);
+	pr_debug("%s is not support\n", __func__);
 	return NULL;
 }
 EXPORT_SYMBOL_GPL(peri_tf_analyse);
 
 static int m4u_debug_set(void *data, u64 val)
 {
-	pr_info("%s:val=%llu\n", __func__, val);
+	pr_debug("%s:val=%llu\n", __func__, val);
 
 	switch (val) {
 	case 1:	/* show help info */
@@ -4059,7 +4059,7 @@ static void mtk_iommu_trace_rec_write(int event,
 		return;
 
 	if (event_mgr[event].dump_log)
-		pr_info("[trace] %5s |0x%-9lx |%9zx |0x%lx |%s\n",
+		pr_debug("[trace] %5s |0x%-9lx |%9zx |0x%lx |%s\n",
 			event_mgr[event].name,
 			data1, data2, data3,
 			(dev != NULL ? dev_name(dev) : ""));
@@ -4318,7 +4318,7 @@ static void mtk_iommu_iova_alloc_dump(struct seq_file *s, struct device *dev)
 	if (dev != NULL) {
 		fwspec = dev_iommu_fwspec_get(dev);
 		if (fwspec == NULL) {
-			pr_info("%s fail! dev:%s, fwspec is NULL\n",
+			pr_debug("%s fail! dev:%s, fwspec is NULL\n",
 				__func__, dev_name(dev));
 			return;
 		}
@@ -4348,7 +4348,7 @@ static void mtk_iova_dbg_alloc(struct device *dev, struct iova_domain *iovad,
 	u32 tab_id = MTK_M4U_TO_TAB(fwspec->ids[0]);
 
 	if (!iova) {
-		pr_info("%s fail! dev:%s, size:0x%zx\n",
+		pr_debug("%s fail! dev:%s, size:0x%zx\n",
 			__func__, dev_name(dev), size);
 
 		if (tab_id == APU_TABLE)
@@ -4420,7 +4420,7 @@ static int mtk_m4u_dbg_probe(struct platform_device *pdev)
 	u32 total_port;
 	int ret = 0;
 
-	pr_info("%s start\n", __func__);
+	pr_debug("%s start\n", __func__);
 	m4u_data = devm_kzalloc(dev, sizeof(struct mtk_m4u_data), GFP_KERNEL);
 	if (!m4u_data)
 		return -ENOMEM;
@@ -4444,7 +4444,7 @@ static int mtk_m4u_dbg_probe(struct platform_device *pdev)
 							      "mtk_m4u_dbg_probe");
 	pr_debug("add free iova hook %s\n", ret ? "fail": "pass");
 
-	pr_info("%s done\n", __func__);
+	pr_debug("%s done\n", __func__);
 	return 0;
 }
 

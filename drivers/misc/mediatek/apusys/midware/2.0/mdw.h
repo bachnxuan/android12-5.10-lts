@@ -311,14 +311,14 @@ struct mdw_dev_func {
 #include <aee.h>
 #define mdw_exception(format, args...) \
 	do { \
-		pr_info("apusys mdw:" format, ##args); \
+		pr_debug("apusys mdw:" format, ##args); \
 		aee_kernel_warning("APUSYS_AP_EXCEPTION_APUSYS_MIDDLEWARE", \
 			"\nCRDISPATCH_KEY:APUSYS_MIDDLEWARE\n" format, \
 			##args); \
 	} while (0)
 #define dma_exception(format, args...) \
 	do { \
-		pr_info("apusys mdw:" format, ##args); \
+		pr_debug("apusys mdw:" format, ##args); \
 		aee_kernel_warning("APUSYS_AP_EXCEPTION_APUSYS_MIDDLEWARE", \
 			"\nCRDISPATCH_KEY:APUSYS_EDMA\n" format, \
 	##args); \

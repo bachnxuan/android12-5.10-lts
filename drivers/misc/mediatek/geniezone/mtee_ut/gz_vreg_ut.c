@@ -23,9 +23,9 @@
 #include <linux/platform_device.h>
 #include "unittest.h"
 
-#define KREE_DEBUG(fmt...) pr_info("[SM_kUT]" fmt)
-#define KREE_INFO(fmt...) pr_info("[SM_kUT]" fmt)
-#define KREE_ERR(fmt...) pr_info("[SM_kUT][ERR]" fmt)
+#define KREE_DEBUG(fmt...) pr_debug("[SM_kUT]" fmt)
+#define KREE_INFO(fmt...) pr_debug("[SM_kUT]" fmt)
+#define KREE_ERR(fmt...) pr_debug("[SM_kUT][ERR]" fmt)
 
 /*vreg: the same setting in gz*/
 #define test_vreg_src_pa  0x1070A000  /*can modify*/

@@ -69,7 +69,7 @@ struct consys_platform_emi_ops g_consys_platform_emi_ops_mt6895 = {
 
 static int consys_emi_mpu_set_region_protection_mt6895(void)
 {
-	pr_info("[%s] is not supported. MPU is set in lk\n", __func__);
+	pr_debug("[%s] is not supported. MPU is set in lk\n", __func__);
 	return 0;
 }
 
@@ -82,19 +82,19 @@ void consys_emi_get_md_shared_emi_mt6895(phys_addr_t* base, unsigned int* size)
 #if IS_ENABLED(CONFIG_MTK_ECCCI_DRIVER)
 	mdPhy = get_smem_phy_start_addr(MD_SYS1, SMEM_USER_RAW_MD_CONSYS, &ret);
 #else
-	pr_info("[%s] ECCCI Driver is not supported.\n", __func__);
+	pr_debug("[%s] ECCCI Driver is not supported.\n", __func__);
 #endif
 #else
-	pr_info("[%s] not implement on FPGA\n", __func__);
+	pr_debug("[%s] not implement on FPGA\n", __func__);
 #endif
 	if (ret && mdPhy) {
-		pr_info("MCIF base=0x%llx size=0x%x", mdPhy, ret);
+		pr_debug("MCIF base=0x%llx size=0x%x", mdPhy, ret);
 		if (base)
 			*base = mdPhy;
 		if (size)
 			*size = ret;
 	} else {
-		pr_info("MCIF is not supported");
+		pr_debug("MCIF is not supported");
 		if (base)
 			*base = 0;
 		if (size)

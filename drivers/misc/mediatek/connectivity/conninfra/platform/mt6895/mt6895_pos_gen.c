@@ -520,7 +520,7 @@ int consys_polling_chipid_mt6895_gen(unsigned int *pconsys_ver_id)
 			CONSYS_GEN_IP_VERSION_OFFSET_ADDR);
 		if (consys_ver_id == CONSYS_GEN_CONN_HW_VER) {
 			check = 0;
-			pr_info("Consys HW version id(0x%08x), retry(%d)\n", consys_ver_id, retry);
+			pr_debug("Consys HW version id(0x%08x), retry(%d)\n", consys_ver_id, retry);
 			if (pconsys_ver_id != NULL)
 				*pconsys_ver_id = consys_ver_id;
 			break;
@@ -559,7 +559,7 @@ unsigned int consys_emi_set_remapping_reg_mt6895_gen(
 			con_emi_base_addr, 0, emi_base_addr_offset, 20);
 	}
 
-	pr_info("connsys_emi_base=[0x%llx] remap cr: connsys=[0x%08x]\n",
+	pr_debug("connsys_emi_base=[0x%llx] remap cr: connsys=[0x%08x]\n",
 		con_emi_base_addr,
 		CONSYS_REG_READ(CONN_BUS_CR_BASE +
 			CONSYS_GEN_CONN2AP_REMAP_MCU_EMI_BASE_ADDR_OFFSET_ADDR));
@@ -570,7 +570,7 @@ unsigned int consys_emi_set_remapping_reg_mt6895_gen(
 			md_shared_emi_base_addr, 0, emi_base_addr_offset, 20);
 	}
 
-	pr_info("mcif_emi_base=[0x%llx] remap cr: mcif=[0x%08x]\n",
+	pr_debug("mcif_emi_base=[0x%llx] remap cr: mcif=[0x%08x]\n",
 		md_shared_emi_base_addr,
 		CONSYS_REG_READ(CONN_BUS_CR_BASE +
 			CONSYS_GEN_CONN2AP_REMAP_MD_SHARE_EMI_BASE_ADDR_OFFSET_ADDR));
@@ -581,7 +581,7 @@ unsigned int consys_emi_set_remapping_reg_mt6895_gen(
 			gps_emi_base_addr, 0, emi_base_addr_offset, 20);
 	}
 
-	pr_info("gps_emi_base=[0x%llx] remap cr: gps=[0x%08x]\n",
+	pr_debug("gps_emi_base=[0x%llx] remap cr: gps=[0x%08x]\n",
 		gps_emi_base_addr,
 		CONSYS_REG_READ(CONN_BUS_CR_BASE +
 			CONSYS_GEN_CONN2AP_REMAP_GPS_EMI_BASE_ADDR_OFFSET_ADDR));
@@ -841,7 +841,7 @@ int connsys_a_die_cfg_adie6637_read_adie_id_mt6895_gen(
 			return -1;
 		}
 
-		pr_info("[%s] A-die chip id: 0x%08x\n", __func__, chip_id);
+		pr_debug("[%s] A-die chip id: 0x%08x\n", __func__, chip_id);
 		if (padie_id != NULL)
 			*padie_id = chip_id;
 		if (phw_ver_id != NULL)
@@ -1311,7 +1311,7 @@ int connsys_a_die_efuse_read_get_efuse_info_mt6895_gen(
 		ret[3] = connsys_a_die_efuse_read_adie6637_get_efuse3_info_mt6895_gen(efuse_valid, &(efuse_list[3]));
 		CONSYS_REG_WRITE(psysram_efuse_list[3], efuse_list[3]);
 
-		pr_info("efuse = [0x%08x, 0x%08x, 0x%08x, 0x%08x]", efuse_list[0], efuse_list[1], efuse_list[2], efuse_list[3]);
+		pr_debug("efuse = [0x%08x, 0x%08x, 0x%08x, 0x%08x]", efuse_list[0], efuse_list[1], efuse_list[2], efuse_list[3]);
 		if (ret[0] || ret[1] || ret[2] || ret[3])
 			pr_notice("efuse read error: [%d, %d, %d, %d]", ret[0], ret[1], ret[2], ret[3]);
 

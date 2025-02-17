@@ -25,9 +25,9 @@
 #include <tz_cross/ta_system.h>
 #include "unittest.h"
 
-#define KREE_DEBUG(fmt...) pr_info("[SM_kUT]" fmt)
-#define KREE_INFO(fmt...) pr_info("[SM_kUT]" fmt)
-#define KREE_ERR(fmt...) pr_info("[SM_kUT][ERR]" fmt)
+#define KREE_DEBUG(fmt...) pr_debug("[SM_kUT]" fmt)
+#define KREE_INFO(fmt...) pr_debug("[SM_kUT]" fmt)
+#define KREE_ERR(fmt...) pr_debug("[SM_kUT][ERR]" fmt)
 
 INIT_UNITTESTS;
 

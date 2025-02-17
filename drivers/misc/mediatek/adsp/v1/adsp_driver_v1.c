@@ -121,7 +121,7 @@ static int adspsys_drv_probe(struct platform_device *pdev)
 
 	ret = adsp_mem_device_probe(pdev);
 	if (ret) {
-		pr_info("%s(), memory probe fail, %d\n", __func__, ret);
+		pr_debug("%s(), memory probe fail, %d\n", __func__, ret);
 		goto ERROR;
 	}
 
@@ -143,7 +143,7 @@ static int adspsys_drv_probe(struct platform_device *pdev)
 
 	register_adspsys(adspsys);
 
-	pr_info("%s, success\n", __func__);
+	pr_debug("%s, success\n", __func__);
 ERROR:
 	return ret;
 }
@@ -229,7 +229,7 @@ static int adsp_core_drv_probe(struct platform_device *pdev)
 	/* add to adsp_core list */
 	register_adsp_core(pdata);
 
-	pr_info("%s, id:%d success\n", __func__, pdata->id);
+	pr_debug("%s, id:%d success\n", __func__, pdata->id);
 	return ret;
 }
 
@@ -320,7 +320,7 @@ static void __exit platform_adsp_exit(void)
 {
 	unregister_3way_semaphore_notifier(&adsp_semaphore_init_notifier);
 	platform_unregister_drivers(drivers, ARRAY_SIZE(drivers));
-	pr_info("[ADSP] platform-adsp Exit.\n");
+	pr_debug("[ADSP] platform-adsp Exit.\n");
 }
 
 module_init(platform_adsp_init);

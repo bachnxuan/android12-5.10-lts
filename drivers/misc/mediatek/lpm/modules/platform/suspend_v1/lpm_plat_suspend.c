@@ -70,21 +70,21 @@ static void get_md_sleep_time_addr(void)
 
 	mddriver = of_find_compatible_node(NULL, NULL, "mediatek,mddriver");
 	if (!mddriver) {
-		pr_info("mddriver not found in DTS\n");
+		pr_debug("mddriver not found in DTS\n");
 		return;
 	}
 
 	ret =  of_property_read_u64(mddriver, "md_low_power_addr", &of_find);
 
 	if (ret) {
-		pr_info("address not found in DTS");
+		pr_debug("address not found in DTS");
 		return;
 	}
 
 	share_mem = (u32 *)ioremap_wc(of_find, 0x200);
 
 	if (share_mem == NULL) {
-		pr_info("[name:spm&][%s:%d] - No MD share mem\n",
+		pr_debug("[name:spm&][%s:%d] - No MD share mem\n",
 			 __func__, __LINE__);
 		return;
 	}
@@ -101,7 +101,7 @@ static void get_md_sleep_time(struct md_sleep_status *md_data)
 
 	/* dump subsystem sleep info */
 	if (share_mem ==  NULL) {
-		pr_info("MD shared memory is NULL");
+		pr_debug("MD shared memory is NULL");
 	} else {
 		memset(md_data, 0, sizeof(struct md_sleep_status));
 		memcpy(md_data, share_mem, sizeof(struct md_sleep_status));
@@ -118,7 +118,7 @@ static void log_md_sleep_info(void)
 	int log_size = 0;
 
 	if (after_md_sleep_status.sleep_time >= before_md_sleep_status.sleep_time) {
-		pr_info("[name:spm&][SPM] md_slp_duration = %llu (32k)\n",
+		pr_debug("[name:spm&][SPM] md_slp_duration = %llu (32k)\n",
 			after_md_sleep_status.sleep_time - before_md_sleep_status.sleep_time);
 
 		log_size += scnprintf(log_buf + log_size,
@@ -149,7 +149,7 @@ static void log_md_sleep_info(void)
 				before_md_sleep_status.nr_sleep_time) % 10000000 / 1000);
 
 		WARN_ON(strlen(log_buf) >= LOG_BUF_SIZE);
-		pr_info("[name:spm&][SPM] %s", log_buf);
+		pr_debug("[name:spm&][SPM] %s", log_buf);
 	}
 }
 #endif
@@ -230,7 +230,7 @@ int lpm_suspend_s2idle_prompt(int cpu,
 	cpumask_set_cpu(cpu, &s2idle_cpumask);
 	if (cpumask_weight(&s2idle_cpumask) == num_online_cpus()) {
 
-		pr_info("[name:spm&][%s:%d] - suspend enter\n",
+		pr_debug("[name:spm&][%s:%d] - suspend enter\n",
 			__func__, __LINE__);
 
 #if IS_ENABLED(CONFIG_MTK_ECCCI_DRIVER)
@@ -250,14 +250,14 @@ void lpm_suspend_s2idle_reflect(int cpu,
 
 		__lpm_suspend_reflect(LPM_SUSPEND_S2IDLE,
 					 cpu, issuer);
-	pr_info("[name:spm&][%s:%d] - resume\n",
+	pr_debug("[name:spm&][%s:%d] - resume\n",
 			__func__, __LINE__);
 
 	if ((after_md_sleep_time >= 0) && (after_md_sleep_time >= before_md_sleep_time))
-		pr_info("[name:spm&][SPM] md_slp_duration = %lld",
+		pr_debug("[name:spm&][SPM] md_slp_duration = %lld",
 			after_md_sleep_time - before_md_sleep_time);
 	else
-		pr_info("[name:spm&][SPM] md share memory is NULL");
+		pr_debug("[name:spm&][SPM] md share memory is NULL");
 #if IS_ENABLED(CONFIG_MTK_ECCCI_DRIVER)
 	/* show md sleep status */
 	get_md_sleep_time(&after_md_sleep_status);
@@ -298,7 +298,7 @@ static struct hrtimer lpm_hrtimer[NR_CPUS];
 static enum hrtimer_restart lpm_hrtimer_timeout(struct hrtimer *timer)
 {
 	if (mtk_lpm_in_suspend) {
-		pr_info("[name:spm&][SPM] wakeup system due to not entering suspend\n");
+		pr_debug("[name:spm&][SPM] wakeup system due to not entering suspend\n");
 		pm_system_wakeup();
 	}
 	return HRTIMER_NORESTART;
@@ -367,7 +367,7 @@ static int lpm_spm_suspend_pm_event(struct notifier_block *notifier,
 				kthread_bind(mtk_lpm_ac[cpu].ts, cpu);
 				wake_up_process(mtk_lpm_ac[cpu].ts);
 			} else {
-				pr_info("[name:spm&][SPM] create LPM monitor thread %d fail\n",
+				pr_debug("[name:spm&][SPM] create LPM monitor thread %d fail\n",
 											cpu);
 				mtk_lpm_in_suspend = 0;
 				/* terminate previously created threads */
@@ -392,7 +392,7 @@ static int lpm_spm_suspend_pm_event(struct notifier_block *notifier,
 		mtk_lpm_in_suspend = 0;
 		spin_lock(&lpm_abort_locker);
 		if (!cpumask_empty(&abort_cpumask)) {
-			pr_info("[name:spm&][SPM] check cpumask %*pb\n",
+			pr_debug("[name:spm&][SPM] check cpumask %*pb\n",
 					cpumask_pr_args(&abort_cpumask));
 			for_each_cpu(cpu, &abort_cpumask)
 				send_sig(SIGKILL, mtk_lpm_ac[cpu].ts, 0);
@@ -434,24 +434,24 @@ static int lpm_init_spm_irq(void)
 
 	node = of_find_compatible_node(NULL, NULL, MTK_LPM_SLEEP_COMPATIBLE_STRING);
 	if (!node)
-		pr_info("[name:spm&][SPM] %s: node %s not found.\n", __func__,
+		pr_debug("[name:spm&][SPM] %s: node %s not found.\n", __func__,
 			MTK_LPM_SLEEP_COMPATIBLE_STRING);
 
 	irq = irq_of_parse_and_map(node, 0);
 	if (!irq) {
-		pr_info("[name:spm&][SPM] failed to get spm irq\n");
+		pr_debug("[name:spm&][SPM] failed to get spm irq\n");
 		goto FINISHED;
 	}
 
 	ret = request_irq(irq, spm_irq_handler, 0, "spm-irq", NULL);
 	if (ret) {
-		pr_info("[name:spm&][SPM] failed to install spm irq handler, ret = %d\n", ret);
+		pr_debug("[name:spm&][SPM] failed to install spm irq handler, ret = %d\n", ret);
 		goto FINISHED;
 	}
 
 	ret = enable_irq_wake(irq);
 	if (ret) {
-		pr_info("[name:spm&][SPM] failed to enable spm irq wake, ret = %d\n", ret);
+		pr_debug("[name:spm&][SPM] failed to enable spm irq wake, ret = %d\n", ret);
 		goto FINISHED;
 	}
 
@@ -460,11 +460,11 @@ static int lpm_init_spm_irq(void)
 	ret = lpm_smc_spm(MT_SPM_SMC_UID_SET_PENDING_IRQ_INIT,
 		 MT_LPM_SMC_ACT_SET, spm_irq_number, 0);
 	if (ret) {
-		pr_info("[name:spm&][SPM] failed to nofity ATF spm irq\n", ret);
+		pr_debug("[name:spm&][SPM] failed to nofity ATF spm irq\n", ret);
 		goto FINISHED;
 	}
 
-	pr_info("[name:spm&][SPM] %s: install spm irq %d\n", __func__, spm_irq_number);
+	pr_debug("[name:spm&][SPM] %s: install spm irq %d\n", __func__, spm_irq_number);
 FINISHED:
 	return 0;
 }

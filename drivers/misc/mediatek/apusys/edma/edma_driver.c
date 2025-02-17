@@ -407,12 +407,12 @@ int edma_init(struct apusys_core_info *info)
 {
 	int ret = 0;
 
-	pr_info("%s in\n", __func__);
+	pr_debug("%s in\n", __func__);
 
 	edma_rv_setup(info);
 
 	if (!apusys_power_check()) {
-		pr_info("%s: edma is disabled by apusys\n", __func__);
+		pr_debug("%s: edma is disabled by apusys\n", __func__);
 		return -ENODEV;
 	}
 

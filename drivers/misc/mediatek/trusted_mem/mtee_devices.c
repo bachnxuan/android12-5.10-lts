@@ -235,7 +235,7 @@ int mtee_mchunks_init(void)
 	struct trusted_mem_device *t_device;
 	int idx;
 
-	pr_info("%s:%d (%d)\n", __func__, __LINE__,
+	pr_debug("%s:%d (%d)\n", __func__, __LINE__,
 		(int)MTEE_MCHUNKS_DEVICE_COUNT);
 
 	for (idx = 0; idx < MTEE_MCHUNKS_DEVICE_COUNT; idx++) {
@@ -245,13 +245,13 @@ int mtee_mchunks_init(void)
 			mtee_mchunks[idx].ssmr_feature_id,
 			mtee_mchunks[idx].dev_name);
 		if (INVALID(t_device)) {
-			pr_info("don't create MTEE tmem device: %d:%s\n",
+			pr_debug("don't create MTEE tmem device: %d:%s\n",
 			       mtee_mchunks[idx].kern_tmem_type,
 			       mtee_mchunks[idx].dev_name);
 		}
 	}
 
-	pr_info("%s:%d (end)\n", __func__, __LINE__);
+	pr_debug("%s:%d (end)\n", __func__, __LINE__);
 	return TMEM_OK;
 }
 

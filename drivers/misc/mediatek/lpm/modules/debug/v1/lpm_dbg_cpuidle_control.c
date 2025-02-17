@@ -204,7 +204,7 @@ static ssize_t lpm_cpuidle_control_write(char *FromUserBuf,
 		break;
 
 	case TYPE_NOTIFY_CM:
-		pr_info("Read Only : Not support dynamic control\n");
+		pr_debug("Read Only : Not support dynamic control\n");
 		break;
 
 	case TYPE_STRESS_EN:
@@ -216,7 +216,7 @@ static ssize_t lpm_cpuidle_control_write(char *FromUserBuf,
 		break;
 
 	default:
-		pr_info("unknown command\n");
+		pr_debug("unknown command\n");
 		break;
 	}
 

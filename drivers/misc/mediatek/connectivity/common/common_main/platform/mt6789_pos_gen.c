@@ -409,7 +409,7 @@ int polling_consys_chipid_mt6789_gen(unsigned int *pconsys_ver_id, unsigned int 
 			CONSYS_GEN_CONN_CONNSYS_VERSION_OFFSET_ADDR);
 		if (consys_ver_id == CONSYS_GEN_CONN_HW_VER) {
 			check = 0;
-			pr_info("Consys HW version id(0x%08x), retry(%d)\n", consys_ver_id, retry);
+			pr_debug("Consys HW version id(0x%08x), retry(%d)\n", consys_ver_id, retry);
 			if (pconsys_ver_id != NULL)
 				*pconsys_ver_id = consys_ver_id;
 			break;
@@ -432,14 +432,14 @@ int polling_consys_chipid_mt6789_gen(unsigned int *pconsys_ver_id, unsigned int 
 	if (((check & 0xf) >> 0) != 0x1)
 		pr_notice("[%s] read CONNSYS configuration ID fail (0x%x)\n", __func__, check);
 	else
-		pr_info("[%s] read CONNSYS configuration ID pass (0x%x)\n", __func__, check);
+		pr_debug("[%s] read CONNSYS configuration ID pass (0x%x)\n", __func__, check);
 
 	/* check CONNSYS HW version ID */
 	check = CONSYS_REG_READ(conn_reg.mcu_base + CONSYS_GEN_HW_VER_OFFSET_ADDR);
 	if (((check & 0xffff) >> 0) != 0x8A00)
 		pr_notice("[%s] read CONNSYS HW version ID fail (0x%x)\n", __func__, check);
 	else
-		pr_info("[%s] read CONNSYS HW version ID pass (0x%x)\n", __func__, check);
+		pr_debug("[%s] read CONNSYS HW version ID pass (0x%x)\n", __func__, check);
 
 	/* check CONNSYS FW version ID */
 	check = CONSYS_REG_READ(conn_reg.mcu_base + CONSYS_GEN_FW_VER_OFFSET_ADDR);
@@ -448,7 +448,7 @@ int polling_consys_chipid_mt6789_gen(unsigned int *pconsys_ver_id, unsigned int 
 	if (((check & 0xffff) >> 0) != 0x8A00)
 		pr_notice("[%s] read CONNSYS FW version ID fail (0x%x)\n", __func__, check);
 	else
-		pr_info("[%s] read CONNSYS FW version ID pass (0x%x)\n", __func__, check);
+		pr_debug("[%s] read CONNSYS FW version ID pass (0x%x)\n", __func__, check);
 
 	return 0;
 }
@@ -706,7 +706,7 @@ int consys_polling_goto_idle_mt6789_gen(unsigned int *pconsys_ver_id)
 		consys_ver_id = CONSYS_REG_READ(conn_reg.mcu_base + CONSYS_GEN_COM_REG0_OFFSET_ADDR);
 
 		if (consys_ver_id == 0x1d1e) {
-			pr_info("go into idle loop pass, count=[%d]!\n", cnt);
+			pr_debug("go into idle loop pass, count=[%d]!\n", cnt);
 			break;
 		}
 

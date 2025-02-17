@@ -16,7 +16,7 @@ static unsigned int ut_level;
 void bp_thl_ut_cb(enum BATTERY_PERCENT_LEVEL_TAG level_val)
 {
 	ut_level = level_val;
-	pr_info("[%s] get %d\n", __func__, level_val);
+	pr_debug("[%s] get %d\n", __func__, level_val);
 }
 
 static ssize_t bp_thl_dbg_write
@@ -41,9 +41,9 @@ static ssize_t bp_thl_dbg_write
 			unregister_bp_thl_notify(BATTERY_PERCENT_PRIO_UT);
 			set_bp_thl_ut_status(ut_input);
 		} else
-			pr_info("[%s] wrong number (%d)\n", __func__, ut_input);
+			pr_debug("[%s] wrong number (%d)\n", __func__, ut_input);
 	} else
-		pr_info("[%s] wrong input (%s)\n", __func__, desc);
+		pr_debug("[%s] wrong input (%s)\n", __func__, desc);
 
 	return count;
 }

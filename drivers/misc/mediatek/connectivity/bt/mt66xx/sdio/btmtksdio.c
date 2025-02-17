@@ -1221,7 +1221,7 @@ static int btmtk_sdio_register_dev(struct btmtk_sdio_dev *bdev)
 	ret = sdio_set_block_size(func, SDIO_BLOCK_SIZE);
 	sdio_release_host(func);
 	if (ret) {
-		pr_info("cannot set SDIO block size");
+		pr_debug("cannot set SDIO block size");
 		ret = -EIO;
 		goto release_irq;
 	}
@@ -1236,7 +1236,7 @@ disable_func:
 	sdio_disable_func(func);
 
 failed:
-	pr_info("%s fail", __func__);
+	pr_debug("%s fail", __func__);
 	return ret;
 }
 

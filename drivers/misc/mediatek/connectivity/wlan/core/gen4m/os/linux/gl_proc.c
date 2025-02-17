@@ -569,7 +569,7 @@ static ssize_t procDbgLevelWrite(struct file *file, const char __user *buffer,
 	while (temp) {
 		if (sscanf(temp,
 			"0x%x:0x%x", &u4NewDbgModule, &u4NewDbgLevel) != 2) {
-			pr_info("debug module and debug level should be one byte in length\n");
+			pr_debug("debug module and debug level should be one byte in length\n");
 			break;
 		}
 		if (u4NewDbgModule == 0xFF) {
@@ -578,7 +578,7 @@ static ssize_t procDbgLevelWrite(struct file *file, const char __user *buffer,
 			break;
 		}
 		if (u4NewDbgModule >= DBG_MODULE_NUM) {
-			pr_info("debug module index should less than %d\n",
+			pr_debug("debug module index should less than %d\n",
 				DBG_MODULE_NUM);
 			break;
 		}
@@ -887,7 +887,7 @@ static ssize_t procPktDelayDbgCfgWrite(struct file *file, const char *buffer,
 		if (sscanf
 		    (temp, "%6s %x %d %d", aucModule, &u4IpProto, &u4PortNum,
 		     &u4DelayThreshold) != 4) {
-			pr_info("read param fail, aucModule=%s\n", aucModule);
+			pr_debug("read param fail, aucModule=%s\n", aucModule);
 			break;
 		}
 
@@ -901,7 +901,7 @@ static ssize_t procPktDelayDbgCfgWrite(struct file *file, const char *buffer,
 			(aucModule, aucRxArray, MODULE_NAME_LENGTH) == 0) {
 			ucTxOrRx = MODULE_RX;
 		} else {
-			pr_info("input module error!\n");
+			pr_debug("input module error!\n");
 			break;
 		}
 

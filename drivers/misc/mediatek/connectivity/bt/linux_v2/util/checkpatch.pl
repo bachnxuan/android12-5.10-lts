@@ -2810,7 +2810,7 @@ sub process {
 # line length limit (with some exclusions)
 #
 # There are a few types of lines that may extend beyond $max_line_length:
-#	logging functions like pr_info that end in a string
+#	logging functions like pr_debug that end in a string
 #	lines with a single string
 #	#defines that are a single string
 #

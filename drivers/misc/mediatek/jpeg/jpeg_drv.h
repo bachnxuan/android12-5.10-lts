@@ -107,7 +107,7 @@ struct compat_JPEG_DEC_DRV_HYBRID_P_N_S {
 #define JPEG_LOG(level, format, args...)                       \
 	do {                                                        \
 		if ((jpg_dbg_level & level) == level)              \
-			pr_info("[JPEG] level=%d %s(),%d: " format "\n",\
+			pr_debug("[JPEG] level=%d %s(),%d: " format "\n",\
 				level, __func__, __LINE__, ##args);      \
 	} while (0)
 

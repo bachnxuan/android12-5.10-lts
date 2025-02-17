@@ -63,7 +63,7 @@ int seninf_dfs_ctrl(struct seninf_dfs_ctx *ctx,
 {
 	int i4RetValue = 0;
 
-	/*pr_info("%s\n", __func__);*/
+	/*pr_debug("%s\n", __func__);*/
 
 	switch (option) {
 	case DFS_CTRL_ENABLE:
@@ -122,7 +122,7 @@ int seninf_dfs_ctrl(struct seninf_dfs_ctx *ctx,
 	}
 		break;
 	default:
-		pr_info("None\n");
+		pr_debug("None\n");
 		break;
 	}
 	return i4RetValue;
@@ -136,7 +136,7 @@ int imgsensor_dfs_ctrl(enum DFS_OPTION option, void *pbuff)
 {
 	int i4RetValue = 0;
 
-	/*pr_info("%s\n", __func__);*/
+	/*pr_debug("%s\n", __func__);*/
 
 	switch (option) {
 	case DFS_CTRL_ENABLE:
@@ -208,7 +208,7 @@ int imgsensor_dfs_ctrl(enum DFS_OPTION option, void *pbuff)
 	}
 		break;
 	default:
-		pr_info("None\n");
+		pr_debug("None\n");
 		break;
 	}
 	return i4RetValue;

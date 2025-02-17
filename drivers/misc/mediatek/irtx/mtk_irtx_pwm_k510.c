@@ -64,7 +64,7 @@ static int mtk_pwm_ir_tx(struct rc_dev *rcdev, unsigned int *txbuf,
 	char *dbglog = logbuf;
 #endif
 
-	pr_info("%s() irtx len=0x%x, pwm=%d\n", __func__,
+	pr_debug("%s() irtx len=0x%x, pwm=%d\n", __func__,
 		(unsigned int)count, (unsigned int)pwm_ir->pwm_ch);
 
 	/* lirc txbuf is odd, the last one is null appeneded by userspace */
@@ -130,20 +130,20 @@ static int mtk_pwm_ir_tx(struct rc_dev *rcdev, unsigned int *txbuf,
 
 #ifdef IRTX_DEBUG
 	dbglog = logbuf;
-	pr_info("h_l_period = %d, cycle_unit_us = %d\n",
+	pr_debug("h_l_period = %d, cycle_unit_us = %d\n",
 		h_l_period, cycle_unit_us);
-	pr_info("irtx len = %d, buf_size = %d, total_time = %d\n",
+	pr_debug("irtx len = %d, buf_size = %d, total_time = %d\n",
 		len, buf_size, total_time);
 	for (i = 0; i < len; i++) {
 		if (i && (i % 16 == 0)) {
-			pr_info("[%d] %s\n", cur_idx++, logbuf);
+			pr_debug("[%d] %s\n", cur_idx++, logbuf);
 			memset(logbuf, 0, sizeof(logbuf));
 			dbglog = logbuf;
 		}
 		dbglog += sprintf(dbglog, "0x%08x ", wave_vir[i]);
 	}
 	if (dbglog != logbuf)
-		pr_info("[%d] %s\n", cur_idx++, logbuf);
+		pr_debug("[%d] %s\n", cur_idx++, logbuf);
 #endif
 
 	if (pwm_ir->regulator != NULL) {
@@ -167,7 +167,7 @@ static int mtk_pwm_ir_tx(struct rc_dev *rcdev, unsigned int *txbuf,
 
 	usleep_range(total_time, total_time + 100);
 
-	pr_info("[IRTX] done, clean up\n");
+	pr_debug("[IRTX] done, clean up\n");
 	mt_pwm_disable(irtx_pwm_config.pwm_no, irtx_pwm_config.pmic_pad);
 
 	if (pwm_ir->regulator != NULL) {

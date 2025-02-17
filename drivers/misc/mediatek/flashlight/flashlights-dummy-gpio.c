@@ -69,7 +69,7 @@ static int dummy_pinctrl_init(struct platform_device *pdev)
 	/* get pinctrl */
 	dummy_pinctrl = devm_pinctrl_get(&pdev->dev);
 	if (IS_ERR(dummy_pinctrl)) {
-		pr_info("Failed to get flashlight pinctrl.\n");
+		pr_debug("Failed to get flashlight pinctrl.\n");
 		ret = PTR_ERR(dummy_pinctrl);
 		return ret;
 	}
@@ -78,13 +78,13 @@ static int dummy_pinctrl_init(struct platform_device *pdev)
 	dummy_xxx_high = pinctrl_lookup_state(
 			dummy_pinctrl, DUMMY_PINCTRL_STATE_XXX_HIGH);
 	if (IS_ERR(dummy_xxx_high)) {
-		pr_info("Failed to init (%s)\n", DUMMY_PINCTRL_STATE_XXX_HIGH);
+		pr_debug("Failed to init (%s)\n", DUMMY_PINCTRL_STATE_XXX_HIGH);
 		ret = PTR_ERR(dummy_xxx_high);
 	}
 	dummy_xxx_low = pinctrl_lookup_state(
 			dummy_pinctrl, DUMMY_PINCTRL_STATE_XXX_LOW);
 	if (IS_ERR(dummy_xxx_low)) {
-		pr_info("Failed to init (%s)\n", DUMMY_PINCTRL_STATE_XXX_LOW);
+		pr_debug("Failed to init (%s)\n", DUMMY_PINCTRL_STATE_XXX_LOW);
 		ret = PTR_ERR(dummy_xxx_low);
 	}
 
@@ -96,7 +96,7 @@ static int dummy_pinctrl_set(int pin, int state)
 	int ret = 0;
 
 	if (IS_ERR(dummy_pinctrl)) {
-		pr_info("pinctrl is not available\n");
+		pr_debug("pinctrl is not available\n");
 		return -1;
 	}
 
@@ -109,10 +109,10 @@ static int dummy_pinctrl_set(int pin, int state)
 				!IS_ERR(dummy_xxx_high))
 			pinctrl_select_state(dummy_pinctrl, dummy_xxx_high);
 		else
-			pr_info("set err, pin(%d) state(%d)\n", pin, state);
+			pr_debug("set err, pin(%d) state(%d)\n", pin, state);
 		break;
 	default:
-		pr_info("set err, pin(%d) state(%d)\n", pin, state);
+		pr_debug("set err, pin(%d) state(%d)\n", pin, state);
 		break;
 	}
 	pr_debug("pin(%d) state(%d)\n", pin, state);
@@ -238,7 +238,7 @@ static int dummy_ioctl(unsigned int cmd, unsigned long arg)
 		}
 		break;
 	default:
-		pr_info("No such command and arg(%d): (%d, %d)\n",
+		pr_debug("No such command and arg(%d): (%d, %d)\n",
 				channel, _IOC_NR(cmd), (int)fl_arg->arg);
 		return -ENOTTY;
 	}
@@ -330,13 +330,13 @@ static int dummy_parse_dt(struct device *dev,
 
 	pdata->channel_num = of_get_child_count(np);
 	if (!pdata->channel_num) {
-		pr_info("Parse no dt, node.\n");
+		pr_debug("Parse no dt, node.\n");
 		return 0;
 	}
-	pr_info("Channel number(%d).\n", pdata->channel_num);
+	pr_debug("Channel number(%d).\n", pdata->channel_num);
 
 	if (of_property_read_u32(np, "decouple", &decouple))
-		pr_info("Parse no dt, decouple.\n");
+		pr_debug("Parse no dt, decouple.\n");
 
 	pdata->dev_id = devm_kzalloc(dev,
 			pdata->channel_num *
@@ -357,7 +357,7 @@ static int dummy_parse_dt(struct device *dev,
 		pdata->dev_id[i].channel = i;
 		pdata->dev_id[i].decouple = decouple;
 
-		pr_info("Parse dt (type,ct,part,name,channel,decouple)=(%d,%d,%d,%s,%d,%d).\n",
+		pr_debug("Parse dt (type,ct,part,name,channel,decouple)=(%d,%d,%d,%s,%d,%d).\n",
 				pdata->dev_id[i].type, pdata->dev_id[i].ct,
 				pdata->dev_id[i].part, pdata->dev_id[i].name,
 				pdata->dev_id[i].channel,
@@ -501,14 +501,14 @@ static int __init flashlight_dummy_init(void)
 #ifndef CONFIG_OF
 	ret = platform_device_register(&dummy_gpio_platform_device);
 	if (ret) {
-		pr_info("Failed to register platform device\n");
+		pr_debug("Failed to register platform device\n");
 		return ret;
 	}
 #endif
 
 	ret = platform_driver_register(&dummy_platform_driver);
 	if (ret) {
-		pr_info("Failed to register platform driver\n");
+		pr_debug("Failed to register platform driver\n");
 		return ret;
 	}
 

@@ -107,7 +107,7 @@ static int dummy_pinctrl_init(struct dummy_flash *flash)
 	/* get pinctrl */
 	flash->dummy_hwen_pinctrl = devm_pinctrl_get(flash->dev);
 	if (IS_ERR(flash->dummy_hwen_pinctrl)) {
-		pr_info("Failed to get flashlight pinctrl.\n");
+		pr_debug("Failed to get flashlight pinctrl.\n");
 		ret = PTR_ERR(flash->dummy_hwen_pinctrl);
 		return ret;
 	}
@@ -117,7 +117,7 @@ static int dummy_pinctrl_init(struct dummy_flash *flash)
 			flash->dummy_hwen_pinctrl,
 			DUMMY_PINCTRL_STATE_HWEN_HIGH);
 	if (IS_ERR(flash->dummy_hwen_high)) {
-		pr_info("Failed to init (%s)\n",
+		pr_debug("Failed to init (%s)\n",
 			DUMMY_PINCTRL_STATE_HWEN_HIGH);
 		ret = PTR_ERR(flash->dummy_hwen_high);
 	}
@@ -125,7 +125,7 @@ static int dummy_pinctrl_init(struct dummy_flash *flash)
 			flash->dummy_hwen_pinctrl,
 			DUMMY_PINCTRL_STATE_HWEN_LOW);
 	if (IS_ERR(flash->dummy_hwen_low)) {
-		pr_info("Failed to init (%s)\n", DUMMY_PINCTRL_STATE_HWEN_LOW);
+		pr_debug("Failed to init (%s)\n", DUMMY_PINCTRL_STATE_HWEN_LOW);
 		ret = PTR_ERR(flash->dummy_hwen_low);
 	}
 
@@ -137,7 +137,7 @@ static int dummy_pinctrl_set(struct dummy_flash *flash, int pin, int state)
 	int ret = 0;
 
 	if (IS_ERR(flash->dummy_hwen_pinctrl)) {
-		pr_info("pinctrl is not available\n");
+		pr_debug("pinctrl is not available\n");
 		return -1;
 	}
 
@@ -152,13 +152,13 @@ static int dummy_pinctrl_set(struct dummy_flash *flash, int pin, int state)
 			pinctrl_select_state(flash->dummy_hwen_pinctrl,
 					flash->dummy_hwen_high);
 		else
-			pr_info("set err, pin(%d) state(%d)\n", pin, state);
+			pr_debug("set err, pin(%d) state(%d)\n", pin, state);
 		break;
 	default:
-		pr_info("set err, pin(%d) state(%d)\n", pin, state);
+		pr_debug("set err, pin(%d) state(%d)\n", pin, state);
 		break;
 	}
-	pr_info("pin(%d) state(%d)\n", pin, state);
+	pr_debug("pin(%d) state(%d)\n", pin, state);
 
 	return ret;
 }
@@ -435,7 +435,7 @@ static int dummy_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
 	int ret;
 
-	pr_info("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	ret = pm_runtime_get_sync(sd->dev);
 	if (ret < 0) {
@@ -448,7 +448,7 @@ static int dummy_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 
 static int dummy_close(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
-	pr_info("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	pm_runtime_put(sd->dev);
 
@@ -468,7 +468,7 @@ static int dummy_subdev_init(struct dummy_flash *flash,
 	const char *fled_name = "flash";
 	int rval;
 
-	// pr_info("%s %d", __func__, led_no);
+	// pr_debug("%s %d", __func__, led_no);
 
 	dummy_v4l2_i2c_subdev_init(&flash->subdev_led[led_no],
 				client, &dummy_ops);
@@ -549,7 +549,7 @@ static int dummy_ioctl(unsigned int cmd, unsigned long arg)
 
 	switch (cmd) {
 	case FLASH_IOC_SET_ONOFF:
-		pr_info("FLASH_IOC_SET_ONOFF(%d): %d\n",
+		pr_debug("FLASH_IOC_SET_ONOFF(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		if ((int)fl_arg->arg) {
 			dummy_torch_brt_ctrl(dummy_flash_data, channel, 25000);
@@ -562,7 +562,7 @@ static int dummy_ioctl(unsigned int cmd, unsigned long arg)
 		}
 		break;
 	default:
-		pr_info("No such command and arg(%d): (%d, %d)\n",
+		pr_debug("No such command and arg(%d): (%d, %d)\n",
 				channel, _IOC_NR(cmd), (int)fl_arg->arg);
 		return -ENOTTY;
 	}
@@ -647,7 +647,7 @@ static int dummy_parse_dt(struct dummy_flash *flash)
 		flash->flash_dev_id[i].channel = i;
 		flash->flash_dev_id[i].decouple = decouple;
 
-		pr_info("Parse dt (type,ct,part,name,channel,decouple)=(%d,%d,%d,%s,%d,%d).\n",
+		pr_debug("Parse dt (type,ct,part,name,channel,decouple)=(%d,%d,%d,%s,%d,%d).\n",
 				flash->flash_dev_id[i].type,
 				flash->flash_dev_id[i].ct,
 				flash->flash_dev_id[i].part,
@@ -674,7 +674,7 @@ static int dummy_probe(struct i2c_client *client,
 	struct dummy_platform_data *pdata = dev_get_platdata(&client->dev);
 	int rval;
 
-	pr_info("%s:%d", __func__, __LINE__);
+	pr_debug("%s:%d", __func__, __LINE__);
 
 	flash = devm_kzalloc(&client->dev, sizeof(*flash), GFP_KERNEL);
 	if (flash == NULL)
@@ -722,7 +722,7 @@ static int dummy_probe(struct i2c_client *client,
 
 	i2c_set_clientdata(client, flash);
 
-	pr_info("%s:%d", __func__, __LINE__);
+	pr_debug("%s:%d", __func__, __LINE__);
 	return 0;
 }
 
@@ -748,7 +748,7 @@ static int __maybe_unused dummy_suspend(struct device *dev)
 	struct i2c_client *client = to_i2c_client(dev);
 	struct dummy_flash *flash = i2c_get_clientdata(client);
 
-	pr_info("%s %d", __func__, __LINE__);
+	pr_debug("%s %d", __func__, __LINE__);
 
 	return dummy_uninit(flash);
 }
@@ -758,7 +758,7 @@ static int __maybe_unused dummy_resume(struct device *dev)
 	struct i2c_client *client = to_i2c_client(dev);
 	struct dummy_flash *flash = i2c_get_clientdata(client);
 
-	pr_info("%s %d", __func__, __LINE__);
+	pr_debug("%s %d", __func__, __LINE__);
 
 	return dummy_init(flash);
 }

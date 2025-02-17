@@ -373,7 +373,7 @@ enum IMGSENSOR_RETURN imgsensor_i2c_buffer_mode(int enable)
 #else
 enum IMGSENSOR_RETURN imgsensor_i2c_buffer_mode(int enable)
 {
-	pr_info("not support i2c_buf_mode\n");
+	pr_debug("not support i2c_buf_mode\n");
 	return IMGSENSOR_RETURN_SUCCESS;
 }
 #endif

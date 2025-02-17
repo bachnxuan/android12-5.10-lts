@@ -45,7 +45,7 @@ struct cfm_container *cfm_container_alloc(unsigned int cnt,
 	sz = sizeof(struct cfm_container) + (cnt * entry_sz);
 	cont = kmalloc(sz, GFP_KERNEL);
 	if (!cont) {
-		pr_info("[WARN] Failed to alloc container %u + %ux%u = %u",
+		pr_debug("[WARN] Failed to alloc container %u + %ux%u = %u",
 			(unsigned int)sizeof(struct cfm_container),
 			cnt, entry_sz, sz);
 		return NULL;
@@ -69,7 +69,7 @@ void *cfm_container_entry(struct cfm_container *cont, unsigned int idx)
 		if (idx < cont->cnt)
 			return &cont->buffer[idx * cont->entry_sz];
 
-		pr_info("[WARN] ConnFem container index out-of-bound: %u >= %u",
+		pr_debug("[WARN] ConnFem container index out-of-bound: %u >= %u",
 			idx, cont->cnt);
 	}
 	return NULL;
@@ -81,13 +81,13 @@ void **cfm_container_entries(struct cfm_container *cont)
 	void **entries;
 
 	if (!cont || cont->cnt == 0) {
-		pr_info("Container is empty");
+		pr_debug("Container is empty");
 		return NULL;
 	}
 
 	entries = kcalloc(cont->cnt, sizeof(*entries), GFP_KERNEL);
 	if (!entries) {
-		pr_info("[WARN] Failed to alloc %u entries of %u",
+		pr_debug("[WARN] Failed to alloc %u entries of %u",
 			cont->cnt, (unsigned int)sizeof(*entries));
 		return NULL;
 	}

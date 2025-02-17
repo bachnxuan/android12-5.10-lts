@@ -117,7 +117,7 @@ static void timesync_sync_base_internal(unsigned int flag)
 
 	spin_unlock_irqrestore(&timesync_ctx.lock, irq_flags);
 
-	pr_info("%s update base: ts=%llu, tick=0x%llx, fz=%d, ver=%d\n",
+	pr_debug("%s update base: ts=%llu, tick=0x%llx, fz=%d, ver=%d\n",
 		TIMESYNC_TAG, ts, tick, freeze, mcupm_base_ver);
 }
 
@@ -165,7 +165,7 @@ unsigned int mcupm_timesync_init(void)
 
 	timesync_workqueue = create_workqueue("mcupm_ts_wq");
 	if (!timesync_workqueue) {
-		pr_info("%s workqueue create failed\n", __func__);
+		pr_debug("%s workqueue create failed\n", __func__);
 		timesync_ctx.enabled = 0;
 		return -1;
 	}
@@ -193,7 +193,7 @@ unsigned int mcupm_timesync_init(void)
 	timesync_refresh_timer.function = timesync_refresh;
 	hrtimer_start(&timesync_refresh_timer, wrap, HRTIMER_MODE_REL);
 
-	pr_info("%s ts: cycle_last %lld, time_base:%lld, wrap:%lld\n",
+	pr_debug("%s ts: cycle_last %lld, time_base:%lld, wrap:%lld\n",
 		TIMESYNC_TAG, timesync_counter.cycle_last,
 		timesync_counter.nsec, wrap);
 

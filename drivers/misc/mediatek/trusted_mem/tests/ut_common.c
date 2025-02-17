@@ -329,14 +329,14 @@ mem_alloc_saturation_variant(enum TRUSTED_MEM_TYPE mem_type, u8 *mem_owner,
 					tmem_query_gz_handle_to_pa(mem_type, alignment, chunk_size,
 						&ref_count, &g_mem_handle_list[chunk_num],
 						mem_owner, 0, 0, &phy_addr);
-					pr_info("trusted_mem_api_query_pa(): \
+					pr_debug("trusted_mem_api_query_pa(): \
 						gz_handle=0x%x, pa=0x%lx\n",
 						g_mem_handle_list[chunk_num], phy_addr);
                                 } else {
 					tmem_query_sec_handle_to_pa(mem_type, alignment, chunk_size,
 						&ref_count, &g_mem_handle_list[chunk_num],
 						mem_owner, 0, 0, &phy_addr);
-					pr_info("trusted_mem_api_query_pa(): \
+					pr_debug("trusted_mem_api_query_pa(): \
 						sec_handle=0x%x, pa=0x%lx\n",
 						g_mem_handle_list[chunk_num], phy_addr);
 				}

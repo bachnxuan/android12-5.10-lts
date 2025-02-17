@@ -107,7 +107,7 @@ static VOID stp_dbg_dump_log(PUINT8 buf, INT32 size)
 
 		if (i >= DUMP_LOG_BYTES_PER_LINE || !size) {
 			line[i] = 0;
-			pr_info("page_trace: %s\n", line);
+			pr_debug("page_trace: %s\n", line);
 			i = 0;
 		}
 	}
@@ -467,7 +467,7 @@ static _osal_inline_ INT32 stp_dbg_soc_paged_trace(VOID)
 
 		dump_len =
 			buffer_idx < STP_DBG_PAGED_TRACE_SIZE ? buffer_idx : STP_DBG_PAGED_TRACE_SIZE;
-		pr_info("-- paged trace ascii output --");
+		pr_debug("-- paged trace ascii output --");
 		stp_dbg_dump_log(&g_paged_trace_buffer[0], dump_len);
 		ret = 0;
 	} while (0);
@@ -541,6 +541,6 @@ INT32 stp_dbg_soc_poll_cpupcr(UINT32 times, UINT32 sleep, UINT32 cmd)
 		times = WMT_CORE_DMP_CPUPCR_NUM;
 
 	if (wmt_lib_dump_cpupcr(times, sleep) == MTK_WCN_BOOL_FALSE)
-		pr_info("dump_cpupcr fail");
+		pr_debug("dump_cpupcr fail");
 	return 0;
 }

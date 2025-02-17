@@ -37,12 +37,12 @@
 	pr_debug(LogTag "[%s] " format, __func__, ##args)
 
 #ifdef CAM_MEM_DEBUG
-#define LOG_DBG(format, args...) pr_info(LogTag "[%s] " format, __func__, ##args)
+#define LOG_DBG(format, args...) pr_debug(LogTag "[%s] " format, __func__, ##args)
 #else
 #define LOG_DBG(format, args...)
 #endif
 
-#define LOG_INF(format, args...) pr_info(LogTag "[%s] " format, __func__, ##args)
+#define LOG_INF(format, args...) pr_debug(LogTag "[%s] " format, __func__, ##args)
 
 #define LOG_NOTICE(format, args...)                                            \
 	pr_notice(LogTag "[%s] " format, __func__, ##args)

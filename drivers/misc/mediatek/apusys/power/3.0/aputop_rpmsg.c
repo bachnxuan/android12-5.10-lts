@@ -25,7 +25,7 @@ static struct aputop_rpmsg {
 enum aputop_rpmsg_cmd get_curr_rpmsg_cmd(void)
 {
 	if (IS_ERR_OR_NULL(top_rpmsg) || !top_rpmsg->initialized) {
-		pr_info("%s: rpmsg not ready yet\n", __func__);
+		pr_debug("%s: rpmsg not ready yet\n", __func__);
 		return APUTOP_RPMSG_CMD_MAX;
 	}
 
@@ -38,7 +38,7 @@ int aputop_send_rpmsg(struct aputop_rpmsg_data *rpmsg_data, int timeout) // ms
 	int ret;
 
 	if (IS_ERR_OR_NULL(top_rpmsg) || !top_rpmsg->initialized) {
-		pr_info("%s: failed to send msg to remote side\n", __func__);
+		pr_debug("%s: failed to send msg to remote side\n", __func__);
 		return -EINVAL;
 	}
 
@@ -50,7 +50,7 @@ int aputop_send_rpmsg(struct aputop_rpmsg_data *rpmsg_data, int timeout) // ms
 	ret = rpmsg_send(top_rpmsg->ept, (void *)rpmsg_data,
 			sizeof(struct aputop_rpmsg_data));
 	if (ret) {
-		pr_info("%s: failed to send msg to remote side, ret=%d\n",
+		pr_debug("%s: failed to send msg to remote side, ret=%d\n",
 				__func__, ret);
 		goto unlock;
 	}
@@ -61,13 +61,13 @@ int aputop_send_rpmsg(struct aputop_rpmsg_data *rpmsg_data, int timeout) // ms
 				msecs_to_jiffies(timeout));
 
 		if (ret < 0) {
-			pr_info("%s waiting for ack interrupted, ret : %d\n",
+			pr_debug("%s waiting for ack interrupted, ret : %d\n",
 					__func__, ret);
 			goto unlock;
 		}
 
 		if (ret == 0) {
-			pr_info("%s waiting for ack timeout\n", __func__);
+			pr_debug("%s waiting for ack timeout\n", __func__);
 			ret = -ETIMEDOUT;
 			goto unlock;
 		}
@@ -88,7 +88,7 @@ static int aputop_rpmsg_callback(struct rpmsg_device *rpdev, void *data,
 	int ret = 0;
 
 	if (IS_ERR_OR_NULL(top_rpmsg) || !top_rpmsg->initialized) {
-		pr_info("%s: failed to send msg to remote side\n", __func__);
+		pr_debug("%s: failed to send msg to remote side\n", __func__);
 		ret = -EINVAL;
 		goto out;
 	}
@@ -108,12 +108,12 @@ void test_ipi_wakeup_apu(void)
 {
 	struct aputop_rpmsg_data rpmsg_data;
 
-	pr_info("%s ++\n", __func__);
+	pr_debug("%s ++\n", __func__);
 	memset(&rpmsg_data, 0, sizeof(struct aputop_rpmsg_data));
 	rpmsg_data.cmd = APUTOP_CURR_STATUS;
 	rpmsg_data.data0 = 0x0; // pseudo data
 	aputop_send_rpmsg(&rpmsg_data, 100);
-	pr_info("%s --\n", __func__);
+	pr_debug("%s --\n", __func__);
 }
 
 static int aputop_rpmsg_probe(struct rpmsg_device *rpdev)

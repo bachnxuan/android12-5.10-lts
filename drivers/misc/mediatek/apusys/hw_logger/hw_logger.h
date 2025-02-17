@@ -114,19 +114,19 @@ enum {
 };
 
 #define HWLOGR_ERR(x, args...) \
-	pr_info(HWLOGR_PREFIX "[error] %s " x, __func__, ##args)
+	pr_debug(HWLOGR_PREFIX "[error] %s " x, __func__, ##args)
 #define HWLOGR_WARN(x, args...) \
-	pr_info(HWLOGR_PREFIX "[warn] %s " x, __func__, ##args)
+	pr_debug(HWLOGR_PREFIX "[warn] %s " x, __func__, ##args)
 #define HWLOGR_INFO(x, args...) \
 	{ \
 		if (g_hw_logger_log_lv >= DBG_LOG_INFO) \
-			pr_info(HWLOGR_PREFIX "%s " \
+			pr_debug(HWLOGR_PREFIX "%s " \
 			x, __func__, ##args); \
 	}
 #define HWLOGR_DBG(x, args...) \
 	{ \
 		if (g_hw_logger_log_lv >= DBG_LOG_DEBUG) \
-			pr_info(HWLOGR_PREFIX "[debug] %s/%d " \
+			pr_debug(HWLOGR_PREFIX "[debug] %s/%d " \
 			x, __func__, __LINE__, ##args); \
 	}
 

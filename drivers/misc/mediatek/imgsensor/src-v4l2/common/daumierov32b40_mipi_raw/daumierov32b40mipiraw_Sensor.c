@@ -54,8 +54,8 @@
 #define daumierov32b40_table_write_cmos_sensor(...) subdrv_i2c_wr_regs_u8(__VA_ARGS__)
 #define daumierov32b40_burst_write_cmos_sensor(...) subdrv_i2c_wr_regs_u8_burst(__VA_ARGS__)
 #define LOG_TAG "[daumierov32b40]"
-#define OV32B40_LOG_INF(format, args...) pr_info(LOG_TAG "[%s] " format, __func__, ##args)
-#define OV32B40_LOG_DBG(format, args...) pr_info(LOG_TAG "[%s] " format, __func__, ##args)
+#define OV32B40_LOG_INF(format, args...) pr_debug(LOG_TAG "[%s] " format, __func__, ##args)
+#define OV32B40_LOG_DBG(format, args...) pr_debug(LOG_TAG "[%s] " format, __func__, ##args)
 
 #undef VENDOR_EDIT
 

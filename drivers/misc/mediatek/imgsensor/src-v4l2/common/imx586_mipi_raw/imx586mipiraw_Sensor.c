@@ -58,7 +58,7 @@ static bool _is_seamless;
 #define write_cmos_sensor_8(...) subdrv_i2c_wr_u8(__VA_ARGS__)
 #define write_cmos_sensor(...) subdrv_i2c_wr_u16(__VA_ARGS__)
 #define imx586_table_write_cmos_sensor(...) subdrv_i2c_wr_regs_u8(__VA_ARGS__)
-#define LOG_INF(format, args...) pr_info(PFX "[%s] " format, __func__, ##args)
+#define LOG_INF(format, args...) pr_debug(PFX "[%s] " format, __func__, ##args)
 
 #undef VENDOR_EDIT
 
@@ -642,7 +642,7 @@ static void write_shutter(struct subdrv_ctx *ctx, kal_uint32 shutter)
 	}
 	if (!_is_seamless)
 		if (read_cmos_sensor_8(ctx, 0x0350) != 0x01) {
-			pr_info("single cam scenario enable auto-extend");
+			pr_debug("single cam scenario enable auto-extend");
 			set_cmos_sensor_8(ctx, 0x0350, 0x01);
 		}
 	if (longexposure_times > 0) {
@@ -3528,7 +3528,7 @@ static void custom3_setting(struct subdrv_ctx *ctx)
 		_size_to_write += _length;
 	}
 	if (otp_flag == OTP_QSC_NONE) {
-		pr_info("OTP no QSC Data, close qsc register");
+		pr_debug("OTP no QSC Data, close qsc register");
 		if (!_is_seamless)
 			write_cmos_sensor_8(ctx, 0x3621, 0x00);
 		else {
@@ -3566,7 +3566,7 @@ static void custom4_setting(struct subdrv_ctx *ctx)
 
 	}
 	if (otp_flag == OTP_QSC_NONE) {
-		pr_info("OTP no QSC Data, close qsc register");
+		pr_debug("OTP no QSC Data, close qsc register");
 		if (!_is_seamless)
 			write_cmos_sensor_8(ctx, 0x3621, 0x00);
 		else {
@@ -3585,7 +3585,7 @@ static void custom6_setting(struct subdrv_ctx *ctx)
 		sizeof(imx586_custom6_setting)/sizeof(kal_uint16));
 
 	if (otp_flag == OTP_QSC_NONE) {
-		pr_info("OTP no QSC Data, close qsc register");
+		pr_debug("OTP no QSC Data, close qsc register");
 		write_cmos_sensor_8(ctx, 0x3621, 0x00);
 	}
 	LOG_INF("X\n");
@@ -4278,7 +4278,7 @@ static kal_uint32 seamless_switch(struct subdrv_ctx *ctx,
 	LOG_INF("exit\n");
 	return ERROR_NONE;
 #if ByPass /*havn't change to v4l2 */
-	pr_info("seamless switch to scenario %d!\n", scenario_id);
+	pr_debug("seamless switch to scenario %d!\n", scenario_id);
 
 	switch (scenario_id) {
 	case SENSOR_SCENARIO_ID_NORMAL_CAPTURE:
@@ -4336,7 +4336,7 @@ static kal_uint32 seamless_switch(struct subdrv_ctx *ctx,
 #if ByPass
 	case SENSOR_SCENARIO_ID_CUSTOM1:
 	{
-		pr_info("seamless switch to zoom-in 1.3x!\n");
+		pr_debug("seamless switch to zoom-in 1.3x!\n");
 		spin_lock(&imgsensor_drv_lock);
 		imgsensor.sensor_mode = IMGSENSOR_MODE_CUSTOM1;
 		imgsensor.pclk = imgsensor_info.custom1.pclk;
@@ -4389,7 +4389,7 @@ static kal_uint32 seamless_switch(struct subdrv_ctx *ctx,
 	break;
 	default:
 	{
-		pr_info(
+		pr_debug(
 		"error! wrong setting in set_seamless_switch = %d",
 		scenario_id);
 		return 0xff;
@@ -4401,7 +4401,7 @@ static kal_uint32 seamless_switch(struct subdrv_ctx *ctx,
 	if (gain_2ndframe != 0)
 		set_gain(gain_2ndframe);
 #endif
-	pr_info(
+	pr_debug(
 	"done for seamless settings shutter %d  %d gain %d %d !\n",
 	shutter, shutter_2ndframe, gain, gain_2ndframe);
 #endif
@@ -5437,7 +5437,7 @@ break;
 				sizeof(struct SENSOR_VC_INFO_STRUCT));
 			break;
 		default:
-			pr_info("error: get wrong vc_INFO id = %d",
+			pr_debug("error: get wrong vc_INFO id = %d",
 			*feature_data_32);
 			break;
 		}
@@ -5472,7 +5472,7 @@ break;
 			"warning! no ae_ctrl input");
 		}
 		if (feature_data == NULL) {
-			pr_info("error! input scenario is null!");
+			pr_debug("error! input scenario is null!");
 			return ERROR_INVALID_SCENARIO_ID;
 		}
 
@@ -5493,7 +5493,7 @@ break;
 			pScenarios =
 			(MUINT32 *)((uintptr_t)(*(feature_data + 1)));
 		} else {
-			pr_info("input pScenarios vector is NULL!\n");
+			pr_debug("input pScenarios vector is NULL!\n");
 			return ERROR_INVALID_SCENARIO_ID;
 		}
 		switch (*feature_data) {

@@ -126,7 +126,7 @@ void kalSetCpuFreq(IN int32_t freq)
 			ret = freq_qos_add_request(&policy->constraints,
 				&wReq->qos_req, FREQ_QOS_MIN, 0);
 			if (ret < 0) {
-				pr_info("%s: freq_qos_add_request fail cpu%d\n",
+				pr_debug("%s: freq_qos_add_request fail cpu%d\n",
 					__func__, cpu);
 				kfree(wReq);
 				break;
@@ -166,7 +166,7 @@ int32_t kalBoostCpu(IN struct ADAPTER *prAdapter,
 
 	if (u4TarPerfLevel >= u4BoostCpuTh) {
 		if (fgRequested == ENUM_CPU_BOOST_STATUS_STOP) {
-			pr_info("kalBoostCpu start (%d>=%d)\n",
+			pr_debug("kalBoostCpu start (%d>=%d)\n",
 				u4TarPerfLevel, u4BoostCpuTh);
 			fgRequested = ENUM_CPU_BOOST_STATUS_START;
 
@@ -179,7 +179,7 @@ int32_t kalBoostCpu(IN struct ADAPTER *prAdapter,
 		}
 	} else {
 		if (fgRequested == ENUM_CPU_BOOST_STATUS_START) {
-			pr_info("kalBoostCpu stop (%d<%d)\n",
+			pr_debug("kalBoostCpu stop (%d<%d)\n",
 				u4TarPerfLevel, u4BoostCpuTh);
 			fgRequested = ENUM_CPU_BOOST_STATUS_STOP;
 

@@ -71,7 +71,7 @@ int mtk_devinfo_init(struct platform_device *pdev)
 		return -1;
 	cell = nvmem_cell_get(&pdev->dev, "lkginfo");
 	if (IS_ERR(cell)) {
-		pr_info("Fail to get Cell\n");
+		pr_debug("Fail to get Cell\n");
 		return PTR_ERR(cell);
 	}
 	buf = nvmem_cell_read(cell, &len);

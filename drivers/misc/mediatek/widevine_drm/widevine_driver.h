@@ -13,7 +13,7 @@ extern int wv_dbg_level;
 #define WV_LOG(level, fmt, args...)				\
 	do {							\
 		if ((wv_dbg_level & level) == level)		\
-			pr_info("[drm_kernel] level=%d %s(), %d: " fmt "\n",\
+			pr_debug("[drm_kernel] level=%d %s(), %d: " fmt "\n",\
 			level, __func__, __LINE__, ##args);	\
 	} while (0)
 

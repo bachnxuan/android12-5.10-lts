@@ -26,9 +26,9 @@
 #include <linux/ktime.h>
 
 /*define*/
-#define KREE_DEBUG(fmt...) pr_info("[KREE]" fmt)
-#define KREE_INFO(fmt...) pr_info("[KREE]" fmt)
-#define KREE_ERR(fmt...) pr_info("[KREE][ERR]" fmt)
+#define KREE_DEBUG(fmt...) pr_debug("[KREE]" fmt)
+#define KREE_INFO(fmt...) pr_debug("[KREE]" fmt)
+#define KREE_ERR(fmt...) pr_debug("[KREE][ERR]" fmt)
 
 #define echo_srv_name  "com.mediatek.geniezone.srv.echo"
 

@@ -144,7 +144,7 @@ ulong apu_rpc_rdy_value(void)
 {
 	if (rpc_reg)
 		return apu_readl(rpc_reg + RPC_INTF_PWR_RDY);
-	pr_info("%s not ready\n", __func__);
+	pr_debug("%s not ready\n", __func__);
 	return 0;
 }
 
@@ -152,7 +152,7 @@ ulong apu_spm_wakeup_value(void)
 {
 	if (spm_reg)
 		return apu_readl(spm_reg + SPM_CROSS_WAKE_M01_REQ);
-	pr_info("%s not ready\n", __func__);
+	pr_debug("%s not ready\n", __func__);
 	return 0;
 }
 

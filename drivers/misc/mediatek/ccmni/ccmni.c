@@ -92,7 +92,7 @@ static int register_tcp_pacing_sysctl(void)
 {
 	sysctl_header = register_sysctl_table(tcp_pacing_sysctl_root);
 	if (sysctl_header == NULL) {
-		pr_info("CCCI:CCMNI:register tcp_pacing failed\n");
+		pr_debug("CCCI:CCMNI:register tcp_pacing failed\n");
 		return -1;
 	}
 	return 0;
@@ -1180,7 +1180,7 @@ static inline void ccmni_dev_init(int md_id, struct net_device *dev)
 	dev->features = NETIF_F_VLAN_CHALLENGED;
 	dev->features |= NETIF_F_GRO_FRAGLIST;
 	if (ctlb->ccci_ops->md_ability & MODEM_CAP_HWTXCSUM) {
-		pr_info("checksum_dbg %s MODEM_CAP_HWTXCSUM", __func__);
+		pr_debug("checksum_dbg %s MODEM_CAP_HWTXCSUM", __func__);
 		dev->features |= NETIF_F_HW_CSUM;
 	}
 	if (ctlb->ccci_ops->md_ability & MODEM_CAP_SGIO) {

@@ -43,11 +43,11 @@ static unsigned int gpueb_enable;
                 aee_kernel_exception_api(__FILE__, __LINE__, \
                         DB_OPT_MMPROFILE_BUFFER | DB_OPT_NE_JBT_TRACES, \
                         ssc_name, "[SSC] error:"string, ##args); \
-        pr_info("[SSC] error:"string, ##args);  \
+        pr_debug("[SSC] error:"string, ##args);  \
         } while (0)
 #else
 #define ssc_aee_print(string, args...) \
-	pr_info("[SSC] error:"string, ##args)
+	pr_debug("[SSC] error:"string, ##args)
 #endif
 
 #define MTK_SSC_DTS_COMPATIBLE "mediatek,ssc"
@@ -66,7 +66,7 @@ static int set_vcore_vlogic_bound(int en)
 	int ret;
 
 	if (!ssc_vcore_voter) {
-		pr_info("[SSC] invalid vcore regulator\n");
+		pr_debug("[SSC] invalid vcore regulator\n");
 		return -1;
 	}
 
@@ -76,7 +76,7 @@ static int set_vcore_vlogic_bound(int en)
 		ret = regulator_set_voltage(ssc_vcore_voter, 575000, INT_MAX);
 
 	if (ret) {
-		pr_info("[SSC] vcore vlogic bound %s fail\n", en ? "enable" : "disable");
+		pr_debug("[SSC] vcore vlogic bound %s fail\n", en ? "enable" : "disable");
 		return -1;
 	}
 
@@ -99,7 +99,7 @@ static int set_gpu_vlogic_bound(int en)
 					GPUPPM_KEEP_IDX, GPUPPM_RESET_IDX);
 
 	if (ret)
-		pr_info("[SSC] gpu vlogic bound %s fail\n", en ? "enable" : "disable");
+		pr_debug("[SSC] gpu vlogic bound %s fail\n", en ? "enable" : "disable");
 #endif
 	return ret;
 }
@@ -110,7 +110,7 @@ static int ssc_vlogic_bound_event(struct notifier_block *notifier, unsigned long
 
 	unsigned int request_id = *((unsigned int*)data);
 
-	pr_info("[SSC] request ID = 0x%x, event = 0x%lx\n", request_id, event);
+	pr_debug("[SSC] request ID = 0x%x, event = 0x%lx\n", request_id, event);
 
 	switch(event) {
 		case SSC_ENABLE_VLOGIC_BOUND:
@@ -267,7 +267,7 @@ static void ssc_notification_handler(u32 feature_id, scmi_tinysys_report *report
 
 		timeout = report->p2;
 
-		pr_info("[SSC] %s, timeout_sta = 0x%x, sram_sta = 0x%x, misc = 0x%x\n",
+		pr_debug("[SSC] %s, timeout_sta = 0x%x, sram_sta = 0x%x, misc = 0x%x\n",
 			__func__, report->p2, report->p3, report->p4);
 
 		for (i = 1 ; i < SSC_TIMEOUT_NUM ; i++) {
@@ -279,7 +279,7 @@ static void ssc_notification_handler(u32 feature_id, scmi_tinysys_report *report
 				ssc_timeout_name[i]);
 			}
 		}
-		pr_info("[SSC] CRDISPATCH_KEY:  SSC VIOLATION: %s\n", log_buf);
+		pr_debug("[SSC] CRDISPATCH_KEY:  SSC VIOLATION: %s\n", log_buf);
 		BUG_ON(1);
 
 	}
@@ -300,7 +300,7 @@ static int mt_ssc_pdrv_probe(struct platform_device *pdev)
 
 	ssc_vcore_voter = regulator_get(&pdev->dev, SSC_VCORE_REGULATOR);
 	if (IS_ERR(ssc_vcore_voter)) {
-		pr_info("[SSC] get ssc vcore regulator fail\n");
+		pr_debug("[SSC] get ssc vcore regulator fail\n");
 		ssc_vcore_voter = NULL;
 		return -1;
 	}
@@ -331,11 +331,11 @@ static int __init ssc_init(void)
 	struct scmi_tinysys_info_st *tinfo;
 #endif
 
-	pr_info("[SSC] %s\n", __func__);
+	pr_debug("[SSC] %s\n", __func__);
 
 	ret = platform_driver_register(&mt_ssc_pdrv);
 	if (ret)
-		pr_info("[SSC] fail to register SSC platform driver\n");
+		pr_debug("[SSC] fail to register SSC platform driver\n");
 
 	spin_lock_irqsave(&ssc_locker, flags);
 
@@ -346,7 +346,7 @@ static int __init ssc_init(void)
 				MTK_SSC_SAFE_VLOGIC_STRING,
 				&safe_vlogic_uV);
 
-		pr_info("[SSC] safe_vlogic_uV = %d uV", safe_vlogic_uV);
+		pr_debug("[SSC] safe_vlogic_uV = %d uV", safe_vlogic_uV);
 		/* This property is not defined*/
 		if (ret)
 			safe_vlogic_uV = 0xFFFFFFFF;
@@ -363,7 +363,7 @@ static int __init ssc_init(void)
 			"gpueb-support",
 			&gpueb_enable);
 
-		pr_info("[SSC] gpueb enable = 0x%x\n", gpueb_enable);
+		pr_debug("[SSC] gpueb enable = 0x%x\n", gpueb_enable);
 
 		if (gpueb_enable == 0)
 			gpufreq_set_limit(TARGET_DEFAULT, LIMIT_SRAMRC, GPUPPM_KEEP_IDX, 60000);
@@ -378,19 +378,19 @@ static int __init ssc_init(void)
 #if IS_ENABLED(CONFIG_ARM_SCMI_PROTOCOL)
 	tinfo = get_scmi_tinysys_info();
 	if (!tinfo) {
-		pr_info("[SSC] get SCMI info fail\n");
+		pr_debug("[SSC] get SCMI info fail\n");
 		goto SKIP_SCMI;
 	}
 	ret = of_property_read_u32(tinfo->sdev->dev.of_node, "scmi_ssc", &ssc_scmi_feature_id);
 
-	pr_info("[SSC] ssc scmi id = %d\n", ssc_scmi_feature_id);
+	pr_debug("[SSC] ssc scmi id = %d\n", ssc_scmi_feature_id);
 
 	scmi_tinysys_register_event_notifier(ssc_scmi_feature_id,
 			(f_handler_t)ssc_notification_handler);
 
 	ret = scmi_tinysys_event_notify(ssc_scmi_feature_id, 1);
 	if (ret < 0)
-		pr_info("[SSC] SCMI notify register fail\n");
+		pr_debug("[SSC] SCMI notify register fail\n");
 
 	ret = of_property_read_u32(tinfo->sdev->dev.of_node, "scmi_plt", &plt_scmi_feature_id);
 	ret = scmi_tinysys_common_set(tinfo->ph, plt_scmi_feature_id, PLT_SSC_INIT,
@@ -399,7 +399,7 @@ static int __init ssc_init(void)
 	if (ret)
 		ssc_aee_print("[SSC] SCMI common set fail!\n");
 	else
-		pr_info("[SSC] notify done! (r1:%d r2:%d r3:%d)\n",
+		pr_debug("[SSC] notify done! (r1:%d r2:%d r3:%d)\n",
 				rvalue.r1, rvalue.r2, rvalue.r3);
 SKIP_SCMI:
 #endif

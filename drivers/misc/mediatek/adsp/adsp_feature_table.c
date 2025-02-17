@@ -219,12 +219,12 @@ int adsp_register_feature(enum adsp_feature_id fid)
 		ret = _adsp_register_feature(cid, fid, 0);
 
 		if (ret)
-			pr_info("%s, failed core:%d, fid:%d, ret:%d",
+			pr_debug("%s, failed core:%d, fid:%d, ret:%d",
 				__func__, cid, fid, ret);
 	}
 
 	if (!flag)
-		pr_info("%s, feature '%s' not in any core_set",
+		pr_debug("%s, feature '%s' not in any core_set",
 			__func__, feature_table[fid].name);
 
 	return ret;
@@ -247,12 +247,12 @@ int adsp_deregister_feature(enum adsp_feature_id fid)
 		ret = _adsp_deregister_feature(cid, fid, 0);
 
 		if (ret)
-			pr_info("%s, failed core:%d, fid:%d, ret:%d",
+			pr_debug("%s, failed core:%d, fid:%d, ret:%d",
 				__func__, cid, fid, ret);
 	}
 
 	if (!flag)
-		pr_info("%s, feature '%s' not in any core_set",
+		pr_debug("%s, feature '%s' not in any core_set",
 			__func__, feature_table[fid].name);
 
 	return ret;

@@ -310,7 +310,7 @@ static const struct attribute_group *extdev_io_attr_groups[] = {
 
 static int __init extdev_io_class_init(void)
 {
-	pr_info("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 	extdev_io_class = class_create(THIS_MODULE, "extdev_io");
 	if (IS_ERR(extdev_io_class)) {
 		pr_err("Unable to create extdev_io class(%d)\n", PTR_ERR(extdev_io_class));
@@ -318,14 +318,14 @@ static int __init extdev_io_class_init(void)
 	}
 
 	extdev_io_class->dev_groups = extdev_io_attr_groups;
-	pr_info("extdev_io class init OK\n");
+	pr_debug("extdev_io class init OK\n");
 	return 0;
 }
 
 static void __exit extdev_io_class_exit(void)
 {
 	class_destroy(extdev_io_class);
-	pr_info("extdev_io class deinit OK\n");
+	pr_debug("extdev_io class deinit OK\n");
 }
 
 subsys_initcall(extdev_io_class_init);

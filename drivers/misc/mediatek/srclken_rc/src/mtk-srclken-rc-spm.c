@@ -261,13 +261,13 @@ static int mtk_srclken_spm_probe(struct platform_device *pdev)
 	if (IS_ERR(cfg_base))
 		return PTR_ERR(cfg_base);
 
-	pr_info("cfg base: 0x%pR\n", cfg_base);
+	pr_debug("cfg base: 0x%pR\n", cfg_base);
 
 	sta_base = of_iomap(node, 1);
 	if (IS_ERR(sta_base))
 		return PTR_ERR(sta_base);
 
-	pr_info("sta base: 0x%pR\n", sta_base);
+	pr_debug("sta base: 0x%pR\n", sta_base);
 
 	/* check each extend register exist or not */
 	ext_num = of_property_count_strings(node, "cfg-ext");

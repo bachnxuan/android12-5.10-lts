@@ -591,7 +591,7 @@ int apu_rproc_init(struct apusys_core_info *info)
 
 	ret = platform_driver_register(&mtk_apu_driver);
 	if (ret)
-		pr_info("failed to register mtk_apu_driver\n");
+		pr_debug("failed to register mtk_apu_driver\n");
 
 	return ret;
 }

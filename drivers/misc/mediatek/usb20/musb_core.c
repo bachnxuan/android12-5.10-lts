@@ -196,7 +196,7 @@ int musb_otg_send_event(struct usb_otg *otg, enum usb_otg_event event)
 	    module_name, kobject_get_path(&otg->phy->dev->kobj, GFP_KERNEL));
 	ret = kobject_uevent_env(&otg->phy->dev->kobj, KOBJ_CHANGE, envp);
 	if (ret < 0)
-		pr_info("uevent sending failed with ret = %d\n", ret);
+		pr_debug("uevent sending failed with ret = %d\n", ret);
 	return ret;
 }
 EXPORT_SYMBOL_GPL(musb_otg_send_event);

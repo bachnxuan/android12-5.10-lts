@@ -61,7 +61,7 @@ int mcupm_plt_module_init(void)
 	unsigned char *b;
 
 	if (mcupm_sysfs_init()) {
-		pr_info("[MCUPM] Sysfs Init Failed\n");
+		pr_debug("[MCUPM] Sysfs Init Failed\n");
 		return -1;
 	}
 
@@ -72,19 +72,19 @@ int mcupm_plt_module_init(void)
 	if (has_reserved_memory) {
 		phys_addr = mcupm_reserve_mem_get_phys(MCUPM_MEM_ID);
 		if (phys_addr == 0) {
-			pr_info("MCUPM: Can't get logger phys mem\n");
+			pr_debug("MCUPM: Can't get logger phys mem\n");
 			goto error;
 		}
 
 		virt_addr = (phys_addr_t)mcupm_reserve_mem_get_virt(MCUPM_MEM_ID);
 		if (virt_addr == 0) {
-			pr_info("MCUPM: Can't get logger virt mem\n");
+			pr_debug("MCUPM: Can't get logger virt mem\n");
 			goto error;
 		}
 
 		mem_sz = mcupm_reserve_mem_get_size(MCUPM_MEM_ID);
 		if (mem_sz == 0) {
-			pr_info("MCUPM: Can't get logger mem size\n");
+			pr_debug("MCUPM: Can't get logger mem size\n");
 			goto error;
 		}
 
@@ -112,7 +112,7 @@ int mcupm_plt_module_init(void)
 		last_ofs = plt_ctl->size;
 
 
-		pr_info("MCUPM: %s(): after plt, ofs=0x%x plt_ctl size=0x%x\n", __func__,
+		pr_debug("MCUPM: %s(): after plt, ofs=0x%x plt_ctl size=0x%x\n", __func__,
 			last_ofs, sizeof(*plt_ctl));
 
 #if MCUPM_LOGGER_SUPPORT
@@ -122,12 +122,12 @@ int mcupm_plt_module_init(void)
 
 
 			if (last_sz == 0) {
-				pr_info("MCUPM: mcupm_logger_init return fail\n");
+				pr_debug("MCUPM: mcupm_logger_init return fail\n");
 				goto error;
 			}
 
 			last_ofs += last_sz;
-			pr_info("MCUPM: %s(): after logger, ofs=0x%x\n", __func__, last_ofs);
+			pr_debug("MCUPM: %s(): after logger, ofs=0x%x\n", __func__, last_ofs);
 		}
 #endif
 
@@ -142,18 +142,18 @@ int mcupm_plt_module_init(void)
 			2000);
 
 		if (ret) {
-			pr_info("MCUPM: plt IPI fail ret=%d, ackdata=%d\n",
+			pr_debug("MCUPM: plt IPI fail ret=%d, ackdata=%d\n",
 				ret, mcupm_plt_ackdata);
 			goto error;
 		}
 
 		if (mcupm_plt_ackdata < 0) {
-			pr_info("MCUPM: plt IPI init fail, ackdata=%d\n",
+			pr_debug("MCUPM: plt IPI init fail, ackdata=%d\n",
 					mcupm_plt_ackdata);
 			goto error;
 		}
 
-		pr_info("MCUPM: plt IPI success ret=%d, ackdata=%d\n",
+		pr_debug("MCUPM: plt IPI success ret=%d, ackdata=%d\n",
 			ret, mcupm_plt_ackdata);
 
 #if MCUPM_LOGGER_SUPPORT
@@ -169,6 +169,6 @@ int mcupm_plt_module_init(void)
 void mcupm_plt_module_exit(void)
 {
     //Todo release resource
-	pr_info("[MCUPM] mcupm plt module exit.\n");
+	pr_debug("[MCUPM] mcupm plt module exit.\n");
 }
 #endif

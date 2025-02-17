@@ -30,13 +30,13 @@ u8 g_edmaRV_log_lv = EDMA_LOG_DEBUG;
 #define LOG_RV_DBG(x, args...) \
 	{ \
 		if (g_edmaRV_log_lv >= EDMA_LOG_DEBUG) \
-			pr_info(EDMA_TAG "[debug] %s/%d "\
+			pr_debug(EDMA_TAG "[debug] %s/%d "\
 			x, __func__, __LINE__, ##args); \
 	}
 
-#define LOG_INF(format, args...)    pr_info(EDMA_TAG " " format, ##args)
-#define LOG_WRN(format, args...)    pr_info(EDMA_TAG "[warn] " format, ##args)
-#define LOG_ERR(format, args...)    pr_info(EDMA_TAG "[error] " format, ##args)
+#define LOG_INF(format, args...)    pr_debug(EDMA_TAG " " format, ##args)
+#define LOG_WRN(format, args...)    pr_debug(EDMA_TAG "[warn] " format, ##args)
+#define LOG_ERR(format, args...)    pr_debug(EDMA_TAG "[error] " format, ##args)
 
 /* ipi type */
 enum EDMA_IPI_TYPE {
@@ -164,7 +164,7 @@ int edma_rv_setup(struct apusys_core_info *info)
 {
 	int ret = 0;
 
-	pr_info("%s in\n", __func__);
+	pr_debug("%s in\n", __func__);
 
 	memset(&eRdev, 0, sizeof(eRdev));
 

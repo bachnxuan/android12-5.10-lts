@@ -78,7 +78,7 @@ uint32_t get_ptn_size(uint32_t hash)
 	}
 
 	if (ptn_hash != hash)
-		pr_info("[MVPU][Sec] PTN HASH: 0x%08x not found\n", hash);
+		pr_debug("[MVPU][Sec] PTN HASH: 0x%08x not found\n", hash);
 
 	//printf("[SEC_IMG] get PTN HASH: 0x%08x, img addr 0x%08x, size: 0x%08x\n", ptn_hash, img_addr, ptn_size);
 	return ptn_size;
@@ -89,7 +89,7 @@ uint32_t get_ker_img_offset(void)
 	uint32_t offset = mvpu_algo_img[3] + 0x10;
 
 #ifdef MVPU_SEC_DEBUG
-	pr_info("[MVPU][Sec] ker_img_offset : 0x%08x\n", offset);
+	pr_debug("[MVPU][Sec] ker_img_offset : 0x%08x\n", offset);
 #endif
 
 	return offset;
@@ -111,7 +111,7 @@ bool get_ker_info(uint32_t hash, uint32_t *ker_bin_offset, uint32_t *ker_bin_num
 		ker_hash = mvpu_algo_img[shift];
 
 #ifdef MVPU_SEC_DEBUG_ADV
-		pr_info("[MVPU][Sec] image hash[%d]: 0x%08x\n", i, ker_hash);
+		pr_debug("[MVPU][Sec] image hash[%d]: 0x%08x\n", i, ker_hash);
 #endif
 
 		// check hash
@@ -130,11 +130,11 @@ bool get_ker_info(uint32_t hash, uint32_t *ker_bin_offset, uint32_t *ker_bin_num
 	}
 
 	if (ker_hash != hash) {
-		pr_info("[MVPU][Sec] KER HASH: 0x%08x not found in mvpu image\n", hash);
+		pr_debug("[MVPU][Sec] KER HASH: 0x%08x not found in mvpu image\n", hash);
 		return false;
 	}
 
-	//pr_info("[SEC_IMG] get KER HASH: 0x%08x, img addr 0x%08x, addr: 0x%08x\n", ker_hash, ker_img_addr, ker_addr);
+	//pr_debug("[SEC_IMG] get KER HASH: 0x%08x, img addr 0x%08x, addr: 0x%08x\n", ker_hash, ker_img_addr, ker_addr);
 	return true;
 }
 
@@ -144,7 +144,7 @@ void set_ker_iova(uint32_t ker_bin_offset, uint32_t ker_bin_num, uint32_t *ker_b
 	uint32_t ker_size_offset = 0;
 	int i = 0;
 
-	pr_info("[MVPU][Sec] %s\n", __func__);
+	pr_debug("[MVPU][Sec] %s\n", __func__);
 
 	for (i = 0; i < ker_bin_num; i++) {
 		shift = ker_bin_offset/sizeof(uint32_t) + ker_size_offset/sizeof(uint32_t) + KER_BIN_INFO_SIZE*i;
@@ -162,7 +162,7 @@ void map_base_buf_id(uint32_t buf_num, uint32_t *sec_chk_addr, uint32_t rp_num, 
 	bool buf_mapped = false;
 
 #ifdef MVPU_SEC_DEBUG
-	pr_info("[MVPU][Sec] === %s ===\n", __func__);
+	pr_debug("[MVPU][Sec] === %s ===\n", __func__);
 #endif
 
 	for (j = 0; j < rp_num; j++) {
@@ -173,7 +173,7 @@ void map_base_buf_id(uint32_t buf_num, uint32_t *sec_chk_addr, uint32_t rp_num, 
 				buf_mapped = true;
 #ifdef MVPU_SEC_DEBUG_ADV
 				if (sec_chk_addr[i] == 0x0) {
-					pr_info("[MVPU][Sec] NOTICE: set target_base[%d]: 0x%08x map to sec_chk_addr[%d]: 0x%08x\n",
+					pr_debug("[MVPU][Sec] NOTICE: set target_base[%d]: 0x%08x map to sec_chk_addr[%d]: 0x%08x\n",
 							j, target_base[j],
 							target_map[j],
 							sec_chk_addr[target_map[j]]);
@@ -183,7 +183,7 @@ void map_base_buf_id(uint32_t buf_num, uint32_t *sec_chk_addr, uint32_t rp_num, 
 		}
 
 		if (buf_mapped == false)
-			pr_info("[MVPU][Sec] NOTICE: target_base[%d]: 0x%08x not mapped\n",
+			pr_debug("[MVPU][Sec] NOTICE: target_base[%d]: 0x%08x not mapped\n",
 						j, target_base[j]);
 	}
 }
@@ -195,7 +195,7 @@ uint32_t get_saved_session_id(void *session)
 
 	for (cnt = 0; cnt < MAX_SAVE_SESSION; cnt++) {
 		if (saved_session[cnt] == NULL) {
-			pr_info("[MVPU][Sec] error: saved_session[%d] is NULL\n",
+			pr_debug("[MVPU][Sec] error: saved_session[%d] is NULL\n",
 						cnt);
 			continue;
 		}
@@ -205,7 +205,7 @@ uint32_t get_saved_session_id(void *session)
 
 		if (memcmp(session, saved_session[cnt], sizeof(uint64_t)) == 0) {
 #ifdef MVPU_SEC_DEBUG
-			pr_info("[MVPU][Sec] Get saved_session at %d: 0x%llx\n",
+			pr_debug("[MVPU][Sec] Get saved_session at %d: 0x%llx\n",
 						cnt, saved_session[cnt]);
 #endif
 			session_id = cnt;
@@ -223,14 +223,14 @@ uint32_t get_avail_session_id(void)
 
 	for (cnt = 0; cnt < MAX_SAVE_HASH; cnt++) {
 		if (saved_session[cnt] == NULL) {
-			pr_info("[MVPU][Sec] error: saved_session[%d] is NULL\n",
+			pr_debug("[MVPU][Sec] error: saved_session[%d] is NULL\n",
 						cnt);
 			continue;
 		}
 
 		if (*((uint64_t *)saved_session[cnt]) == -1) {
 			session_id = cnt;
-			pr_info("[MVPU][Sec] Get available session id %d\n",
+			pr_debug("[MVPU][Sec] Get available session id %d\n",
 						session_id);
 			break;
 		}
@@ -240,7 +240,7 @@ uint32_t get_avail_session_id(void)
 	if (session_id == -1) {
 		session_id = sess_oldest;
 
-		pr_info("[MVPU][Sec] Take oldest session id %d\n",
+		pr_debug("[MVPU][Sec] Take oldest session id %d\n",
 					session_id);
 	}
 
@@ -253,12 +253,12 @@ void clear_session(void *session)
 	uint32_t session_id = 0;
 
 #ifdef MVPU_SEC_DEBUG
-	pr_info("[MVPU][Sec] %s\n", __func__);
+	pr_debug("[MVPU][Sec] %s\n", __func__);
 #endif
 
 	for (session_id = 0; session_id < MAX_SAVE_SESSION; session_id++) {
 		if (saved_session[session_id] == NULL) {
-			pr_info("[MVPU][Sec] error: saved_session[%d] is NULL\n",
+			pr_debug("[MVPU][Sec] error: saved_session[%d] is NULL\n",
 						session_id);
 			continue;
 		}
@@ -268,7 +268,7 @@ void clear_session(void *session)
 
 		if (memcmp(session, saved_session[session_id], sizeof(uint64_t)) == 0) {
 #ifdef MVPU_SEC_DEBUG
-			pr_info("[MVPU][Sec] apusys session %llx match saved_session[%d]\n",
+			pr_debug("[MVPU][Sec] apusys session %llx match saved_session[%d]\n",
 					*((uint64_t *)session),
 					session_id);
 #endif
@@ -286,13 +286,13 @@ void update_session_id(uint32_t session_id, void *session)
 		sess_oldest = 0;
 
 #ifdef MVPU_SEC_DEBUG
-	pr_info("[MVPU][Sec] set oldest session_id: %d\n", sess_oldest);
+	pr_debug("[MVPU][Sec] set oldest session_id: %d\n", sess_oldest);
 #endif
 
 	if (saved_session[session_id] != NULL && session != NULL) {
 		memcpy(saved_session[session_id], session, sizeof(uint64_t));
 #ifdef MVPU_SEC_DEBUG
-		pr_info("[MVPU][Sec] set saved_session[%d]: 0x%llx to apu_session: 0x%llx\n",
+		pr_debug("[MVPU][Sec] set saved_session[%d]: 0x%llx to apu_session: 0x%llx\n",
 				session_id,
 				*((uint64_t *)saved_session[session_id]),
 				*((uint64_t *)session));
@@ -307,7 +307,7 @@ uint32_t get_saved_hash_id(uint32_t session_id, uint32_t batch_name_hash)
 
 	for (cnt = 0; cnt < MAX_SAVE_HASH; cnt++) {
 		if (batch_name_hash == hash_pool[session_id]->hash_list[cnt]) {
-			pr_info("[MVPU][Sec] Get saved_hash_list at %d: 0x%08x\n",
+			pr_debug("[MVPU][Sec] Get saved_hash_list at %d: 0x%08x\n",
 						cnt, batch_name_hash);
 			hash_id = cnt;
 			break;
@@ -325,7 +325,7 @@ uint32_t get_avail_hash_id(uint32_t session_id)
 	for (cnt = 0; cnt < MAX_SAVE_HASH; cnt++) {
 		if (hash_pool[session_id]->hash_list[cnt] == 0) {
 			hash_id = cnt;
-			pr_info("[MVPU][Sec] Get available hash id %d\n", hash_id);
+			pr_debug("[MVPU][Sec] Get available hash id %d\n", hash_id);
 			break;
 		}
 	}
@@ -334,7 +334,7 @@ uint32_t get_avail_hash_id(uint32_t session_id)
 	if (hash_id == -1) {
 		hash_id = hash_pool[session_id]->hash_oldest;
 
-		pr_info("[MVPU][Sec] Take oldest hash id %d\n", hash_id);
+		pr_debug("[MVPU][Sec] Take oldest hash id %d\n", hash_id);
 	}
 
 	return hash_id;
@@ -356,12 +356,12 @@ void clear_hash(uint32_t session_id, uint32_t hash_id)
 		kfree(hash_pool[session_id]->hash_offset[hash_id]);
 
 #ifdef MVPU_SEC_DEBUG
-		pr_info("[MVPU][Sec] Clear hash_id[%d] settings\n",
+		pr_debug("[MVPU][Sec] Clear hash_id[%d] settings\n",
 					hash_id);
 #endif
 	} else {
 #ifdef MVPU_SEC_DEBUG
-		pr_info("[MVPU][Sec] bypass Clear hash_id[%d] settings\n",
+		pr_debug("[MVPU][Sec] bypass Clear hash_id[%d] settings\n",
 					hash_id);
 #endif
 	}
@@ -372,7 +372,7 @@ void free_all_hash(uint32_t session_id)
 	uint32_t hash_id = 0;
 
 #ifdef MVPU_SEC_DEBUG
-	pr_info("[MVPU][Sec] %s saved_session[%d]\n", __func__, session_id);
+	pr_debug("[MVPU][Sec] %s saved_session[%d]\n", __func__, session_id);
 #endif
 
 	for (hash_id = 0; hash_id < MAX_SAVE_HASH; hash_id++) {
@@ -398,7 +398,7 @@ int update_hash_pool(void *session, bool algo_in_img,
 	void *buf_kva;
 
 #ifdef MVPU_SEC_DEBUG
-	pr_info("[MVPU][Sec] %s\n", __func__);
+	pr_debug("[MVPU][Sec] %s\n", __func__);
 #endif
 
 	hash_pool[session_id]->buf_num = buf_num;
@@ -410,7 +410,7 @@ int update_hash_pool(void *session, bool algo_in_img,
 	hash_pool[session_id]->dma_heap[hash_id] = dma_heap_find("mtk_mm");
 
 	if (!hash_pool[session_id]->dma_heap[hash_id]) {
-		pr_info("[MVPU][Sec] heap find fail\n");
+		pr_debug("[MVPU][Sec] heap find fail\n");
 		return -1;
 	}
 
@@ -429,31 +429,31 @@ int update_hash_pool(void *session, bool algo_in_img,
 
 	hash_pool[session_id]->hash_dma_buf[hash_id] = dma_heap_buffer_alloc(hash_pool[session_id]->dma_heap[hash_id], total_buf_size, O_RDWR | O_CLOEXEC, DMA_HEAP_VALID_HEAP_FLAGS);
 	if (IS_ERR(hash_pool[session_id]->hash_dma_buf[hash_id])) {
-		pr_info("[MVPU][Sec] buffer alloc fail\n");
+		pr_debug("[MVPU][Sec] buffer alloc fail\n");
 		return PTR_ERR(hash_pool[session_id]->hash_dma_buf[hash_id]);
 	}
 
 	if (mvpu_dev == NULL) {
-		pr_info("[MVPU][Sec] mvpu_dev is NULL\n");
+		pr_debug("[MVPU][Sec] mvpu_dev is NULL\n");
 		return -1;
 	}
 
 	hash_pool[session_id]->attach[hash_id] = dma_buf_attach(hash_pool[session_id]->hash_dma_buf[hash_id], mvpu_dev);
 	if (IS_ERR(hash_pool[session_id]->attach[hash_id])) {
-		pr_info("[MVPU][Sec] attach fail, return\n");
+		pr_debug("[MVPU][Sec] attach fail, return\n");
 		return PTR_ERR(hash_pool[session_id]->attach[hash_id]);
 	}
 
 	hash_pool[session_id]->sgt[hash_id] = dma_buf_map_attachment(hash_pool[session_id]->attach[hash_id], DMA_BIDIRECTIONAL);
 	if (IS_ERR(hash_pool[session_id]->sgt[hash_id])) {
-		pr_info("[MVPU][Sec] map failed, detach and return\n");
+		pr_debug("[MVPU][Sec] map failed, detach and return\n");
 		dma_buf_detach(hash_pool[session_id]->hash_dma_buf[hash_id], hash_pool[session_id]->attach[hash_id]);
 		return PTR_ERR(hash_pool[session_id]->sgt[hash_id]);
 	}
 
 	// get iova
 	hash_pool[session_id]->hash_base_iova[hash_id] = (uint32_t)sg_dma_address(hash_pool[session_id]->sgt[hash_id]->sgl);
-	pr_info("[MVPU][Sec] hash_base_iova 0x%08x\n",
+	pr_debug("[MVPU][Sec] hash_base_iova 0x%08x\n",
 				hash_pool[session_id]->hash_base_iova[hash_id]);
 
 	// get *kva
@@ -461,7 +461,7 @@ int update_hash_pool(void *session, bool algo_in_img,
 	//hash_pool[session_id]->hash_base_kva[hash_id] = (uint64_t *)p_buf;
 
 	if (!p_buf) {
-		pr_info("[MVPU][Sec] kva map failed\n");
+		pr_debug("[MVPU][Sec] kva map failed\n");
 		return -ENOMEM;
 	}
 
@@ -483,7 +483,7 @@ int update_hash_pool(void *session, bool algo_in_img,
 			buf_kva = apusys_mem_query_kva_by_sess(session, sec_chk_addr[cnt]);
 
 #ifdef MVPU_SEC_DEBUG
-			pr_info("[MVPU][Sec] buf[%d]: copy 0x%llx to 0x%llx with size 0x%08x, offset 0x%08x\n",
+			pr_debug("[MVPU][Sec] buf[%d]: copy 0x%llx to 0x%llx with size 0x%08x, offset 0x%08x\n",
 						cnt,
 						(uintptr_t)buf_kva,
 						(uintptr_t)cp_buff,
@@ -493,18 +493,18 @@ int update_hash_pool(void *session, bool algo_in_img,
 
 			if (buf_kva != 0x0) {
 				if (algo_in_img && (mem_is_kernel[cnt] == BUF_KERNEL)) {
-					pr_info("[MVPU][Sec] buf[%d]: use kernel from image\n",
+					pr_debug("[MVPU][Sec] buf[%d]: use kernel from image\n",
 								cnt);
 				} else if (mem_is_kernel[cnt] == BUF_IO) {
-					pr_info("[MVPU][Sec] buf[%d]: bypass IO buffer\n",
+					pr_debug("[MVPU][Sec] buf[%d]: bypass IO buffer\n",
 								cnt);
 				} else {
-					pr_info("[MVPU][Sec] buf[%d]: copy to pool\n",
+					pr_debug("[MVPU][Sec] buf[%d]: copy to pool\n",
 								cnt);
 					memcpy(cp_buff, buf_kva, buf_size);
 				}
 			} else {
-				pr_info("[MVPU][Sec] buf[%d]: bypass cmd_buf\n",
+				pr_debug("[MVPU][Sec] buf[%d]: bypass cmd_buf\n",
 							cnt);
 			}
 
@@ -513,7 +513,7 @@ int update_hash_pool(void *session, bool algo_in_img,
 			buf_ofst += buf_size;
 		}
 	} else {
-		pr_info("[MVPU][Sec] hash_offset alloc fail\n");
+		pr_debug("[MVPU][Sec] hash_offset alloc fail\n");
 		return -ENOMEM;
 	}
 
@@ -548,13 +548,13 @@ int update_new_base_addr(bool algo_in_img, uint32_t session_id, uint32_t hash_id
 	for (cnt = 0; cnt < hash_pool[session_id]->buf_num; cnt++) {
 		if (algo_in_img && mem_is_kernel[cnt] == BUF_KERNEL) {
 			if (sec_chk_addr[cnt] == 0) {
-				pr_info("[MVPU][Sec] WARNING: buf[%d] is not kernel !!!\n",
+				pr_debug("[MVPU][Sec] WARNING: buf[%d] is not kernel !!!\n",
 							cnt);
 				continue;
 			}
 
 			if (ker_img_cnt > ker_bin_num) {
-				pr_info("[MVPU][Sec] WARNING: mem_is_kernel[%d], total num >= image kernel num %d\n",
+				pr_debug("[MVPU][Sec] WARNING: mem_is_kernel[%d], total num >= image kernel num %d\n",
 							cnt, ker_bin_num);
 
 				ret = -1;
@@ -564,7 +564,7 @@ int update_new_base_addr(bool algo_in_img, uint32_t session_id, uint32_t hash_id
 			target_pool_addr[cnt] = ker_bin_each_iova[ker_img_cnt];
 
 #ifdef MVPU_SEC_DEBUG_ADV
-			pr_info("[MVPU][Sec] set target_pool_addr[%d] = 0x%08x, from partition\n",
+			pr_debug("[MVPU][Sec] set target_pool_addr[%d] = 0x%08x, from partition\n",
 							cnt, target_pool_addr[cnt]);
 #endif
 
@@ -574,7 +574,7 @@ int update_new_base_addr(bool algo_in_img, uint32_t session_id, uint32_t hash_id
 		} else {
 			target_pool_ofst = hash_pool[session_id]->hash_offset[hash_id][cnt];
 			target_pool_addr[cnt] = hash_pool[session_id]->hash_base_iova[hash_id] + target_pool_ofst;
-			pr_info("[MVPU][Sec] set target_pool_addr[%d]: 0x%08x\n",
+			pr_debug("[MVPU][Sec] set target_pool_addr[%d]: 0x%08x\n",
 						cnt, target_pool_addr[cnt]);
 		}
 	}
@@ -588,7 +588,7 @@ int update_new_base_addr(bool algo_in_img, uint32_t session_id, uint32_t hash_id
 #endif
 
 #ifdef MVPU_SEC_DEBUG_ADV
-		pr_info("[MVPU][Sec] target_buf_new_base[%d]: 0x%08x\n",
+		pr_debug("[MVPU][Sec] target_buf_new_base[%d]: 0x%08x\n",
 					cnt, target_buf_new_base[cnt]);
 #endif
 	}
@@ -615,7 +615,7 @@ int replace_mem(uint32_t session_id, uint32_t hash_id, uint32_t rp_num,
 	buf_ptr_base = dma_buf_vmap(hash_pool[session_id]->hash_dma_buf[hash_id]);
 
 	if (!buf_ptr_base) {
-		pr_info("[MVPU][Sec] buf_ptr_base kva map failed\n");
+		pr_debug("[MVPU][Sec] buf_ptr_base kva map failed\n");
 		return -ENOMEM;
 	}
 
@@ -637,7 +637,7 @@ int replace_mem(uint32_t session_id, uint32_t hash_id, uint32_t rp_num,
 		}
 
 #ifdef MVPU_SEC_DEBUG_RP_INFO
-		pr_info("[MVPU][Sec] DRV rp cnt %03d, replace *[0x%llx + 0x%08x] from 0x%08x to [0x%08x + 0x%08x]\n",
+		pr_debug("[MVPU][Sec] DRV rp cnt %03d, replace *[0x%llx + 0x%08x] from 0x%08x to [0x%08x + 0x%08x]\n",
 					cnt,
 					(target_buf_old_base[cnt] == 0) ?
 						((uintptr_t)kreg_kva):(target_buf_old_base[cnt]),
@@ -653,7 +653,7 @@ int replace_mem(uint32_t session_id, uint32_t hash_id, uint32_t rp_num,
 				(uint32_t)(target_buf_new_base[cnt] + target_buf_new_offset[cnt]);
 
 #ifdef MVPU_SEC_DEBUG_RP_INFO
-		pr_info("[MVPU][Sec] new value: 0x%08x\n",
+		pr_debug("[MVPU][Sec] new value: 0x%08x\n",
 					*((uintptr_t *)buf_ptr));
 #endif
 	}
@@ -676,7 +676,7 @@ int mvpu_load_img(struct device *dev)
 	phys_addr_t size;
 
 #ifdef MVPU_SEC_DEBUG
-	pr_info("[MVPU] %s start\n", __func__);
+	pr_debug("[MVPU] %s start\n", __func__);
 #endif
 
 	mvpu_sec_mem_node = of_find_compatible_node(NULL, NULL, "mediatek,apu_mvpu_algo");
@@ -696,14 +696,14 @@ int mvpu_load_img(struct device *dev)
 
 	if (dma_mapping_error(dev, mvpu_algo_iova)) {
 #ifdef MVPU_SEC_DEBUG
-		pr_info("[MVPU][WARN] get mvpu_algo_iova error: 0x%08x, VA: 0x%llx\n",
+		pr_debug("[MVPU][WARN] get mvpu_algo_iova error: 0x%08x, VA: 0x%llx\n",
 				mvpu_algo_iova, mvpu_algo_img);
 #else
-		pr_info("[MVPU][WARN] get mvpu_algo_iova error: 0x%08x\n",
+		pr_debug("[MVPU][WARN] get mvpu_algo_iova error: 0x%08x\n",
 				mvpu_algo_iova);
 #endif
 	} else {
-		pr_info("[MVPU][SEC] get mvpu_algo_iova: 0x%08x\n",
+		pr_debug("[MVPU][SEC] get mvpu_algo_iova: 0x%08x\n",
 				mvpu_algo_iova);
 	}
 

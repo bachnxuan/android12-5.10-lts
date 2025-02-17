@@ -23,8 +23,8 @@
 #include "eeprom_i2c_common_driver.h"
 
 #define CAM_CAL_LOG_ERR(format, args...) pr_err(PFX "[%s] " format, __func__, ##args)
-#define CAM_CAL_LOG_INF(format, args...) pr_info(PFX "[%s] " format, __func__, ##args)
-#define CAM_CAL_LOG_DBG(format, args...) pr_info(PFX "[%s] " format, __func__, ##args)
+#define CAM_CAL_LOG_INF(format, args...) pr_debug(PFX "[%s] " format, __func__, ##args)
+#define CAM_CAL_LOG_DBG(format, args...) pr_debug(PFX "[%s] " format, __func__, ##args)
 
 
 unsigned int xiaomi_do_module_version(struct EEPROM_DRV_FD_DATA *pdata,

@@ -18,7 +18,7 @@ void sspm_set_emi_mpu(phys_addr_t base, phys_addr_t size)
 	ret = mtk_emimpu_init_region(&rg_info, MPU_REGION_ID_SSPM);
 
 	if (ret) {
-		pr_info("[SSPM] set emimpu fail\n");
+		pr_debug("[SSPM] set emimpu fail\n");
 		return;
 	}
 

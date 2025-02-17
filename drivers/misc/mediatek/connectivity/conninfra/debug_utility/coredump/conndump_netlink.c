@@ -256,7 +256,7 @@ static int conndump_nl_bind_internal(struct dump_netlink_ctx* ctx, struct sk_buf
 		if (ctx->bind_pid[i] == 0) {
 			ctx->bind_pid[i] = port;
 			ctx->num_bind_process++;
-			pr_info("%s():-> pid  = %d\n", __func__, port);
+			pr_debug("%s():-> pid  = %d\n", __func__, port);
 			break;
 		}
 	}
@@ -272,7 +272,7 @@ out:
 static int conndump_nl_dump_end_internal(struct dump_netlink_ctx* ctx, struct sk_buff *skb, struct genl_info *info)
 {
 	if (ctx && ctx->cb.coredump_end) {
-		pr_info("Get coredump end command, type=%d", ctx->conn_type);
+		pr_debug("Get coredump end command, type=%d", ctx->conn_type);
 		ctx->cb.coredump_end(ctx->coredump_ctx);
 	}
 	return 0;
@@ -524,7 +524,7 @@ int conndump_netlink_send_to_native(int conn_type, char* tag, char* buf, unsigne
 	unsigned int remain_len = length;
 	int ret;
 
-	pr_info("[%s] conn_type=%d tag=%s length=%d\n",
+	pr_debug("[%s] conn_type=%d tag=%s length=%d\n",
 		__func__, conn_type, tag, length);
 	if ((conn_type < CONN_DEBUG_TYPE_WIFI || conn_type > CONN_DEBUG_TYPE_BT) || tag == NULL) {
 		pr_err("Incorrect type (%d), tag = %s\n", conn_type, tag);

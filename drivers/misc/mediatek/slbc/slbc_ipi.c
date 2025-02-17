@@ -40,7 +40,7 @@ int slbc_sspm_slb_disable(int disable)
 {
 	struct slbc_ipi_data slbc_ipi_d;
 
-	pr_info("#@# %s(%d) disable %d\n", __func__, __LINE__, disable);
+	pr_debug("#@# %s(%d) disable %d\n", __func__, __LINE__, disable);
 
 	slbc_ipi_d.cmd = IPI_SLB_DISABLE;
 	slbc_ipi_d.arg = disable;
@@ -52,7 +52,7 @@ int slbc_sspm_slc_disable(int disable)
 {
 	struct slbc_ipi_data slbc_ipi_d;
 
-	pr_info("#@# %s(%d) disable %d\n", __func__, __LINE__, disable);
+	pr_debug("#@# %s(%d) disable %d\n", __func__, __LINE__, disable);
 
 	slbc_ipi_d.cmd = IPI_SLC_DISABLE;
 	slbc_ipi_d.arg = disable;
@@ -64,7 +64,7 @@ int slbc_sspm_enable(int enable)
 {
 	struct slbc_ipi_data slbc_ipi_d;
 
-	pr_info("#@# %s(%d) enable %d\n", __func__, __LINE__, enable);
+	pr_debug("#@# %s(%d) enable %d\n", __func__, __LINE__, enable);
 	slbc_set_scmi_enable(enable);
 
 	slbc_ipi_d.cmd = IPI_SLBC_ENABLE;
@@ -143,12 +143,12 @@ int _slbc_request_cache_scmi(void *ptr)
 			d->slot_used = rvalue.r2;
 			ret = d->ret = rvalue.r3;
 		} else {
-			pr_info("#@# %s(%d) return fail(%d)\n",
+			pr_debug("#@# %s(%d) return fail(%d)\n",
 					__func__, __LINE__, ret);
 			ret = -1;
 		}
 	} else {
-		pr_info("#@# %s(%d) wrong type(0x%x)\n",
+		pr_debug("#@# %s(%d) wrong type(0x%x)\n",
 				__func__, __LINE__, d->type);
 		ret = -1;
 	}
@@ -173,12 +173,12 @@ int _slbc_release_cache_scmi(void *ptr)
 			d->slot_used = rvalue.r2;
 			ret = d->ret = rvalue.r3;
 		} else {
-			pr_info("#@# %s(%d) return fail(%d)\n",
+			pr_debug("#@# %s(%d) return fail(%d)\n",
 					__func__, __LINE__, ret);
 			ret = -1;
 		}
 	} else {
-		pr_info("#@# %s(%d) wrong type(0x%x)\n",
+		pr_debug("#@# %s(%d) wrong type(0x%x)\n",
 				__func__, __LINE__, d->type);
 		ret = -1;
 	}
@@ -199,7 +199,7 @@ int _slbc_request_buffer_scmi(void *ptr)
 	if (d->type == TP_BUFFER) {
 		ret = slbc_scmi_set(&slbc_ipi_d, 2);
 		if (ret) {
-			pr_info("#@# %s(%d) return fail(%d)\n",
+			pr_debug("#@# %s(%d) return fail(%d)\n",
 					__func__, __LINE__, ret);
 			ret = -1;
 
@@ -212,12 +212,12 @@ int _slbc_request_buffer_scmi(void *ptr)
 			d->slot_used = rvalue.r2;
 			ret = d->ret = rvalue.r3;
 		} else {
-			pr_info("#@# %s(%d) return fail(%d)\n",
+			pr_debug("#@# %s(%d) return fail(%d)\n",
 					__func__, __LINE__, ret);
 			ret = -1;
 		}
 	} else {
-		pr_info("#@# %s(%d) wrong type(0x%x)\n",
+		pr_debug("#@# %s(%d) wrong type(0x%x)\n",
 				__func__, __LINE__, d->type);
 		ret = -1;
 	}
@@ -238,7 +238,7 @@ int _slbc_release_buffer_scmi(void *ptr)
 	if (d->type == TP_BUFFER) {
 		ret = slbc_scmi_set(&slbc_ipi_d, 2);
 		if (ret) {
-			pr_info("#@# %s(%d) return fail(%d)\n",
+			pr_debug("#@# %s(%d) return fail(%d)\n",
 					__func__, __LINE__, ret);
 			ret = -1;
 
@@ -251,12 +251,12 @@ int _slbc_release_buffer_scmi(void *ptr)
 			d->slot_used = rvalue.r2;
 			ret = d->ret = rvalue.r3;
 		} else {
-			pr_info("#@# %s(%d) return fail(%d)\n",
+			pr_debug("#@# %s(%d) return fail(%d)\n",
 					__func__, __LINE__, ret);
 			ret = -1;
 		}
 	} else {
-		pr_info("#@# %s(%d) wrong type(0x%x)\n",
+		pr_debug("#@# %s(%d) wrong type(0x%x)\n",
 				__func__, __LINE__, d->type);
 		ret = -1;
 	}
@@ -276,7 +276,7 @@ static void slbc_scmi_handler(u32 r_feature_id, scmi_tinysys_report *report)
 
 	cmd = report->p1;
 	arg = report->p2;
-	/* pr_info("#@# %s(%d) report 0x%x 0x%x 0x%x 0x%x\n", __func__, __LINE__, */
+	/* pr_debug("#@# %s(%d) report 0x%x 0x%x 0x%x 0x%x\n", __func__, __LINE__, */
 			/* report->p1, report->p2, report->p3, report->p4); */
 
 	switch (cmd) {
@@ -288,7 +288,7 @@ static void slbc_scmi_handler(u32 r_feature_id, scmi_tinysys_report *report)
 			if (ipi_ops && ipi_ops->slbc_request_acp)
 				ipi_ops->slbc_request_acp(&d);
 		} else
-			pr_info("#@# %s(%d) wrong cmd(%s) and type(0x%x)\n",
+			pr_debug("#@# %s(%d) wrong cmd(%s) and type(0x%x)\n",
 					__func__, __LINE__,
 					"IPI_SLBC_ACP_REQUEST_TO_AP",
 					d.type);
@@ -299,7 +299,7 @@ static void slbc_scmi_handler(u32 r_feature_id, scmi_tinysys_report *report)
 			if (ipi_ops && ipi_ops->slbc_release_acp)
 				ipi_ops->slbc_release_acp(&d);
 		} else
-			pr_info("#@# %s(%d) wrong cmd(%s) and type(0x%x)\n",
+			pr_debug("#@# %s(%d) wrong cmd(%s) and type(0x%x)\n",
 					__func__, __LINE__,
 					"IPI_SLBC_ACP_RELEASE_TO_AP",
 					d.type);
@@ -309,7 +309,7 @@ static void slbc_scmi_handler(u32 r_feature_id, scmi_tinysys_report *report)
 			ipi_ops->slbc_mem_barrier();
 		break;
 	default:
-		pr_info("wrong slbc IPI command: %d\n",
+		pr_debug("wrong slbc IPI command: %d\n",
 				cmd);
 	}
 }
@@ -320,16 +320,16 @@ int slbc_scmi_set(void *buffer, int slot)
 	struct slbc_ipi_data *slbc_ipi_d = buffer;
 
 	if (!slbc_enable) {
-		pr_info("slbc not ready, skip cmd=%d\n", slbc_ipi_d->cmd);
+		pr_debug("slbc not ready, skip cmd=%d\n", slbc_ipi_d->cmd);
 		goto error;
 	}
 
 	if (slbc_sspm_ready != 1) {
-		pr_info("slbc scmi not ready, skip cmd=%d\n", slbc_ipi_d->cmd);
+		pr_debug("slbc scmi not ready, skip cmd=%d\n", slbc_ipi_d->cmd);
 		goto error;
 	}
 
-	pr_info("#@# %s(%d) id 0x%x cmd 0x%x arg 0x%x\n",
+	pr_debug("#@# %s(%d) id 0x%x cmd 0x%x arg 0x%x\n",
 			__func__, __LINE__,
 			scmi_slbc_id, slbc_ipi_d->cmd, slbc_ipi_d->arg);
 
@@ -341,12 +341,12 @@ int slbc_scmi_set(void *buffer, int slot)
 	if (ret == -ETIMEDOUT) {
 		if (scmi_id == slbc_sram_read(SLBC_SCMI_SSPM)) {
 			ret = 0;
-			pr_info("slbc scmi timed out!\n");
+			pr_debug("slbc scmi timed out!\n");
 		}
 	}
 
 	if (ret) {
-		pr_info("slbc scmi cmd %d send fail, ret = %d\n",
+		pr_debug("slbc scmi cmd %d send fail, ret = %d\n",
 				slbc_ipi_d->cmd, ret);
 
 		goto error;
@@ -364,16 +364,16 @@ int slbc_scmi_get(void *buffer, int slot, void *ptr)
 	struct scmi_tinysys_status *rvalue = ptr;
 
 	if (!slbc_enable) {
-		pr_info("slbc not ready, skip cmd=%d\n", slbc_ipi_d->cmd);
+		pr_debug("slbc not ready, skip cmd=%d\n", slbc_ipi_d->cmd);
 		goto error;
 	}
 
 	if (slbc_sspm_ready != 1) {
-		pr_info("slbc scmi not ready, skip cmd=%d\n", slbc_ipi_d->cmd);
+		pr_debug("slbc scmi not ready, skip cmd=%d\n", slbc_ipi_d->cmd);
 		goto error;
 	}
 
-	pr_info("#@# %s(%d) id 0x%x cmd 0x%x arg 0x%x\n",
+	pr_debug("#@# %s(%d) id 0x%x cmd 0x%x arg 0x%x\n",
 			__func__, __LINE__,
 			scmi_slbc_id, slbc_ipi_d->cmd, slbc_ipi_d->arg);
 
@@ -388,7 +388,7 @@ int slbc_scmi_get(void *buffer, int slot, void *ptr)
 			rvalue->r1 = slbc_sram_read(SLBC_SCMI_RET1);
 			rvalue->r2 = slbc_sram_read(SLBC_SCMI_RET2);
 			rvalue->r3 = slbc_sram_read(SLBC_SCMI_RET3);
-			pr_info("slbc scmi timed out! return 0x%x 0x%x 0x%x\n",
+			pr_debug("slbc scmi timed out! return 0x%x 0x%x 0x%x\n",
 					rvalue->r1,
 					rvalue->r2,
 					rvalue->r3);
@@ -396,7 +396,7 @@ int slbc_scmi_get(void *buffer, int slot, void *ptr)
 	}
 
 	if (ret) {
-		pr_info("slbc scmi cmd %d send fail, ret = %d\n",
+		pr_debug("slbc scmi cmd %d send fail, ret = %d\n",
 				slbc_ipi_d->cmd, ret);
 
 		goto error;
@@ -414,18 +414,18 @@ int slbc_scmi_init(void)
 	_tinfo = get_scmi_tinysys_info();
 
 	if (!(_tinfo && _tinfo->sdev)) {
-		pr_info("slbc call get_scmi_tinysys_info() fail\n");
+		pr_debug("slbc call get_scmi_tinysys_info() fail\n");
 		return -EPROBE_DEFER;
 	}
 
 	ret = of_property_read_u32(_tinfo->sdev->dev.of_node, "scmi_slbc",
 			&scmi_slbc_id);
 	if (ret) {
-		pr_info("get slbc scmi_slbc fail, ret %d\n", ret);
+		pr_debug("get slbc scmi_slbc fail, ret %d\n", ret);
 		slbc_sspm_ready = -2;
 		return -EINVAL;
 	}
-	pr_info("#@# %s(%d) scmi_slbc_id %d\n",
+	pr_debug("#@# %s(%d) scmi_slbc_id %d\n",
 			__func__, __LINE__, scmi_slbc_id);
 
 	scmi_tinysys_register_event_notifier(scmi_slbc_id,
@@ -434,13 +434,13 @@ int slbc_scmi_init(void)
 	ret = scmi_tinysys_event_notify(scmi_slbc_id, 1);
 
 	if (ret) {
-		pr_info("event notify fail ...");
+		pr_debug("event notify fail ...");
 		return -EINVAL;
 	}
 
 	slbc_sspm_ready = 1;
 
-	pr_info("slbc scmi is ready!\n");
+	pr_debug("slbc scmi is ready!\n");
 
 	return 0;
 }

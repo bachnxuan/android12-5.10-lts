@@ -59,7 +59,7 @@ int popcount(unsigned int x)
 	x = x + (x >> 8);
 	x = x + (x >> 16);
 
-	/* pr_info("popcount %d\n", x & 0x0000003F); */
+	/* pr_debug("popcount %d\n", x & 0x0000003F); */
 
 	return x & 0x0000003F;
 }

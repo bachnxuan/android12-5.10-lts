@@ -24,7 +24,7 @@ int mdw_mem_rsc_init(void)
 	memset(&rsc_mem_mgr, 0, sizeof(rsc_mem_mgr));
 	mutex_init(&rsc_mem_mgr.mtx);
 
-	pr_info("%s done\n", __func__);
+	pr_debug("%s done\n", __func__);
 
 	return 0;
 
@@ -40,7 +40,7 @@ struct device *mdw_mem_rsc_get_dev(int type)
 	case APUSYS_MEMORY_DATA:
 		break;
 	default:
-		pr_info("Unsupported Type %d\n", type);
+		pr_debug("Unsupported Type %d\n", type);
 		goto err;
 	}
 
@@ -67,17 +67,17 @@ int mdw_mem_rsc_register(struct device *dev, int type)
 			rsc_mem_mgr.mdw_mem[type - 1].dev = dev;
 		else {
 			ret = -EINVAL;
-			pr_info("Mulit-Register %d\n", type);
+			pr_debug("Mulit-Register %d\n", type);
 		}
 		break;
 	default:
 		ret = -EINVAL;
-		pr_info("Unsupported Type %d\n", type);
+		pr_debug("Unsupported Type %d\n", type);
 		break;
 	}
 	mutex_unlock(&rsc_mem_mgr.mtx);
 
-	pr_info("Register type[%d] Done\n", type);
+	pr_debug("Register type[%d] Done\n", type);
 
 	return ret;
 }

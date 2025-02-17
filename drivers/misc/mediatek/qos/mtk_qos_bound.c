@@ -66,12 +66,12 @@ void qos_bound_enable(int enable)
 	ack = qos_ipi_to_sspm_scmi_command(qos_ipi_d.cmd,
 			qos_ipi_d.u.qos_bound_enable.enable, 0, 0, QOS_IPI_SCMI_GET);
 	if (!ack || ack == -1) {
-		pr_info("get qos sspm address fail\n");
+		pr_debug("get qos sspm address fail\n");
 		return;
 	}
 	bound = (struct qos_bound *)sspm_sbuf_get(ack);
 	if (bound == NULL) {
-		pr_info("mtk_qos: sspm_sbuf_get fail\n");
+		pr_debug("mtk_qos: sspm_sbuf_get fail\n");
 		return;
 	}
 	smp_mb(); /* init bound before flag enabled */
@@ -80,11 +80,11 @@ void qos_bound_enable(int enable)
 		qos_bound_apu = (unsigned short *)(bound);
 		qos_bound_apu += (sizeof(struct qos_bound)/sizeof(unsigned short));
 		qos_bound_apu_num = bound->apu_num;
-		pr_info("mtk_qos: bound ver=0x%x apu_num=%d\n",
+		pr_debug("mtk_qos: bound ver=0x%x apu_num=%d\n",
 				bound->ver, bound->apu_num);
 		qos_bound_enabled = enable;
 	} else {
-		pr_info("mtk_qos: invalid bound version(0x%x, 0x%x)\n",
+		pr_debug("mtk_qos: invalid bound version(0x%x, 0x%x)\n",
 				bound->ver, bound->apu_num);
 		qos_bound_enabled = false;
 	}
@@ -205,7 +205,7 @@ int qos_notifier_call_chain(unsigned long val, void *v)
 		return ret;
 
 	if (v == NULL) {
-		pr_info("detect bound null ptr(%d)\n",
+		pr_debug("detect bound null ptr(%d)\n",
 			is_qos_bound_enabled());
 		return ret;
 	}
@@ -227,14 +227,14 @@ int qos_notifier_call_chain(unsigned long val, void *v)
 	if (is_qos_bound_log_enabled()) {
 		idx = bound->idx;
 		stat = &bound->stats[bound->idx];
-		pr_info("idx: %hu, state: %hu, num: %hu, event: %hu\n",
+		pr_debug("idx: %hu, state: %hu, num: %hu, event: %hu\n",
 				idx, state,
 				stat->num, stat->event);
 		for (i = 0; i < NR_QOS_EMIBM_TYPE; i++)
-			pr_info("emibw [%d]: mon: %hu\n", i,
+			pr_debug("emibw [%d]: mon: %hu\n", i,
 					stat->emibw_mon[i]);
 		for (i = 0; i < NR_QOS_SMIBM_TYPE; i++)
-			pr_info("smibw [%d]: mon: %hu\n", i,
+			pr_debug("smibw [%d]: mon: %hu\n", i,
 					stat->smibw_mon[i]);
 	}
 

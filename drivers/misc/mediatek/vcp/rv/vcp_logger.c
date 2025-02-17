@@ -48,7 +48,7 @@
 #undef pr_debug
 #define pr_debug(fmt, arg...) do { \
 		if (vcp_dbg_log) \
-			pr_info(fmt, ##arg); \
+			pr_debug(fmt, ##arg); \
 	} while (0)
 
 struct log_ctrl_s {

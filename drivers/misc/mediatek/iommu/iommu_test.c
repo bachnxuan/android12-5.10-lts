@@ -319,7 +319,7 @@ static struct dmabuf_info *find_dmabuf_info(struct dmabuf_data *data, int id)
 			break;
 	}
 	if (plist_tmp == &(data->buf_head)) {
-		pr_info("%s fail, heap:%s, buf_id:%d\n",
+		pr_debug("%s fail, heap:%s, buf_id:%d\n",
 			__func__, dma_heap_get_name(data->heap), id);
 		mutex_unlock(&(data->buf_lock));
 		return NULL;
@@ -342,7 +342,7 @@ static struct dmabuf_map *find_dmabuf_map(struct dmabuf_info *data, int attach_i
 	}
 
 	if (map_tmp == &(data->map_head)) {
-		pr_info("%s fail, attach_id:%d\n", __func__, attach_id);
+		pr_debug("%s fail, attach_id:%d\n", __func__, attach_id);
 		mutex_unlock(&(data->map_lock));
 		return NULL;
 	}
@@ -364,13 +364,13 @@ static int check_dmabuf_id(struct dmabuf_data *data, int alloc_id)
 	}
 
 	if (plist_tmp == &(data->buf_head)) {
-		pr_info("%s success, alloc_id(%d) can be used\n",
+		pr_debug("%s success, alloc_id(%d) can be used\n",
 			__func__, alloc_id);
 		mutex_unlock(&(data->buf_lock));
 		return 0;
 	}
 	mutex_unlock(&(data->buf_lock));
-	pr_info("%s fail, alloc_id(%d) has aleady exist!! dmabuf:0x%lx, sz:0x%zx\n",
+	pr_debug("%s fail, alloc_id(%d) has aleady exist!! dmabuf:0x%lx, sz:0x%zx\n",
 		__func__, alloc_id, obj_info->dmabuf, obj_info->size);
 
 	return -EINVAL;
@@ -389,12 +389,12 @@ static int check_attach_id(struct dmabuf_info *data, int id)
 	}
 
 	if (plist_tmp == &(data->map_head)) {
-		pr_info("%s success, attach_id(%d) can be used\n", __func__, id);
+		pr_debug("%s success, attach_id(%d) can be used\n", __func__, id);
 		mutex_unlock(&(data->map_lock));
 		return 0;
 	}
 	mutex_unlock(&(data->map_lock));
-	pr_info("%s fail, attach_id(%d) has aleady exist\n",
+	pr_debug("%s fail, attach_id(%d) has aleady exist\n",
 		__func__, id);
 
 	return -EINVAL;
@@ -422,13 +422,13 @@ static void dump_dmabuf_info_map(enum DMABUF_HEAP heap)
 	mutex_lock(&(data->buf_lock));
 	list_for_each(info_tmp, &(data->buf_head)) {
 		info_obj = container_of(info_tmp, struct dmabuf_info, buf_node);
-		pr_info("%s 1, info_obj:0x%lx, buf_id:%d, dmabuf:0x%lx, sz:0x%zx, heap:%s\n",
+		pr_debug("%s 1, info_obj:0x%lx, buf_id:%d, dmabuf:0x%lx, sz:0x%zx, heap:%s\n",
 			__func__, (unsigned long)info_obj, info_obj->id,
 			(unsigned long)info_obj->dmabuf, info_obj->size, heap_obj[heap].name);
 		mutex_lock(&(info_obj->map_lock));
 		list_for_each(map_tmp, &(info_obj->map_head)) {
 			map_obj = container_of(map_tmp, struct dmabuf_map, map_node);
-			pr_info("%s 2, map_obj:0x%lx, attach_id:%d, attach:0x%lx, iova:%pa\n",
+			pr_debug("%s 2, map_obj:0x%lx, attach_id:%d, attach:0x%lx, iova:%pa\n",
 				__func__, (unsigned long)map_obj, map_obj->id,
 				(unsigned long)map_obj->attach, &map_obj->dma_address);
 		}
@@ -443,11 +443,11 @@ static void dmabuf_heap_alloc_test(size_t size, enum DMABUF_HEAP heap, int buf_i
 	struct dmabuf_data *data_obj;
 	struct dmabuf_info *info_obj;
 
-	pr_info("%s start, heap:%s(%d)\n", __func__, heap_obj[heap].name, heap);
+	pr_debug("%s start, heap:%s(%d)\n", __func__, heap_obj[heap].name, heap);
 
 	ret = check_dmabuf_id(&dmabuf_data_obj[heap], buf_id);
 	if (ret) {
-		pr_info("%s failed, buf_id can not be used:%d\n", __func__, buf_id);
+		pr_debug("%s failed, buf_id can not be used:%d\n", __func__, buf_id);
 		return;
 	}
 
@@ -456,7 +456,7 @@ static void dmabuf_heap_alloc_test(size_t size, enum DMABUF_HEAP heap, int buf_i
 		data_obj = &dmabuf_data_obj[TEST_MTK_NORMAL];
 		data_obj->heap = dma_heap_find("mtk_mm");
 		if (!data_obj->heap) {
-			pr_info("%s, find mtk_mm failed!!\n", __func__);
+			pr_debug("%s, find mtk_mm failed!!\n", __func__);
 			return;
 		}
 		break;
@@ -467,7 +467,7 @@ static void dmabuf_heap_alloc_test(size_t size, enum DMABUF_HEAP heap, int buf_i
 		data_obj = &dmabuf_data_obj[heap];
 		data_obj->heap = dma_heap_find("mtk_svp_region");
 		if (!data_obj->heap) {
-			pr_info("%s, find mtk_svp_regio failed!!\n", __func__);
+			pr_debug("%s, find mtk_svp_regio failed!!\n", __func__);
 			return;
 		}
 		break;
@@ -476,7 +476,7 @@ static void dmabuf_heap_alloc_test(size_t size, enum DMABUF_HEAP heap, int buf_i
 		data_obj = &dmabuf_data_obj[heap];
 		data_obj->heap = dma_heap_find("mtk_svp_region-aligned");
 		if (!data_obj->heap) {
-			pr_info("%s, find mtk_svp_region-aligned failed!!\n", __func__);
+			pr_debug("%s, find mtk_svp_region-aligned failed!!\n", __func__);
 			return;
 		}
 		break;
@@ -486,7 +486,7 @@ static void dmabuf_heap_alloc_test(size_t size, enum DMABUF_HEAP heap, int buf_i
 		data_obj = &dmabuf_data_obj[heap];
 		data_obj->heap = dma_heap_find("mtk_prot_region");
 		if (!data_obj->heap) {
-			pr_info("%s, find mtk_prot_region failed!!\n", __func__);
+			pr_debug("%s, find mtk_prot_region failed!!\n", __func__);
 			return;
 		}
 		break;
@@ -494,7 +494,7 @@ static void dmabuf_heap_alloc_test(size_t size, enum DMABUF_HEAP heap, int buf_i
 		data_obj = &dmabuf_data_obj[heap];
 		data_obj->heap = dma_heap_find("mtk_prot_region-aligned");
 		if (!data_obj->heap) {
-			pr_info("%s, find mtk_prot_region-aligned failed!!\n", __func__);
+			pr_debug("%s, find mtk_prot_region-aligned failed!!\n", __func__);
 			return;
 		}
 		break;
@@ -505,7 +505,7 @@ static void dmabuf_heap_alloc_test(size_t size, enum DMABUF_HEAP heap, int buf_i
 		data_obj = &dmabuf_data_obj[heap];
 		data_obj->heap = dma_heap_find("mtk_svp_page-uncached");
 		if (!data_obj->heap) {
-			pr_info("%s, find mtk_svp_page-uncached failed!!\n", __func__);
+			pr_debug("%s, find mtk_svp_page-uncached failed!!\n", __func__);
 			return;
 		}
 		break;
@@ -515,7 +515,7 @@ static void dmabuf_heap_alloc_test(size_t size, enum DMABUF_HEAP heap, int buf_i
 		data_obj = &dmabuf_data_obj[heap];
 		data_obj->heap = dma_heap_find("mtk_prot_page-uncached");
 		if (!data_obj->heap) {
-			pr_info("%s, find mtk_svp_page-uncached failed!!\n", __func__);
+			pr_debug("%s, find mtk_svp_page-uncached failed!!\n", __func__);
 			return;
 		}
 		break;
@@ -523,7 +523,7 @@ static void dmabuf_heap_alloc_test(size_t size, enum DMABUF_HEAP heap, int buf_i
 		data_obj = &dmabuf_data_obj[heap];
 		data_obj->heap = dma_heap_find("mtk_2d_fr_region");
 		if (!data_obj->heap) {
-			pr_info("%s, find mtk_2d_fr_region failed!!\n", __func__);
+			pr_debug("%s, find mtk_2d_fr_region failed!!\n", __func__);
 			return;
 		}
 		break;
@@ -531,7 +531,7 @@ static void dmabuf_heap_alloc_test(size_t size, enum DMABUF_HEAP heap, int buf_i
 		data_obj = &dmabuf_data_obj[heap];
 		data_obj->heap = dma_heap_find("mtk_2d_fr_region-aligned");
 		if (!data_obj->heap) {
-			pr_info("%s, find mtk_2d_fr_region-aligned failed!!\n", __func__);
+			pr_debug("%s, find mtk_2d_fr_region-aligned failed!!\n", __func__);
 			return;
 		}
 		break;
@@ -539,7 +539,7 @@ static void dmabuf_heap_alloc_test(size_t size, enum DMABUF_HEAP heap, int buf_i
 		data_obj = &dmabuf_data_obj[heap];
 		data_obj->heap = dma_heap_find("mtk_sapu_data_shm_region");
 		if (!data_obj->heap) {
-			pr_info("%s, find mtk_sapu_data_shm_region failed!!\n", __func__);
+			pr_debug("%s, find mtk_sapu_data_shm_region failed!!\n", __func__);
 			return;
 		}
 		break;
@@ -547,7 +547,7 @@ static void dmabuf_heap_alloc_test(size_t size, enum DMABUF_HEAP heap, int buf_i
 		data_obj = &dmabuf_data_obj[heap];
 		data_obj->heap = dma_heap_find("mtk_sapu_data_shm_region-aligned");
 		if (!data_obj->heap) {
-			pr_info("%s, find mtk_sapu_data_shm_region-aligned failed!!\n",
+			pr_debug("%s, find mtk_sapu_data_shm_region-aligned failed!!\n",
 				__func__);
 			return;
 		};
@@ -555,7 +555,7 @@ static void dmabuf_heap_alloc_test(size_t size, enum DMABUF_HEAP heap, int buf_i
 		data_obj = &dmabuf_data_obj[heap];
 		data_obj->heap = dma_heap_find("mtk_sapu_engine_shm_region");
 		if (!data_obj->heap) {
-			pr_info("%s, find mtk_sapu_engine_shm_region failed!!\n",
+			pr_debug("%s, find mtk_sapu_engine_shm_region failed!!\n",
 				__func__);
 			return;
 		}
@@ -564,7 +564,7 @@ static void dmabuf_heap_alloc_test(size_t size, enum DMABUF_HEAP heap, int buf_i
 		data_obj = &dmabuf_data_obj[heap];
 		data_obj->heap = dma_heap_find("mtk_sapu_engine_shm_region-aligned");
 		if (!data_obj->heap) {
-			pr_info("%s, find mtk_sapu_engine_shm_region-aligned failed!!\n",
+			pr_debug("%s, find mtk_sapu_engine_shm_region-aligned failed!!\n",
 				__func__);
 			return;
 		}
@@ -574,7 +574,7 @@ static void dmabuf_heap_alloc_test(size_t size, enum DMABUF_HEAP heap, int buf_i
 		data_obj = &dmabuf_data_obj[heap];
 		data_obj->heap = dma_heap_find("mtk_wfd_region");
 		if (!data_obj->heap) {
-			pr_info("%s, find mtk_wfd_region failed!!\n", __func__);
+			pr_debug("%s, find mtk_wfd_region failed!!\n", __func__);
 			return;
 		}
 		break;
@@ -583,27 +583,27 @@ static void dmabuf_heap_alloc_test(size_t size, enum DMABUF_HEAP heap, int buf_i
 		data_obj = &dmabuf_data_obj[heap];
 		data_obj->heap = dma_heap_find("mtk_wfd_region-aligned");
 		if (!data_obj->heap) {
-			pr_info("%s, find mtk_wfd_region-aligned failed!!\n", __func__);
+			pr_debug("%s, find mtk_wfd_region-aligned failed!!\n", __func__);
 			return;
 		}
 		break;
 	default:
-		pr_info("%s failed, heap type in invalid:%s(%d)\n",
+		pr_debug("%s failed, heap type in invalid:%s(%d)\n",
 			__func__, heap_obj[heap].name, heap);
 		return;
 	}
 
-	pr_info("%s dma_heap_find done, heap:%s\n", __func__, dma_heap_get_name(data_obj->heap));
+	pr_debug("%s dma_heap_find done, heap:%s\n", __func__, dma_heap_get_name(data_obj->heap));
 	info_obj = dmabuf_info_alloc(buf_id);
 	if (!info_obj) {
-		pr_info("%s dmabuf_info_alloc fail, heap:%s(%d)\n",
+		pr_debug("%s dmabuf_info_alloc fail, heap:%s(%d)\n",
 			__func__, heap_obj[heap].name, heap);
 		return;
 	}
 	info_obj->dmabuf = dma_heap_buffer_alloc(data_obj->heap, size,
 				DMA_HEAP_VALID_FD_FLAGS, DMA_HEAP_VALID_HEAP_FLAGS);
 	if (IS_ERR(info_obj->dmabuf)) {
-		pr_info("%s, alloc buffer fail, heap:%s(%d)\n",
+		pr_debug("%s, alloc buffer fail, heap:%s(%d)\n",
 			__func__, heap_obj[heap].name, heap);
 		return;
 	}
@@ -611,7 +611,7 @@ static void dmabuf_heap_alloc_test(size_t size, enum DMABUF_HEAP heap, int buf_i
 	info_obj->size = size;
 	add_dmabuf_info(data_obj, info_obj);
 
-	pr_info("%s success, heap:%s(%d), dmabuf_info:0x%lx, dmabuf:0x%lx, sz:0x%zx, buf_id:%d\n",
+	pr_debug("%s success, heap:%s(%d), dmabuf_info:0x%lx, dmabuf:0x%lx, sz:0x%zx, buf_id:%d\n",
 		__func__, heap_obj[heap].name, heap, (unsigned long)info_obj,
 		(unsigned long)info_obj->dmabuf, size, buf_id);
 }
@@ -622,11 +622,11 @@ static void dmabuf_heap_free_test(enum DMABUF_HEAP heap, int buf_id)
 
 	info_obj = find_dmabuf_info(&dmabuf_data_obj[heap], buf_id);
 	if (!info_obj) {
-		pr_info("%s find dmabuf_info fail, heap:%s\n",
+		pr_debug("%s find dmabuf_info fail, heap:%s\n",
 			__func__, dma_heap_get_name(dmabuf_data_obj[heap].heap));
 		return;
 	}
-	pr_info("%s success, heap:%s(%d), dmabuf_info:0x%lx, dmabuf:0x%lx, buf_id:%d\n",
+	pr_debug("%s success, heap:%s(%d), dmabuf_info:0x%lx, dmabuf:0x%lx, buf_id:%d\n",
 		__func__, heap_obj[heap].name, heap, (unsigned long)info_obj,
 		(unsigned long)info_obj->dmabuf, buf_id);
 
@@ -645,13 +645,13 @@ static void dmabuf_map_iova(enum DMABUF_HEAP heap, int buf_id, int attach_id)
 #ifdef SECURE_HANDLE_TEST
 	u32 sec_handle;
 #endif
-	pr_info("%s start, heap:%s(%d), dev:%s\n", __func__,
+	pr_debug("%s start, heap:%s(%d), dev:%s\n", __func__,
 		heap_obj[heap].name, heap, dev_name(dev));
 
 	/* find dmabuf_info by attach buf_id from dmabuf_data */
 	info_obj = find_dmabuf_info(&dmabuf_data_obj[heap], buf_id);
 	if (!info_obj) {
-		pr_info("%s find dmabuf_info fail, heap:%s\n",
+		pr_debug("%s find dmabuf_info fail, heap:%s\n",
 			__func__, dma_heap_get_name(dmabuf_data_obj[heap].heap));
 		return;
 	}
@@ -659,34 +659,34 @@ static void dmabuf_map_iova(enum DMABUF_HEAP heap, int buf_id, int attach_id)
 	/* get secure handle */
 	sec_handle = dmabuf_to_secure_handle(info_obj->dmabuf);
 	if (!sec_handle)
-		pr_info("%s get secure handle failed, heap:%s\n", __func__, heap_obj[heap].name);
+		pr_debug("%s get secure handle failed, heap:%s\n", __func__, heap_obj[heap].name);
 	else
-		pr_info("%s get secure handle(%u) success, heap:%s\n", __func__,
+		pr_debug("%s get secure handle(%u) success, heap:%s\n", __func__,
 			sec_handle, heap_obj[heap].name);
 #endif
 	ret = check_attach_id(info_obj, attach_id);
 	if (ret) {
-		pr_info("%s failed, attach_id can not be used:%d\n", __func__, attach_id);
+		pr_debug("%s failed, attach_id can not be used:%d\n", __func__, attach_id);
 		return;
 	}
 
 	map_obj = dmabuf_map_alloc(attach_id);
 	if (!map_obj) {
-		pr_info("%s dmabuf_map_alloc fail, heap:%s\n",
+		pr_debug("%s dmabuf_map_alloc fail, heap:%s\n",
 			__func__, dma_heap_get_name(dmabuf_data_obj[heap].heap));
 		return;
 	}
 
 	attach = dma_buf_attach(info_obj->dmabuf, dev);
 	if (IS_ERR(attach)) {
-		pr_info("%s, dma_buf_attach failed!!, heap:%s(%d)\n",
+		pr_debug("%s, dma_buf_attach failed!!, heap:%s(%d)\n",
 			__func__, heap_obj[heap].name, heap);
 		return;
 	}
 
 	table = dma_buf_map_attachment(attach, DMA_BIDIRECTIONAL);
 	if (IS_ERR(table)) {
-		pr_info("%s, dma_buf_map_attachment failed!!, heap:%s\n",
+		pr_debug("%s, dma_buf_map_attachment failed!!, heap:%s\n",
 			__func__, heap_obj[heap].name);
 		return;
 	}
@@ -695,7 +695,7 @@ static void dmabuf_map_iova(enum DMABUF_HEAP heap, int buf_id, int attach_id)
 	map_obj->table = table;
 	map_obj->dma_address = sg_dma_address(table->sgl);
 	add_dmabuf_map(info_obj, map_obj);
-	pr_info("%s success, heap:%s(%d), dmabuf:0x%lx, map_obj:0x%lx, buf_id:%d, att_id:%d, attach:0x%lx, iova:%pa\n",
+	pr_debug("%s success, heap:%s(%d), dmabuf:0x%lx, map_obj:0x%lx, buf_id:%d, att_id:%d, attach:0x%lx, iova:%pa\n",
 		__func__, heap_obj[heap].name, heap, (unsigned long)info_obj->dmabuf,
 		(unsigned long)map_obj, buf_id, attach_id, (unsigned long)map_obj->attach,
 		&map_obj->dma_address);
@@ -706,23 +706,23 @@ static void dmabuf_unmap_iova(enum DMABUF_HEAP heap, int buf_id, int attach_id)
 	struct dmabuf_info *info_obj;
 	struct dmabuf_map *map_obj;
 
-	pr_info("%s start\n", __func__);
+	pr_debug("%s start\n", __func__);
 
 	/* find dmabuf_info by buf_id from dmabuf_data */
 	info_obj = find_dmabuf_info(&dmabuf_data_obj[heap], buf_id);
 	if (!info_obj) {
-		pr_info("%s find dmabuf_info fail, heap:%s\n",
+		pr_debug("%s find dmabuf_info fail, heap:%s\n",
 			__func__, dma_heap_get_name(dmabuf_data_obj[heap].heap));
 		return;
 	}
 	map_obj = find_dmabuf_map(info_obj, attach_id);
 	if (!map_obj) {
-		pr_info("%s find dmabuf_map fail, heap:%s\n",
+		pr_debug("%s find dmabuf_map fail, heap:%s\n",
 			__func__, dma_heap_get_name(dmabuf_data_obj[heap].heap));
 		return;
 	}
 
-	pr_info("%s success, heap:%s(%d), dmabuf:0x%lx, map_obj:0x%lx, buf_id:%d, att_id:%d, attach:0x%lx, iova:%pa\n",
+	pr_debug("%s success, heap:%s(%d), dmabuf:0x%lx, map_obj:0x%lx, buf_id:%d, att_id:%d, attach:0x%lx, iova:%pa\n",
 		__func__, heap_obj[heap].name, heap, (unsigned long)info_obj->dmabuf,
 		(unsigned long)map_obj, buf_id, attach_id, (unsigned long)map_obj->attach,
 		&map_obj->dma_address);
@@ -869,7 +869,7 @@ static int iommu_test_debug_set(void *data, u64 input)
 	u64 index = (input & 0xff);
 	u64 val = (input >> 8);
 
-	pr_info("%s [%s], start, input:0x%llx, index=%llu, val:%llu\n",
+	pr_debug("%s [%s], start, input:0x%llx, index=%llu, val:%llu\n",
 		__func__, test_cmd_name[index].name, input, index, val);
 
 	switch (index) {
@@ -921,10 +921,10 @@ static int iommu_test_debug_set(void *data, u64 input)
 		dump_dmabuf_info_map(test_heap);
 		break;
 	default:
-		pr_info("%s error,index=%llu\n", __func__, index);
+		pr_debug("%s error,index=%llu\n", __func__, index);
 	}
 
-	pr_info("%s [%s] done\n", __func__, test_cmd_name[index].name);
+	pr_debug("%s [%s] done\n", __func__, test_cmd_name[index].name);
 
 	return 0;
 }
@@ -943,13 +943,13 @@ static int iommu_test_debug_init(struct iommu_test_debug_data *data)
 	data->debug_root = proc_mkdir("iommu_test", NULL);
 
 	if (IS_ERR_OR_NULL(data->debug_root))
-		pr_info("failed to create debug dir.\n");
+		pr_debug("failed to create debug dir.\n");
 
 	debug_file = proc_create_data("test",
 		S_IFREG | 0644, data->debug_root, &iommu_test_debug_fops, NULL);
 
 	if (IS_ERR_OR_NULL(debug_file))
-		pr_info("failed to create debug files 2.\n");
+		pr_debug("failed to create debug files 2.\n");
 
 	return 0;
 }
@@ -959,7 +959,7 @@ static int dmaheap_normal_test_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 
-	pr_info("%s start, dev:%s\n", __func__, dev_name(&pdev->dev));
+	pr_debug("%s start, dev:%s\n", __func__, dev_name(&pdev->dev));
 
 	dmabuf_data_obj[TEST_MTK_NORMAL].dev = dev;
 	mutex_init(&dmabuf_data_obj[TEST_MTK_NORMAL].buf_lock);
@@ -967,7 +967,7 @@ static int dmaheap_normal_test_probe(struct platform_device *pdev)
 
 	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(34));
 
-	pr_info("%s done, dev:%s\n", __func__, dev_name(&pdev->dev));
+	pr_debug("%s done, dev:%s\n", __func__, dev_name(&pdev->dev));
 	return 0;
 }
 
@@ -975,7 +975,7 @@ static int dmaheap_sec_normal_region_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 
-	pr_info("%s start, dev:%s\n", __func__, dev_name(&pdev->dev));
+	pr_debug("%s start, dev:%s\n", __func__, dev_name(&pdev->dev));
 
 	dmabuf_data_obj[TEST_REQ_SVP_REGION].dev = dev;
 	mutex_init(&dmabuf_data_obj[TEST_REQ_SVP_REGION].buf_lock);
@@ -999,7 +999,7 @@ static int dmaheap_sec_normal_region_probe(struct platform_device *pdev)
 
 	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(34));
 
-	pr_info("%s done, dev:%s\n", __func__, dev_name(&pdev->dev));
+	pr_debug("%s done, dev:%s\n", __func__, dev_name(&pdev->dev));
 
 	return 0;
 }
@@ -1008,7 +1008,7 @@ static int dmaheap_sec_ccu0_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 
-	pr_info("%s start, dev:%s\n", __func__, dev_name(&pdev->dev));
+	pr_debug("%s start, dev:%s\n", __func__, dev_name(&pdev->dev));
 
 	dmabuf_data_obj[TEST_REQ_PROT_REGION_ALIGN_CCU0].dev = dev;
 	mutex_init(&dmabuf_data_obj[TEST_REQ_PROT_REGION_ALIGN_CCU0].buf_lock);
@@ -1024,7 +1024,7 @@ static int dmaheap_sec_ccu0_probe(struct platform_device *pdev)
 
 	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(34));
 
-	pr_info("%s done, dev:%s\n", __func__, dev_name(&pdev->dev));
+	pr_debug("%s done, dev:%s\n", __func__, dev_name(&pdev->dev));
 	return 0;
 }
 
@@ -1033,7 +1033,7 @@ static int dmaheap_sec_video_up_probe(struct platform_device *pdev)
 	/* include region && page dev */
 	struct device *dev = &pdev->dev;
 
-	pr_info("%s start, dev:%s\n", __func__, dev_name(&pdev->dev));
+	pr_debug("%s start, dev:%s\n", __func__, dev_name(&pdev->dev));
 
 	dmabuf_data_obj[TEST_REQ_SVP_REGION_ALIGN_UP].dev = dev;
 	mutex_init(&dmabuf_data_obj[TEST_REQ_SVP_REGION_ALIGN_UP].buf_lock);
@@ -1053,7 +1053,7 @@ static int dmaheap_sec_video_up_probe(struct platform_device *pdev)
 
 	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(34));
 
-	pr_info("%s done, dev:%s\n", __func__, dev_name(&pdev->dev));
+	pr_debug("%s done, dev:%s\n", __func__, dev_name(&pdev->dev));
 	return 0;
 }
 
@@ -1062,7 +1062,7 @@ static int dmaheap_sec_vdec_probe(struct platform_device *pdev)
 	/* include region && page dev */
 	struct device *dev = &pdev->dev;
 
-	pr_info("%s start, dev:%s\n", __func__, dev_name(&pdev->dev));
+	pr_debug("%s start, dev:%s\n", __func__, dev_name(&pdev->dev));
 
 	dmabuf_data_obj[TEST_REQ_SVP_REGION_ALIGN_VDEC].dev = dev;
 	mutex_init(&dmabuf_data_obj[TEST_REQ_SVP_REGION_ALIGN_VDEC].buf_lock);
@@ -1081,7 +1081,7 @@ static int dmaheap_sec_vdec_probe(struct platform_device *pdev)
 	INIT_LIST_HEAD(&dmabuf_data_obj[TEST_WFD_REGION_ALIGN_VDEC].buf_head);
 	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(34));
 
-	pr_info("%s done, dev:%s\n", __func__, dev_name(&pdev->dev));
+	pr_debug("%s done, dev:%s\n", __func__, dev_name(&pdev->dev));
 	return 0;
 }
 
@@ -1089,7 +1089,7 @@ static int dmaheap_sec_pa_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 
-	pr_info("%s start, dev:%s\n", __func__, dev_name(&pdev->dev));
+	pr_debug("%s start, dev:%s\n", __func__, dev_name(&pdev->dev));
 
 	dmabuf_data_obj[TEST_REQ_SVP_REGION_PA].dev = dev;
 	mutex_init(&dmabuf_data_obj[TEST_REQ_SVP_REGION_PA].buf_lock);
@@ -1113,7 +1113,7 @@ static int dmaheap_sec_pa_probe(struct platform_device *pdev)
 
 	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(34));
 
-	pr_info("%s done, dev:%s\n", __func__, dev_name(&pdev->dev));
+	pr_debug("%s done, dev:%s\n", __func__, dev_name(&pdev->dev));
 	return 0;
 }
 
@@ -1127,35 +1127,35 @@ static int dmabuf_test(struct platform_device *pdev)
 	struct sg_table *table;
 	struct device *dev = &pdev->dev;
 
-	pr_info("%s start, dev:%s\n", __func__, dev_name(dev));
+	pr_debug("%s start, dev:%s\n", __func__, dev_name(dev));
 
 	heap = dma_heap_find("mtk_mm");
 	if (!heap) {
-		pr_info("%s, find mtk_mm failed!!\n", __func__);
+		pr_debug("%s, find mtk_mm failed!!\n", __func__);
 		return -EINVAL;
 	}
 
 	dmabuf = dma_heap_buffer_alloc(heap, size,
 				DMA_HEAP_VALID_FD_FLAGS, DMA_HEAP_VALID_HEAP_FLAGS);
 	if (IS_ERR(dmabuf)) {
-		pr_info("%s, alloc buffer fail, heap:%s\n", __func__, dma_heap_get_name(heap));
+		pr_debug("%s, alloc buffer fail, heap:%s\n", __func__, dma_heap_get_name(heap));
 		return -EINVAL;
 	}
-	pr_info("%s alloc dma-buf success, size:0x%zx, heap:%s\n",
+	pr_debug("%s alloc dma-buf success, size:0x%zx, heap:%s\n",
 		__func__, size, dma_heap_get_name(heap));
 
 	attach = dma_buf_attach(dmabuf, dev);
 	if (IS_ERR(attach)) {
-		pr_info("%s, dma_buf_attach failed!!, heap:%s\n", __func__, dma_heap_get_name(heap));
+		pr_debug("%s, dma_buf_attach failed!!, heap:%s\n", __func__, dma_heap_get_name(heap));
 		return -EINVAL;
 	}
 
 	table = dma_buf_map_attachment(attach, DMA_BIDIRECTIONAL);
 	if (IS_ERR(attach)) {
-		pr_info("%s, dma_buf_map_attachment failed!!, heap:%s\n", __func__, dma_heap_get_name(heap));
+		pr_debug("%s, dma_buf_map_attachment failed!!, heap:%s\n", __func__, dma_heap_get_name(heap));
 		return -EINVAL;
 	}
-	pr_info("%s map dma-buf success, size:0x%zx, heap:%s, iova:0x%lx\n",
+	pr_debug("%s map dma-buf success, size:0x%zx, heap:%s, iova:0x%lx\n",
 		__func__, size, dma_heap_get_name(heap), (unsigned long)sg_dma_address(table->sgl));
 
 	dma_buf_unmap_attachment(attach, table, DMA_BIDIRECTIONAL);
@@ -1163,7 +1163,7 @@ static int dmabuf_test(struct platform_device *pdev)
 
 	dma_heap_buffer_free(dmabuf);
 
-	pr_info("%s done, dev:%s\n", __func__, dev_name(dev));
+	pr_debug("%s done, dev:%s\n", __func__, dev_name(dev));
 	return 0;
 }
 
@@ -1175,21 +1175,21 @@ static int iommu_test_dom_probe(struct platform_device *pdev)
 	dma_addr_t dma_addr[TEST_NUM];
 	size_t size = (6 * SZ_1M + PAGE_SIZE * 3);
 
-	pr_info("%s start, dev:%s\n", __func__, dev_name(&pdev->dev));
+	pr_debug("%s start, dev:%s\n", __func__, dev_name(&pdev->dev));
 	dma_set_mask_and_coherent(&pdev->dev,DMA_BIT_MASK(34));
 	for (i = 0; i < TEST_NUM; i++) {
 		cpu_addr[i] = dma_alloc_attrs(&pdev->dev, size, &dma_addr[i], GFP_KERNEL, DMA_ATTR_WRITE_COMBINE);
-		pr_info("dev:%s, alloc iova success, iova:%pa, size:0x%zx\n", dev_name(&pdev->dev), &dma_addr[i], size);
+		pr_debug("dev:%s, alloc iova success, iova:%pa, size:0x%zx\n", dev_name(&pdev->dev), &dma_addr[i], size);
 	}
 	for (i = 0; i < TEST_NUM; i++) {
 		dma_free_attrs(&pdev->dev, size, cpu_addr[i], dma_addr[i], DMA_ATTR_WRITE_COMBINE);
-		pr_info("dev:%s, free iova success, iova:%pa, size:0x%zx\n", dev_name(&pdev->dev), &dma_addr[i], size);
+		pr_debug("dev:%s, free iova success, iova:%pa, size:0x%zx\n", dev_name(&pdev->dev), &dma_addr[i], size);
 	}
-	pr_info("%s done, dev:%s\n", __func__, dev_name(&pdev->dev));
+	pr_debug("%s done, dev:%s\n", __func__, dev_name(&pdev->dev));
 
 	ret = dmabuf_test(pdev);
 	if (ret)
-		pr_info("%s failed, dmabuf_test fail, dev:%s\n", __func__, dev_name(&pdev->dev));
+		pr_debug("%s failed, dmabuf_test fail, dev:%s\n", __func__, dev_name(&pdev->dev));
 
 	return 0;
 }
@@ -1395,7 +1395,7 @@ static int __init iommu_test_init(void)
 	int ret;
 	int i;
 
-	pr_info("%s+\n", __func__);
+	pr_debug("%s+\n", __func__);
 
 	debug_data = kmalloc(sizeof(struct iommu_test_debug_data), GFP_KERNEL);
 	if (!debug_data)
@@ -1404,7 +1404,7 @@ static int __init iommu_test_init(void)
 	iommu_test_debug_init(debug_data);
 
 	for (i = 0; i < ARRAY_SIZE(iommu_test_drivers); i++) {
-		pr_info("%s, register %d\n", __func__, i);
+		pr_debug("%s, register %d\n", __func__, i);
 		ret = platform_driver_register(iommu_test_drivers[i]);
 		if (ret < 0) {
 			pr_err("Failed to register %s driver: %d\n",
@@ -1412,7 +1412,7 @@ static int __init iommu_test_init(void)
 			goto err;
 		}
 	}
-	pr_info("%s-\n", __func__);
+	pr_debug("%s-\n", __func__);
 
 	return 0;
 

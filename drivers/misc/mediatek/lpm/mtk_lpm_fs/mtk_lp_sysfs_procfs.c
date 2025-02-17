@@ -57,7 +57,7 @@ static int mtk_lp_sysfs_procfs_seq_show(struct seq_file *sf, void *v)
 			out_sz = pOp->fs_read(buf, buf_sz - 1, pOp->priv);
 		buf[buf_sz - 1] = '\0';
 		seq_commit(sf, out_sz);
-		pr_info("[%s:%d] buf_sz=%lu\n", __func__, __LINE__, buf_sz);
+		pr_debug("[%s:%d] buf_sz=%lu\n", __func__, __LINE__, buf_sz);
 	}
 
 	return 0;
@@ -233,7 +233,7 @@ int mtk_lp_sysfs_entry_node_remove_plat(
 
 	if (!node)
 		return -EINVAL;
-	pr_info("FS remove %s\n", node->name);
+	pr_debug("FS remove %s\n", node->name);
 	return bRet;
 }
 

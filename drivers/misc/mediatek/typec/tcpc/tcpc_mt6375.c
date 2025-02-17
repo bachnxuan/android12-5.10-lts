@@ -665,7 +665,7 @@ static int mt6375_enable_typec_otp_fwen(struct tcpc_device *tcpc, bool en)
 {
 	struct mt6375_tcpc_data *ddata = tcpc_get_dev_data(tcpc);
 
-	pr_info("%s: en=%d\n", __func__, en);
+	pr_debug("%s: en=%d\n", __func__, en);
 	return (en ? mt6375_set_bits : mt6375_clr_bits)
 		(ddata, MT6375_REG_TYPECOTPCTRL, MT6375_MSK_TYPECOTP_FWEN);
 }
@@ -674,7 +674,7 @@ static int mt6375_set_force_discharge(struct tcpc_device *tcpc, bool en, int mv)
 {
 	struct mt6375_tcpc_data *ddata = tcpc_get_dev_data(tcpc);
 
-	pr_info("%s en = %d", __func__, en);
+	pr_debug("%s en = %d", __func__, en);
 	return (en ? mt6375_set_bits : mt6375_clr_bits)
 		(ddata, TCPC_V10_REG_POWER_CTRL, TCPC_V10_REG_BLEED_DISC_EN);
 }
@@ -1348,7 +1348,7 @@ static int mt6375_set_cc_toggling(struct mt6375_tcpc_data *ddata, int pull)
 #endif /* CONFIG_WD_POLLING_ONLY */
 #endif /* CONFIG_WATER_DETECTION */
 
-	pr_info("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 	ret = mt6375_write8(ddata, TCPC_V10_REG_ROLE_CTRL, data);
 	if (ret < 0)
 		return ret;
@@ -1403,7 +1403,7 @@ static int mt6375_enable_floating_ground(struct mt6375_tcpc_data *ddata,
 	int ret = 0;
 	u8 value = 0;
 
-	pr_info("%s: en:%d\n", __func__, en);
+	pr_debug("%s: en:%d\n", __func__, en);
 	if (en) {
 		/* set wd0 detect time */
 		value |= (ddata->wd0_tsleep << MT6375_SFT_WD0_TSLEEP);
@@ -2269,7 +2269,7 @@ static int mt6375_get_vbus_voltage(struct tcpc_device *tcpc, u32 *vbus)
 		return ret;
 	/* TODO: Please re-write it */
 	*vbus = (data & 0x3FF) * 25;
-	pr_info("%s 0x%04x, %dmV\n", __func__, data, *vbus);
+	pr_debug("%s 0x%04x, %dmV\n", __func__, data, *vbus);
 	return 0;
 }
 

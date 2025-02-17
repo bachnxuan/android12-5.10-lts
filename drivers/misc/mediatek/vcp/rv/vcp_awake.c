@@ -120,7 +120,7 @@ int vcp_awake_unlock(void *_vcp_id)
 
 	/* vcp unlock awake success*/
 	if (*vcp_awake_count <= 0)
-		pr_info("%s:%s awake_count=%d NOT SYNC!\n", __func__,
+		pr_debug("%s:%s awake_count=%d NOT SYNC!\n", __func__,
 		core_id, *vcp_awake_count);
 
 	if (*vcp_awake_count > 0)
