@@ -2020,7 +2020,8 @@ int vprintk_store(int facility, int level,
 	text_len = vscnprintf(text, sizeof(textbuf), fmt, args);
 
 	if (unlikely(strstr(text, "[mi_disp") != NULL) ||
-	    unlikely(strstr(text, "[drm") != NULL))
+	    unlikely(strstr(text, "[drm") != NULL) ||
+	    unlikely(strncmp(text, "healthd:", strlen("healthd:")) == 0))
 		return 0;
 
 	/* mark and strip a trailing newline */
