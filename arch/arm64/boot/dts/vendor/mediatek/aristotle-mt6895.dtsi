@@ -1018,8 +1018,8 @@ this file is only for attribution of aristotle
 	backlight {
 		label = "lcd-backlight";
 		led_mode = <4>;
-		max-brightness = <4095>;
-		max-hw-brightness = <4095>;
+		max-brightness = <2047>;
+		max-hw-brightness = <2047>;
 		default-state = "quarter";
 	};
 };
