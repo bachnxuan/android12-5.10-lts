@@ -3663,8 +3663,8 @@ static u64 get_backup_vfp(void)
 
 static int idlevfp_set(void *data, u64 val)
 {
-	if (val > 4095)
-		val = 4095;
+	if (val > 2047)
+		val = 2047;
 
 	backup_vfp_for_lp_cust((unsigned int)val);
 	return 0;
@@ -3700,8 +3700,8 @@ static ssize_t idlevfp_proc_set(struct file *file, const char __user *ubuf,
 	if (ret)
 		return ret;
 
-	if (val > 4095)
-		val = 4095;
+	if (val > 2047)
+		val = 2047;
 
 	backup_vfp_for_lp_cust(val);
 

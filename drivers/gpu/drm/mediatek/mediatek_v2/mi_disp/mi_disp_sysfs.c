@@ -328,7 +328,7 @@ static ssize_t brightness_clone_store(struct device *device,
 static ssize_t max_brightness_clone_show(struct device *device,
 				struct device_attribute *attr, char *buf)
   {
-	int max_brightness_clone = 4095;
+	int max_brightness_clone = 2047;
 	struct disp_display *dd_ptr = to_disp_display(device);
 
 	mi_dsi_display_get_max_brightness_clone(dd_ptr->display, &max_brightness_clone);
@@ -340,7 +340,7 @@ static ssize_t max_brightness_clone_show(struct device *device,
 static ssize_t factory_max_brightness_show(struct device *device,
 				struct device_attribute *attr, char *buf)
   {
-	int factory_max_brightness = 4095;
+	int factory_max_brightness = 2047;
 	struct disp_display *dd_ptr = to_disp_display(device);
 
 	mi_dsi_display_get_factory_max_brightness(dd_ptr->display,&factory_max_brightness);
