@@ -1,0 +1,176 @@
+name: Build GKI - Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      TIME: ${{ steps.set-time.outputs.TIME }}
+    steps:
+      - name: Get current time
+        id: set-time
+        run: echo "TIME=$(date +'%Y%m%d')" >> $GITHUB_ENV && echo "TIME=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+      - name: Free disk space
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -qq curl
+          curl -fsSL https://raw.githubusercontent.com/kou/arrow/e49d8ae15583ceff03237571569099a6ad62be32/ci/scripts/util_free_space.sh | bash
+      - name: Checkout Code
+        uses: actions/checkout@v4.2.2
+        with:
+          submodules: "true"
+          fetch-depth: 1
+      - name: Set Swap Space
+        uses: pierotofy/set-swap-space@v1.0
+        with:
+          swap-size-gb: 8   
+      - name: Setup build environment
+        run: |
+          # Install require dependencies
+          sudo apt update -y
+          sudo apt install bc binutils-dev bison build-essential ccache curl flex git libelf-dev lld make python3-dev cpio python-is-python3 tar perl wget lz4 unzip -y
+          git clone https://github.com/bachnxuan/AnyKernel3.git AnyKernel3
+          cd AnyKernel3 && rm -rf .git .github && cd ..
+          # Init & Auto update KernelSU-Next submodule
+          git submodule update --init --recursive
+          cd KernelSU-Next
+          git fetch --unshallow origin next-susfs:next-susfs
+          git branch -r
+          git checkout next-susfs
+          git pull origin next-susfs
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          max-size: 7.5G
+      - name: Download toolchain
+        working-directory: ./..
+        run: |
+          AOSP_MIRROR=https://android.googlesource.com
+          BRANCH=main-kernel-build-2024
+          git clone $AOSP_MIRROR/kernel/prebuilts/build-tools -b $BRANCH --depth 1 kernel-build-tools
+          git clone $AOSP_MIRROR/platform/system/tools/mkbootimg -b $BRANCH --depth 1 mkbootimg
+          git clone --depth 1 https://gitlab.com/rvproject27/RvClang.git -b release/19.x clang-tc
+      - name: Set boot sign key
+        env:
+          BOOT_SIGN_KEY: ${{ secrets.BOOT_SIGN_KEY }}
+        run: |
+          if [ ! -z "$BOOT_SIGN_KEY" ]; then
+            echo "$BOOT_SIGN_KEY" > ../kernel-build-tools/linux-x86/share/avb/testkey_rsa2048.pem
+          else
+            echo "BOOT_SIGN_KEY is not set. Exiting..."
+            exit 1
+          fi
+      - name: Build
+        run: |
+          bash build.sh
+      - name: Making ak3 zip
+        run: |
+          mv ./out/arch/arm64/boot/Image.gz $GITHUB_WORKSPACE
+          cd AnyKernel3
+          ZIP_NAME="5.10.233-xaga-${{ env.TIME }}-AnyKernel3.zip"
+          echo "Creating zip file: $ZIP_NAME..."
+          cp ../Image.gz ./Image.gz
+          zip -r "../$ZIP_NAME" ./*
+          rm ./Image.gz
+      - name: Initialize environment for building boot image
+        run: |
+          echo "BOOT_SIGN_KEY_PATH=$GITHUB_WORKSPACE/../kernel-build-tools/linux-x86/share/avb/testkey_rsa2048.pem" >> $GITHUB_ENV
+          echo "AVBTOOL=$GITHUB_WORKSPACE/../kernel-build-tools/linux-x86/bin/avbtool" >> $GITHUB_ENV
+          echo "MKBOOTIMG=$GITHUB_WORKSPACE/../mkbootimg/mkbootimg.py" >> $GITHUB_ENV
+      - name: Build boot image
+        run: |
+          mkdir bootimg && cd bootimg
+          cp ../Image.gz ./Image.gz
+          echo "Building boot.img"
+          $MKBOOTIMG --header_version 4 --kernel Image.gz --output boot.img
+          $AVBTOOL add_hash_footer --partition_name boot --partition_size $((64 * 1024 * 1024)) --image boot.img --algorithm SHA256_RSA2048 --key $BOOT_SIGN_KEY_PATH
+          cp ./boot.img ../5.10.233-xaga-${{ env.TIME }}-boot.img
+      - name: Upload Kernel Image Artifact
+        uses: actions/upload-artifact@v4.6.0
+        with:
+          name: AnyKernel3
+          path: ./5.10.233-xaga-${{ env.TIME }}-AnyKernel3.zip
+      - name: Upload Kernel Image Artifact
+        uses: actions/upload-artifact@v4.6.0
+        with:
+          name: boot
+          path: ./5.10.233-xaga-${{ env.TIME }}-boot.img    
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      TIME: ${{ needs.build.outputs.TIME }}
+      GH_TOKEN: ${{ github.token }}
+    outputs:
+      NEW_TAG: ${{ steps.set-tag.outputs.NEW_TAG }}
+    steps:
+      - name: Setup Environment
+        id: set-tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          echo "TIME: $TIME"
+
+          # Fetch tags from the GitHub API
+          tags_json=$(curl --silent -H "Authorization: token ${GITHUB_TOKEN}" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/tags")
+          
+          # Extract the latest tag (if exists)
+          LATEST_TAG=$(echo "$tags_json" | jq -r '.[0].name // empty')
+          echo "Latest Tag: $LATEST_TAG"
+          
+          # Determine NEW_TAG based on the latest tag and TIME value
+          if [[ -z "$LATEST_TAG" ]]; then
+            NEW_TAG="$TIME"
+          elif [[ "$LATEST_TAG" == "$TIME" ]]; then
+            NEW_TAG="${TIME}-r1"
+          elif [[ "$LATEST_TAG" == ${TIME}-r* ]]; then
+            revision=$(echo "$LATEST_TAG" | awk -F'-r' '{print $2}')
+            revision=${revision:-0}
+            new_revision=$((revision + 1))
+            NEW_TAG="${TIME}-r${new_revision}"
+          else
+            NEW_TAG="$TIME"
+          fi
+          
+          # Export NEW_TAG to GitHub environment and output for subsequent steps
+          echo "NEW_TAG=${NEW_TAG}" >> $GITHUB_ENV
+          echo "NEW_TAG=${NEW_TAG}" >> $GITHUB_OUTPUT
+          echo "New Tag: $NEW_TAG"
+          
+          # Ensure the release artifact directory exists
+          mkdir -p ./release-artifact
+      - name: Print NEW_TAG
+        run: |
+          echo $NEW_TAG
+      - name: Download Kernel Image Artifact
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: AnyKernel3
+          path: ./release-artifact
+      - name: Download Kernel Image Artifact
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: boot
+          path: ./release-artifact
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v2.2.1
+        with:
+          tag_name: "${{ env.NEW_TAG }}"
+          name: "KernelSU-Next With SUSFS Release: ${{ env.NEW_TAG }}"
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Assets
+        uses: softprops/action-gh-release@v2.2.1
+        with:
+          tag_name: "${{ env.NEW_TAG }}"
+          generate_release_notes: true
+          files: ./release-artifact/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
