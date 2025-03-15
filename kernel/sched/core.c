@@ -294,13 +294,15 @@ static void update_rq_clock_task(struct rq *rq, s64 delta)
 #endif
 #ifdef CONFIG_PARAVIRT_TIME_ACCOUNTING
 	if (static_key_false((&paravirt_steal_rq_enabled))) {
-		steal = paravirt_steal_clock(cpu_of(rq));
+		u64 prev_steal;
+
+		steal = prev_steal = paravirt_steal_clock(cpu_of(rq));
 		steal -= rq->prev_steal_time_rq;
 
 		if (unlikely(steal > delta))
 			steal = delta;
 
-		rq->prev_steal_time_rq += steal;
+		rq->prev_steal_time_rq = prev_steal;
 		delta -= steal;
 	}
 #endif
@@ -6488,6 +6490,11 @@ static void do_sched_yield(void)
 {
 	struct rq_flags rf;
 	struct rq *rq;
+	bool skip = 0;
+
+	trace_android_rvh_before_do_sched_yield(&skip);
+	if (skip)
+		return;
 
 	rq = this_rq_lock_irq(&rf);
 
