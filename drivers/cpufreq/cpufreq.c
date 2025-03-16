@@ -784,11 +784,17 @@ static ssize_t show_scaling_governor(struct cpufreq_policy *policy, char *buf)
 /*
  * store_scaling_governor - store policy for the specified CPU
  */
+
+bool task_is_booster(struct task_struct *tsk);
+
 static ssize_t store_scaling_governor(struct cpufreq_policy *policy,
 					const char *buf, size_t count)
 {
 	char str_governor[16];
 	int ret;
+
+        if (task_is_booster(current))
+		return -EINVAL;
 
 	ret = sscanf(buf, "%15s", str_governor);
 	if (ret != 1)
