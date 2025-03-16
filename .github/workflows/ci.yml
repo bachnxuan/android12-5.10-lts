@@ -40,10 +40,9 @@ jobs:
           # Init & Auto update KernelSU-Next submodule
           git submodule update --init --recursive
           cd KernelSU-Next
-          git fetch --unshallow origin next-susfs:next-susfs
-          git branch -r
-          git checkout next-susfs
-          git pull origin next-susfs
+          git fetch --unshallow origin next-susfs-dev:next-susfs-dev
+          git checkout next-susfs-dev
+          git pull origin next-susfs-dev
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
