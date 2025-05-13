@@ -846,6 +846,16 @@ KBUILD_CFLAGS += $(stackp-flags-y)
 KBUILD_CFLAGS-$(CONFIG_WERROR) += -Werror
 KBUILD_CFLAGS += $(KBUILD_CFLAGS-y)
 
+ifeq ($(shell echo $(CONFIG_CC_VERSION_TEXT) | grep -qE 'Android|Neutron' && echo true || echo false),true)
+# Enable MLGO optimizations for register allocation
+KBUILD_CFLAGS   += -mllvm -regalloc-enable-advisor=release
+KBUILD_LDFLAGS  += -mllvm -regalloc-enable-advisor=release
+KBUILD_LDFLAGS  += -mllvm -enable-ml-inliner=release
+endif
+
+# Enable hot cold split optimization
+KBUILD_CFLAGS   += -mllvm -hot-cold-split=true
+
 ifdef CONFIG_CC_IS_CLANG
 KBUILD_CPPFLAGS += -Qunused-arguments
 KBUILD_CFLAGS += -Wno-format-invalid-specifier
