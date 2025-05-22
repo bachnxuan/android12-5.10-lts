@@ -794,8 +794,8 @@ KBUILD_CFLAGS	+= -mllvm -polly \
 		   -mllvm -polly-invariant-load-hoisting \
 		   -mllvm -polly-vectorizer=stripmine
 
-ifeq ($(shell test $(CONFIG_CLANG_VERSION) -gt 130000; echo $$?),0)
-KBUILD_CFLAGS	+= -mllvm -polly-loopfusion-greedy=1 \
+ifeq ($(shell test $(CONFIG_CLANG_VERSION) -gt 130000; echo $?),0)
+KBUILD_CFLAGS  += -mllvm -polly-loopfusion-greedy=1 \
 		   -mllvm -polly-reschedule=1 \
 		   -mllvm -polly-postopts=1 \
 		   -mllvm -polly-num-threads=0 \
@@ -842,11 +842,12 @@ KBUILD_CFLAGS += $(stackp-flags-y)
 KBUILD_CFLAGS-$(CONFIG_WERROR) += -Werror
 KBUILD_CFLAGS += $(KBUILD_CFLAGS-y)
 
-ifeq ($(shell echo $(CONFIG_CC_VERSION_TEXT) | grep -qE 'Android|Neutron' && echo true || echo false),true)
+ifeq ($(call cc-option-yn, -mllvm -regalloc-enable-advisor=release),y)
 # Enable MLGO optimizations for register allocation
 KBUILD_CFLAGS   += -mllvm -regalloc-enable-advisor=release
 KBUILD_LDFLAGS  += -mllvm -regalloc-enable-advisor=release
 KBUILD_LDFLAGS  += -mllvm -enable-ml-inliner=release
+$(info --- MLGO Optimizations Activated!)
 endif
 
 # Enable hot cold split optimization
