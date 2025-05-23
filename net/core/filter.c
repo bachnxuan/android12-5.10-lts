@@ -4900,7 +4900,7 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
 				if (val <= 0 || tp->data_segs_out > tp->syn_data)
 					ret = -EINVAL;
 				else
-					tcp_snd_cwnd_set(tp, val);
+					tp->snd_cwnd = val;
 				break;
 			case TCP_BPF_SNDCWND_CLAMP:
 				if (val <= 0) {

@@ -159,7 +159,7 @@ EXPORT_SYMBOL_GPL(tcp_vegas_cwnd_event);
 
 static inline u32 tcp_vegas_ssthresh(struct tcp_sock *tp)
 {
-	return  min(tp->snd_ssthresh, tcp_snd_cwnd(tp));
+	return  min(tp->snd_ssthresh, tp->snd_cwnd);
 }
 
 static void tcp_vegas_cong_avoid(struct sock *sk, u32 ack, u32 acked)
@@ -217,14 +217,14 @@ static void tcp_vegas_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 			 * This is:
 			 *     (actual rate in segments) * baseRTT
 			 */
-			target_cwnd = (u64)tcp_snd_cwnd(tp) * vegas->baseRTT;
+			target_cwnd = (u64)tp->snd_cwnd * vegas->baseRTT;
 			do_div(target_cwnd, rtt);
 
 			/* Calculate the difference between the window we had,
 			 * and the window we would like to have. This quantity
 			 * is the "Diff" from the Arizona Vegas papers.
 			 */
-			diff = tcp_snd_cwnd(tp) * (rtt-vegas->baseRTT) / vegas->baseRTT;
+			diff = tp->snd_cwnd * (rtt-vegas->baseRTT) / vegas->baseRTT;
 
 			if (diff > gamma && tcp_in_slow_start(tp)) {
 				/* Going too fast. Time to slow down
@@ -238,8 +238,7 @@ static void tcp_vegas_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 				 * truncation robs us of full link
 				 * utilization.
 				 */
-				tcp_snd_cwnd_set(tp, min(tcp_snd_cwnd(tp),
-							 (u32)target_cwnd + 1));
+				tp->snd_cwnd = min(tp->snd_cwnd, (u32)target_cwnd+1);
 				tp->snd_ssthresh = tcp_vegas_ssthresh(tp);
 
 			} else if (tcp_in_slow_start(tp)) {
@@ -255,14 +254,14 @@ static void tcp_vegas_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 					/* The old window was too fast, so
 					 * we slow down.
 					 */
-					tcp_snd_cwnd_set(tp, tcp_snd_cwnd(tp) - 1);
+					tp->snd_cwnd--;
 					tp->snd_ssthresh
 						= tcp_vegas_ssthresh(tp);
 				} else if (diff < alpha) {
 					/* We don't have enough extra packets
 					 * in the network, so speed up.
 					 */
-					tcp_snd_cwnd_set(tp, tcp_snd_cwnd(tp) + 1);
+					tp->snd_cwnd++;
 				} else {
 					/* Sending just as fast as we
 					 * should be.
@@ -270,10 +269,10 @@ static void tcp_vegas_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 				}
 			}
 
-			if (tcp_snd_cwnd(tp) < 2)
-				tcp_snd_cwnd_set(tp, 2);
-			else if (tcp_snd_cwnd(tp) > tp->snd_cwnd_clamp)
-				tcp_snd_cwnd_set(tp, tp->snd_cwnd_clamp);
+			if (tp->snd_cwnd < 2)
+				tp->snd_cwnd = 2;
+			else if (tp->snd_cwnd > tp->snd_cwnd_clamp)
+				tp->snd_cwnd = tp->snd_cwnd_clamp;
 
 			tp->snd_ssthresh = tcp_current_ssthresh(sk);
 		}
