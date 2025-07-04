@@ -17,6 +17,7 @@
 #include <linux/mmc/host.h>
 #include <linux/mmc/card.h>
 
+#include <mt-plat/mtk_blocktag.h>
 #include "cqhci.h"
 #include "cqhci-crypto.h"
 
@@ -607,7 +608,7 @@ static int cqhci_request(struct mmc_host *mmc, struct mmc_request *mrq)
 		cqhci_writel(cq_host, 0, CQHCI_CTL);
 		mmc->cqe_on = true;
 		pr_debug("%s: cqhci: CQE on\n", mmc_hostname(mmc));
-		if (cqhci_readl(cq_host, CQHCI_CTL) && CQHCI_HALT) {
+		if (cqhci_readl(cq_host, CQHCI_CTL) & CQHCI_HALT) {
 			pr_err("%s: cqhci: CQE failed to exit halt state\n",
 			       mmc_hostname(mmc));
 		}
@@ -641,6 +642,12 @@ static int cqhci_request(struct mmc_host *mmc, struct mmc_request *mrq)
 	cq_host->qcnt += 1;
 	/* Make sure descriptors are ready before ringing the doorbell */
 	wmb();
+
+	if (mrq->data) {
+		mmc_mtk_biolog_send_command(tag, mrq);
+		mmc_mtk_biolog_check(mmc, cq_host->qcnt);
+	}
+
 	cqhci_writel(cq_host, 1 << tag, CQHCI_TDBR);
 	if (!(cqhci_readl(cq_host, CQHCI_TDBR) & (1 << tag)))
 		pr_debug("%s: cqhci: doorbell not set for tag %d\n",
@@ -799,6 +806,8 @@ static void cqhci_finish_mrq(struct mmc_host *mmc, unsigned int tag)
 			data->bytes_xfered = 0;
 		else
 			data->bytes_xfered = data->blksz * data->blocks;
+		mmc_mtk_biolog_transfer_req_compl(mmc, tag, 0);
+		mmc_mtk_biolog_check(mmc, cq_host->qcnt);
 	}
 
 	mmc_cqe_request_done(mmc, mrq);

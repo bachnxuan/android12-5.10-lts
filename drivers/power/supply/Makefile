@@ -98,3 +98,9 @@ obj-$(CONFIG_CHARGER_BD70528)	+= bd70528-charger.o
 obj-$(CONFIG_CHARGER_BD99954)	+= bd99954-charger.o
 obj-$(CONFIG_CHARGER_WILCO)	+= wilco-charger.o
 obj-$(CONFIG_RN5T618_POWER)	+= rn5t618_power.o
+
+ifeq ($(CONFIG_BUILD_PRODUCT_NAME),"plato")
+obj-y += mediatek/plato/
+else
+obj-y += mediatek/
+endif

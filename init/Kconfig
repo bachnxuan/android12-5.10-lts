@@ -198,6 +198,30 @@ config LOCALVERSION_AUTO
 
 	  which is done within the script "scripts/setlocalversion".)
 
+config LOCALVERSION_SHA
+	bool "Leave only current tree"
+	default y
+	depends on LOCALVERSION_AUTO
+	depends on !COMPILE_TEST
+	help
+	  A cleaner version of LOCALVERSION_AUTO, contains current tree.
+
+menuconfig UNAME_OVERRIDE
+	bool "Override uname output for specific processes"
+	help
+	  This will modify struct new_utsname->release string's return value
+	  to another string on a specified process.
+
+if UNAME_OVERRIDE
+
+config UNAME_OVERRIDE_TARGET
+	string "Target process' cmdline for uname override"
+
+config UNAME_OVERRIDE_STRING
+	string "New uname's release string for uname override"
+
+endif
+
 config BUILD_SALT
 	string "Build ID Salt"
 	default ""
@@ -670,7 +694,7 @@ endmenu # "CPU/Task time and stats accounting"
 
 config CPU_ISOLATION
 	bool "CPU isolation"
-	depends on SMP || COMPILE_TEST
+	depends on SMP
 	default y
 	help
 	  Make sure that CPUs running critical tasks are not disturbed by
@@ -2255,6 +2279,7 @@ comment "Do not forget to sign required modules with scripts/sign-file"
 choice
 	prompt "Which hash algorithm should modules be signed with?"
 	depends on MODULE_SIG
+	default MODULE_SIG_SHA512
 	help
 	  This determines which sort of hashing algorithm will be used during
 	  signature generation.  This algorithm _must_ be built into the kernel

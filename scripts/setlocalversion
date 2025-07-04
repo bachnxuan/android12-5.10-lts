@@ -64,6 +64,13 @@ scm_version()
 	# Check for git and a git repo.
 	if head=$(git rev-parse --verify HEAD 2>/dev/null); then
 
+		# Get commit sha, leave.
+		if test "$CONFIG_LOCALVERSION_SHA" = "y"; then
+			last_commit=$(git rev-parse --verify --short=8 HEAD)
+			printf '%s' "/$last_commit"
+			return
+		fi
+
 		if [ -n "$android_release" ] && [ -n "$kmi_generation" ]; then
 			printf '%s' "-$android_release-$kmi_generation"
 		elif [ -n "$android_release" ]; then
