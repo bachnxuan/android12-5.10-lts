@@ -843,6 +843,7 @@ ifeq ($(call cc-option-yn, -mllvm -regalloc-enable-advisor=release),y)
 KBUILD_CFLAGS   += -mllvm -regalloc-enable-advisor=release
 KBUILD_LDFLAGS  += -mllvm -regalloc-enable-advisor=release
 KBUILD_LDFLAGS  += -mllvm -enable-ml-inliner=release
+KBUILD_LDFLAGS  += -mllvm -ml-inliner-model-selector=arm64
 $(info --- MLGO Optimizations Activated!)
 endif
 
