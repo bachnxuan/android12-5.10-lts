@@ -841,12 +841,15 @@ KBUILD_CFLAGS-$(CONFIG_WERROR) += -Werror
 KBUILD_CFLAGS += $(KBUILD_CFLAGS-y)
 
 ifeq ($(call cc-option-yn, -mllvm -regalloc-enable-advisor=release),y)
-# Enable MLGO optimizations for register allocation
-KBUILD_CFLAGS   += -mllvm -regalloc-enable-advisor=release
-KBUILD_LDFLAGS  += -mllvm -regalloc-enable-advisor=release
-KBUILD_LDFLAGS  += -mllvm -enable-ml-inliner=release
-KBUILD_LDFLAGS  += -mllvm -ml-inliner-model-selector=arm64
+ifeq ($(call cc-option-yn,-mllvm -ml-inliner-model-selector=arm64-mixed),y)
+KBUILD_CLFLAGS  += -mllvm -regalloc-enable-advisor=release \
+		   -mllvm -enable-ml-inliner=release \
+                   -mllvm -ml-inliner-model-selector=arm64-mixed \
+		   -ml-inliner-skip-policy=if-caller-not-cold
+KBUILD_LDFLAGS  += -mllvm -enable-ml-inliner=release \
+                   -mllvm -ml-inliner-model-selector=arm64-mixed
 $(info --- MLGO Optimizations Activated!)
+endif
 endif
 
 # Enable hot cold split optimization
