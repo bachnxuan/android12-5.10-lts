@@ -848,7 +848,6 @@ KBUILD_CLFLAGS  += -mllvm -regalloc-enable-advisor=release \
 		   -ml-inliner-skip-policy=if-caller-not-cold
 KBUILD_LDFLAGS  += -mllvm -enable-ml-inliner=release \
                    -mllvm -ml-inliner-model-selector=arm64-mixed
-$(info --- MLGO Optimizations Activated!)
 endif
 endif
 
