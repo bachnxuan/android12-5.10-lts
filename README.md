@@ -8,13 +8,13 @@ Custom kernel for **xaga(in)** / **xagapro(in)**. Supports **AOSP** and **HyperO
 
 ## Download
 
-Get the latest **boot.img** / **AnyKernel3 zip** from the release: [Github Release](https://github.com/bachnxuan/android12-5.10-lts/releases/latest)
+Get the latest **Boot Image** / **AnyKernel3 zip** from the release: [Github Release](https://github.com/bachnxuan/android12-5.10-lts/releases/latest)
 
 ---
 
-## Flashing
+## How to flash
 
-### Fastboot (boot.img)
+### Fastboot (Boot Image)
 
 > [!NOTE]
 > You may need to flash to `boot_a` / `boot_b` according to your current slot.
