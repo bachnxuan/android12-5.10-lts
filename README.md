@@ -2,6 +2,9 @@
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/bachnxuan/gki_kernel_builder/release.yml) [![Telegram](https://img.shields.io/badge/Telegram-2CA5E0?logo=telegram&logoColor=white)](https://t.me/xaga_kernel)
 
+> [!IMPORTANT]
+> We are moving to [ESK Project Organization](https://github.com/ESK-Project), please update your repository reference accordingly to get futures update. 
+
 Custom kernel for **xaga(in)** / **xagapro(in)**. Supports **AOSP** and **HyperOS**.
 
 ---
